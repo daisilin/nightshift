@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --font-heading: 'DM Serif Display', Georgia, serif;
+  --font-body: 'Nunito Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+
+  --color-bg: #FFFAF7;
+  --color-surface: #FFF5F0;
+  --color-surface-2: #FFEEE6;
+  --color-text: #2D2438;
+  --color-text-2: #6B5E7B;
+  --color-text-3: #A89BB5;
+  --color-text-4: #C7BBCF;
+
+  --color-orchid: #B07CC6;
+  --color-orchid-light: #D9B8E8;
+  --color-blue: #8BACD4;
+  --color-peach: #E8A87C;
+  --color-sage: #8FB89A;
+  --color-rose: #D48BB5;
+}
+
+html { font-family: var(--font-body); background: var(--color-bg); color: var(--color-text); -webkit-font-smoothing: antialiased; }
+body { margin: 0; min-height: 100vh; }
+h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 400; }
+::selection { background: rgba(176,124,198,0.2); }
+*:focus-visible { outline: 2px solid var(--color-orchid); outline-offset: 3px; border-radius: 8px; }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-thumb { background: rgba(176,124,198,0.15); border-radius: 3px; }
+
+.card {
+  background: white;
+  border: 1px solid rgba(176,124,198,0.10);
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(176,124,198,0.07), 0 1px 3px rgba(176,124,198,0.04);
+}
+
+@keyframes morph {
+  0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+}
