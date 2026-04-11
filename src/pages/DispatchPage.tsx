@@ -69,7 +69,7 @@ export function DispatchPage() {
 
         {/* Intern status cards */}
         <div className="space-y-3">
-          {roles.map((role, i) => {
+          {roles.map((role) => {
             const profile = INTERN_PROFILES[role];
             const done = statuses[role].includes('done');
             return (

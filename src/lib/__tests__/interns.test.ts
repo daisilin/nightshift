@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { createMissions, parseFindingsFromResponse, getInternSystemPrompt, resetFindingCounter } from '../interns';
+import { createMissions, parseFindingsFromResponse, getInternSystemPrompt, resetFindingCounter, buildRefinedBrief } from '../interns';
+import type { ResearchSession } from '../../context/types';
 
 beforeEach(() => resetFindingCounter());
 
@@ -85,5 +86,61 @@ describe('getInternSystemPrompt', () => {
     expect(prompt).toContain('Scout');
     expect(prompt).toContain('scout');
     expect(prompt).toContain('test brief');
+  });
+});
+
+describe('buildRefinedBrief', () => {
+  const makeSession = (findings: { text: string; feedback: string | null }[]): ResearchSession => ({
+    id: 's1', brief: 'test question', missions: [], reports: [{
+      role: 'scout', summary: '', status: 'done',
+      findings: findings.map((f, i) => ({
+        id: `f${i}`, internRole: 'scout' as const, text: f.text, confidence: 0.8,
+        feedback: f.feedback as any,
+      })),
+    }],
+    synthesis: null, agreements: [], disagreements: [],
+    openQuestions: ['what about X?'], nextMissions: [],
+    createdAt: 0, completedAt: null, round: 1, previousSessionId: null,
+  });
+
+  it('includes useful findings in KEEP section', () => {
+    const brief = buildRefinedBrief(makeSession([
+      { text: 'React is popular', feedback: 'useful' },
+      { text: 'Vue is niche', feedback: 'shallow' },
+    ]));
+    expect(brief).toContain('KEEP');
+    expect(brief).toContain('React is popular');
+    expect(brief).not.toContain('Vue is niche');
+  });
+
+  it('includes deeper findings in GO DEEPER section', () => {
+    const brief = buildRefinedBrief(makeSession([
+      { text: 'Astro performance', feedback: 'deeper' },
+    ]));
+    expect(brief).toContain('GO DEEPER');
+    expect(brief).toContain('Astro performance');
+  });
+
+  it('includes wrong findings in AVOID section', () => {
+    const brief = buildRefinedBrief(makeSession([
+      { text: 'jQuery is the future', feedback: 'wrong' },
+    ]));
+    expect(brief).toContain('AVOID');
+    expect(brief).toContain('jQuery is the future');
+  });
+
+  it('includes open questions', () => {
+    const brief = buildRefinedBrief(makeSession([]));
+    expect(brief).toContain('what about X?');
+  });
+
+  it('handles session with no feedback gracefully', () => {
+    const brief = buildRefinedBrief(makeSession([
+      { text: 'unfeedback finding', feedback: null },
+    ]));
+    expect(brief).toContain('test question');
+    expect(brief).not.toContain('KEEP');
+    expect(brief).not.toContain('GO DEEPER');
+    expect(brief).not.toContain('AVOID');
   });
 });

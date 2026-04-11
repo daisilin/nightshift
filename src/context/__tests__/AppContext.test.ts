@@ -60,6 +60,23 @@ describe('reducer', () => {
     expect(s).toEqual(initialState);
   });
 
+  it('ITERATE_SESSION archives current and creates new session with higher round', () => {
+    const missions = createMissions('test');
+    let s = r(initialState, { type: 'START_SESSION', payload: { brief: 'test', missions } });
+    const prevId = s.currentSession!.id;
+    const newMissions = createMissions('refined test');
+    s = r(s, { type: 'ITERATE_SESSION', payload: { refinedBrief: 'refined test', missions: newMissions } });
+
+    expect(s.sessions).toHaveLength(1);
+    expect(s.sessions[0].id).toBe(prevId);
+    expect(s.sessions[0].completedAt).toBeTypeOf('number');
+    expect(s.currentSession).toBeTruthy();
+    expect(s.currentSession!.brief).toBe('refined test');
+    expect(s.currentSession!.round).toBe(2);
+    expect(s.currentSession!.previousSessionId).toBe(prevId);
+    expect(s.step).toBe('dispatch');
+  });
+
   it('does not mutate previous state', () => {
     const before = { ...initialState };
     r(before, { type: 'SET_STEP', payload: 'brief' });

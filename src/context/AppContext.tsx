@@ -30,6 +30,7 @@ export function reducer(state: AppState, action: AppAction): AppState {
         createdAt: Date.now(),
         completedAt: null,
         round: state.sessions.length + 1,
+        previousSessionId: null,
       };
       return { ...state, currentSession: session, step: 'dispatch' };
     }
@@ -69,6 +70,33 @@ export function reducer(state: AppState, action: AppAction): AppState {
         ),
       }));
       return { ...state, currentSession: { ...state.currentSession, reports } };
+    }
+
+    case 'ITERATE_SESSION': {
+      if (!state.currentSession) return state;
+      const archived = { ...state.currentSession, completedAt: Date.now() };
+      const updatedSessions = [...state.sessions, archived];
+      const iteratedSession = {
+        id: `s-${Date.now()}`,
+        brief: action.payload.refinedBrief,
+        missions: action.payload.missions,
+        reports: action.payload.missions.map(m => ({
+          role: m.role,
+          summary: '',
+          findings: [],
+          status: 'pending' as const,
+        })),
+        synthesis: null,
+        agreements: [],
+        disagreements: [],
+        openQuestions: [],
+        nextMissions: [],
+        createdAt: Date.now(),
+        completedAt: null,
+        round: archived.round + 1,
+        previousSessionId: archived.id,
+      };
+      return { ...state, sessions: updatedSessions, currentSession: iteratedSession, step: 'dispatch' };
     }
 
     case 'COMPLETE_SESSION': {

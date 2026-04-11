@@ -1,4 +1,4 @@
-import type { Intern, InternRole, Finding } from '../context/types';
+import type { Intern, InternRole, Finding, ResearchSession } from '../context/types';
 
 export const INTERN_PROFILES: Record<InternRole, Omit<Intern, 'mission'>> = {
   scout: {
@@ -83,4 +83,31 @@ export function parseFindingsFromResponse(text: string, role: InternRole): Findi
 
 export function resetFindingCounter(): void {
   findingCounter = 0;
+}
+
+/** Build a refined brief from a session's feedback. Pure function. */
+export function buildRefinedBrief(session: ResearchSession): string {
+  const allFindings = session.reports.flatMap(r => r.findings);
+  const useful = allFindings.filter(f => f.feedback === 'useful').map(f => f.text);
+  const deeper = allFindings.filter(f => f.feedback === 'deeper').map(f => f.text);
+  const wrong = allFindings.filter(f => f.feedback === 'wrong').map(f => f.text);
+
+  const parts: string[] = [`Original question: "${session.brief}"`];
+
+  if (useful.length > 0) {
+    parts.push(`\nKEEP — these were useful:\n${useful.map(t => `- ${t}`).join('\n')}`);
+  }
+  if (deeper.length > 0) {
+    parts.push(`\nGO DEEPER on:\n${deeper.map(t => `- ${t}`).join('\n')}`);
+  }
+  if (wrong.length > 0) {
+    parts.push(`\nAVOID — wrong direction:\n${wrong.map(t => `- ${t}`).join('\n')}`);
+  }
+  if (session.openQuestions.length > 0) {
+    parts.push(`\nOpen questions to prioritize:\n${session.openQuestions.map(q => `- ${q}`).join('\n')}`);
+  }
+
+  parts.push('\nBased on this feedback, investigate further. Focus on what was useful, go deeper where requested, and avoid wrong directions.');
+
+  return parts.join('\n');
 }

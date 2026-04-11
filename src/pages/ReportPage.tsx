@@ -1,9 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
-import { INTERN_PROFILES } from '../lib/interns';
+import { INTERN_PROFILES, buildRefinedBrief, createMissions } from '../lib/interns';
 import type { InternRole, FindingFeedback } from '../context/types';
 import { stagger, staggerItem } from '../lib/animations';
+import { RoundDiff } from '../components/report/RoundDiff';
 
 const feedbackOptions: { value: FindingFeedback; label: string; emoji: string }[] = [
   { value: 'useful', label: 'useful', emoji: '👍' },
@@ -36,6 +37,12 @@ export function ReportPage() {
             <p className="text-xs text-text-4 mt-1">round {session.round} · {new Date(session.createdAt).toLocaleString()}</p>
           </div>
         </motion.div>
+
+        {/* Round diff — shows what changed from previous round */}
+        {session.round > 1 && session.previousSessionId && (() => {
+          const prev = state.sessions.find(s => s.id === session.previousSessionId);
+          return prev ? <RoundDiff currentSession={session} previousSession={prev} /> : null;
+        })()}
 
         {/* Synthesis card — the hero */}
         {session.synthesis && (
@@ -165,7 +172,12 @@ export function ReportPage() {
           <motion.button
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
-            onClick={() => { dispatch({ type: 'COMPLETE_SESSION' }); nav('/'); }}
+            onClick={() => {
+              const refined = buildRefinedBrief(session);
+              const missions = createMissions(refined);
+              dispatch({ type: 'ITERATE_SESSION', payload: { refinedBrief: refined, missions } });
+              nav('/dispatch');
+            }}
             className="px-6 py-3 rounded-[14px] text-sm font-semibold text-text-2 border border-orchid/15 bg-orchid/5 cursor-pointer hover:bg-orchid/10 transition-all"
           >
             iterate with feedback →

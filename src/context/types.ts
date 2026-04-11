@@ -39,6 +39,7 @@ export interface ResearchSession {
   createdAt: number;
   completedAt: number | null;
   round: number;
+  previousSessionId: string | null;
 }
 
 export interface AppState {
@@ -53,5 +54,6 @@ export type AppAction =
   | { type: 'UPDATE_REPORT'; payload: { role: InternRole; report: Partial<InternReport> } }
   | { type: 'SET_SYNTHESIS'; payload: { synthesis: string; agreements: string[]; disagreements: string[]; openQuestions: string[]; nextMissions: string[] } }
   | { type: 'SET_FEEDBACK'; payload: { findingId: string; feedback: FindingFeedback } }
+  | { type: 'ITERATE_SESSION'; payload: { refinedBrief: string; missions: Intern[] } }
   | { type: 'COMPLETE_SESSION' }
   | { type: 'RESET' };
