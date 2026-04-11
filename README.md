@@ -1,54 +1,55 @@
-# React + TypeScript + Vite
+# nightshift — agent interns that work while you sleep
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A flow-first research workspace where you dispatch AI agent interns to explore a question from multiple angles, then wake up to a synthesized morning briefing with feedback loops.
 
-Currently, two official plugins are available:
+## Why not just use Claude?
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Because nightshift manages things a single chat can't:
+- **Parallel research** — 3 interns explore different angles simultaneously
+- **Structured synthesis** — where they agree, disagree, and what's uncertain
+- **Per-finding feedback** — mark what's useful, shallow, or wrong
+- **State across sessions** — research history persists and compounds
+- **Manager-quality reports** — not chat logs, but visual briefings
 
-## Expanding the ESLint configuration
+## The 3 Interns
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+| Intern | Role | Approach |
+|--------|------|----------|
+| Scout | Broad sweep | Maps the landscape, finds patterns and key players |
+| Analyst | Deep dive | Picks the strongest angle and goes deep |
+| Contrarian | Devil's advocate | Finds risks, blind spots, and opposing views |
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## The Daily Loop
+
+1. **Brief** — Give a messy research question
+2. **Dispatch** — 3 interns research in parallel
+3. **Morning Report** — Synthesized briefing with confidence levels
+4. **Review** — Give feedback on each finding
+5. **Iterate** — Next round is shaped by your feedback
+
+## Deploy to Vercel
+
+1. Push to GitHub (done)
+2. Go to [vercel.com](https://vercel.com), import this repo
+3. Add environment variable: `ANTHROPIC_API_KEY` = your key
+4. Deploy
+
+## Local Development
+
+```bash
+npm install
+echo "ANTHROPIC_API_KEY=sk-ant-..." > .env
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Tech Stack
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- React 19 + TypeScript + Vite
+- Tailwind CSS v4
+- Framer Motion
+- Claude API (Sonnet)
+- Vitest (17 tests)
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## Author
+
+[Daisy Lin](https://daisilin.github.io) — exploring agent interfaces that help people do research without becoming operators.
