@@ -4,11 +4,7 @@ import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 import { DesignCard } from '../components/report/DesignCard';
 import { DesignEditor } from '../components/report/DesignEditor';
-import { PersonaComparison } from '../components/report/PersonaComparison';
-import { MetricCard } from '../components/report/MetricCard';
-import { DistributionChart } from '../components/report/DistributionChart';
 import { TaskPreview } from '../components/preview/TaskPreview';
-import { DataExplorer } from '../components/report/DataExplorer';
 import { PeerReviewCard } from '../components/report/PeerReviewCard';
 import { CrossTaskView } from '../components/report/CrossTaskView';
 import { ResultRenderer } from '../components/report/ResultRenderer';
@@ -16,8 +12,6 @@ import { AnalysisChat } from '../components/report/AnalysisChat';
 import { getParadigm } from '../data/taskBank';
 import { personaBank } from '../data/personaBank';
 import { stagger, staggerItem } from '../lib/animations';
-
-const CONDITION_COLORS = ['#8BACD4', '#B07CC6', '#E8A87C', '#8FB89A', '#D48BB5'];
 
 export function ReportPage() {
   const nav = useNavigate();
@@ -47,23 +41,6 @@ export function ReportPage() {
     ? (doneBatteryTasks[selectedIdx] || doneBatteryTasks[0])
     : (doneReports[selectedIdx] || doneReports[0]);
   const paradigm = getParadigm(session.paradigmId);
-
-  // Distribution data from selected design
-  const distributionGroups = (() => {
-    if (!selected.dataset || !selected.design || selected.design.params.type !== 'behavioral') return [];
-    const condRts: Record<string, number[]> = {};
-    for (const p of selected.dataset.participants) {
-      for (const t of p.trials) {
-        if (t.rt !== null) {
-          if (!condRts[t.condition]) condRts[t.condition] = [];
-          condRts[t.condition].push(t.rt);
-        }
-      }
-    }
-    return Object.entries(condRts).map(([name, values], i) => ({
-      name, values, color: CONDITION_COLORS[i % CONDITION_COLORS.length],
-    }));
-  })();
 
   return (
     <div className="min-h-screen px-4 sm:px-6 py-8" style={{ background: 'linear-gradient(160deg, #FFFAF7 0%, #FFEEE6 30%, #F5E6F0 60%, #E8EEF5 100%)' }}>
@@ -154,39 +131,7 @@ export function ReportPage() {
           </motion.div>
         )}
 
-        {/* Persona Comparison */}
-        {selected.metrics && (
-          <motion.div variants={staggerItem} className="mb-6">
-            <PersonaComparison metrics={selected.metrics} />
-          </motion.div>
-        )}
-
-        {/* Key Metrics */}
-        {selected.metrics && (
-          <motion.div variants={staggerItem} className="mb-6">
-            <h2 className="text-xs font-mono text-text-3 uppercase tracking-wider mb-3">key metrics</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {selected.metrics.overall.slice(0, 8).map((m, i) => (
-                <MetricCard key={i} metric={m} />
-              ))}
-            </div>
-          </motion.div>
-        )}
-
-        {/* Distribution Charts */}
-        {distributionGroups.length > 0 && (
-          <motion.div variants={staggerItem} className="mb-6">
-            <h2 className="text-xs font-mono text-text-3 uppercase tracking-wider mb-3">distributions</h2>
-            <DistributionChart label="RT by condition" groups={distributionGroups} unit="ms" />
-          </motion.div>
-        )}
-
-        {/* Data Explorer */}
-        {selected.dataset && selected.design && (
-          <motion.div variants={staggerItem} className="mb-6">
-            <DataExplorer dataset={selected.dataset} design={selected.design} />
-          </motion.div>
-        )}
+        {/* All analysis is from the pipeline — no hardcoded sections */}
 
         {/* Dynamic Analysis Results */}
         {(session.analysisResults ?? []).length > 0 && (
