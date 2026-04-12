@@ -90,7 +90,18 @@ export function ReportPage() {
                 🎮 try this experiment yourself
               </motion.button>
             ) : (
-              <TaskPreview design={selected.design} onClose={() => setPreviewing(false)} />
+              <TaskPreview
+                design={selected.design}
+                onClose={() => setPreviewing(false)}
+                onDesignChange={(updated) => {
+                  // Update the design in state when researcher tweaks params in preview
+                  if ('role' in selected) {
+                    dispatch({ type: 'UPDATE_DESIGN_REPORT', payload: { role: selected.role, report: { design: updated } } });
+                  } else if ('paradigmId' in selected) {
+                    dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: selected.paradigmId, update: { design: updated } } });
+                  }
+                }}
+              />
             )}
           </motion.div>
         )}
