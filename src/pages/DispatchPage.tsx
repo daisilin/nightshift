@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 import { INTERN_PROFILES } from '../lib/interns';
 import { proposeDesign, synthesizePilotResults, generatePeerReview, planAnalysis } from '../lib/ai';
-import { simulatePilot } from '../lib/simulation';
+import { simulatePilot, simulateBattery } from '../lib/simulation';
 import { computePilotMetrics } from '../lib/metrics';
 import { runAnalysisPipeline, defaultBatteryPlan, defaultSingleTaskPlan } from '../lib/analysis/registry';
 import { getParadigm } from '../data/taskBank';
@@ -32,21 +32,17 @@ export function DispatchPage() {
 
     (async () => {
       if (isBattery) {
-        // === BATTERY MODE: INSTANT simulation, NO Claude for design ===
-        // Use task bank defaults directly — this completes in <1 second for any number of tasks
+        // === BATTERY MODE: INSTANT with SHARED latent profiles ===
+        // Same simulated participants take all tasks (realistic cross-task correlations)
         const allDesigns: ExperimentDesign[] = [];
-        const allDatasets: any[] = [];
-        const allMetrics: any[] = [];
         const paradigms: any[] = [];
 
+        // Create designs from task bank defaults
         for (const task of battery) {
           const paradigm = getParadigm(task.paradigmId);
           if (!paradigm) continue;
-
-          dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: task.paradigmId, update: { status: 'simulating' } } });
-
-          // Use task bank defaults — no Claude call needed
-          const design: ExperimentDesign = {
+          paradigms.push(paradigm);
+          allDesigns.push({
             id: `design-${task.paradigmId}-${Date.now()}`,
             name: paradigm.name,
             paradigmId: task.paradigmId,
@@ -56,9 +52,21 @@ export function DispatchPage() {
             hypotheses: [`Effect of condition on ${paradigm.dependentVariables[0]?.name || 'performance'}`],
             rationale: `Standard ${paradigm.name} design from task bank`,
             internRole: 'scout',
-          };
+          });
+        }
 
-          const dataset = simulatePilot(design, personas);
+        // Simulate ALL tasks with shared latent profiles (instant)
+        const allDatasets = simulateBattery(allDesigns, personas, 42);
+        const allMetrics: any[] = [];
+
+        // Update UI and compute metrics per task
+        for (let ti = 0; ti < battery.length; ti++) {
+          const task = battery[ti];
+          const design = allDesigns[ti];
+          const dataset = allDatasets[ti];
+          if (!design || !dataset) continue;
+
+          dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: task.paradigmId, update: { status: 'simulating', design, dataset } } });
 
           dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: task.paradigmId, update: { status: 'computing', design, dataset } } });
           const metrics = computePilotMetrics(design, dataset, personaNames);

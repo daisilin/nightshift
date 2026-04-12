@@ -2,6 +2,7 @@ import type {
   ExperimentDesign, PersonaDefinition, BehavioralParams, SurveyParams,
   SimulatedTrial, SimulatedParticipant, SimulatedDataset,
 } from './types';
+import { generateCohort, getTaskLoadings, computeTaskAbility, type LatentProfile } from './latentModel';
 
 // ============================================================
 // SEEDED PRNG — Mulberry32
@@ -43,6 +44,7 @@ export function simulateBehavioralTrial(
   persona: PersonaDefinition,
   conditionIndex: number,
   trialIndex: number,
+  taskAbility: number = 0, // latent ability score for this task
 ): SimulatedTrial {
   const { difficulty, nTrials, rtRange, baseAccuracy, conditionLabels } = params;
   const condition = conditionLabels[conditionIndex] || `cond-${conditionIndex}`;
@@ -58,7 +60,12 @@ export function simulateBehavioralTrial(
     };
   }
 
-  // RT: base + difficulty effect + condition effect + individual noise
+  // Ability effect: higher ability → faster RT, higher accuracy
+  // Scales ability from [-2,2] to [-0.25, 0.25] effect on RT and accuracy
+  const abilityRtFactor = 1 - taskAbility * 0.12; // high ability = faster
+  const abilityAccBonus = taskAbility * 0.08;      // high ability = more accurate
+
+  // RT: LOG-NORMAL distribution (realistic heavy right tail)
   const baseMean = rtRange[0] + difficulty * (rtRange[1] - rtRange[0]);
   const conditionShift = conditionIndex * (rtRange[1] - rtRange[0]) * 0.08;
   const sd = baseMean * 0.2 * persona.variabilityMultiplier;
@@ -71,12 +78,14 @@ export function simulateBehavioralTrial(
     ? persona.fatigueRate * (trialIndex - nTrials * 0.7) * 15
     : 0;
 
-  const rt = normalDraw(rng, baseMean + conditionShift + practiceEffect + fatigueEffect, sd)
-    * persona.rtMultiplier;
-  const clampedRt = clamp(Math.round(rt), rtRange[0] * 0.5, rtRange[1] * 2);
+  // Log-normal RT: exp(normal) produces realistic heavy right tail
+  const logMean = Math.log(Math.max(50, baseMean + conditionShift + practiceEffect + fatigueEffect));
+  const logSd = 0.3 * persona.variabilityMultiplier; // CV ~30%, realistic for RT
+  const rt = Math.exp(normalDraw(rng, logMean, logSd)) * persona.rtMultiplier * abilityRtFactor;
+  const clampedRt = clamp(Math.round(rt), rtRange[0] * 0.3, rtRange[1] * 3);
 
-  // Accuracy: base - difficulty effect - condition effect
-  const baseP = baseAccuracy - difficulty * 0.35 + persona.accuracyOffset;
+  // Accuracy: base - difficulty + ability bonus + persona offset
+  const baseP = baseAccuracy - difficulty * 0.35 + persona.accuracyOffset + abilityAccBonus;
   const condAccShift = -conditionIndex * 0.04;
   const fatigueAccEffect = trialIndex > nTrials * 0.7 ? -persona.fatigueRate * 0.04 : 0;
   const p = clamp(baseP + condAccShift + fatigueAccEffect, 0.05, 0.99);
@@ -152,35 +161,36 @@ export function simulateParticipant(
   persona: PersonaDefinition,
   participantIndex: number,
   masterSeed: number,
+  latentProfile?: LatentProfile,
 ): SimulatedParticipant {
   const seed = masterSeed + participantIndex * 7919 + persona.id.length * 31;
   const rng = createRng(seed);
   const params = design.params;
   const trials: SimulatedTrial[] = [];
 
+  // Compute task-specific ability from latent profile
+  const loadings = getTaskLoadings(design.paradigmId);
+  const taskAbility = latentProfile ? computeTaskAbility(latentProfile, loadings) : 0;
+
   if (params.type === 'behavioral') {
-    // Individual speed/accuracy offset
-    const _speedOffset = normalDraw(rng, 0, 60); // unused for now, captured in persona
     const trialsPerCondition = Math.floor(params.nTrials / params.nConditions);
 
     if (params.withinSubject) {
-      // Within-subject: each participant sees all conditions
       for (let c = 0; c < params.nConditions; c++) {
         for (let t = 0; t < trialsPerCondition; t++) {
           const globalIdx = c * trialsPerCondition + t;
-          trials.push(simulateBehavioralTrial(rng, params, persona, c, globalIdx));
+          trials.push(simulateBehavioralTrial(rng, params, persona, c, globalIdx, taskAbility));
         }
       }
     } else {
-      // Between-subject: participant sees one condition
       const assignedCondition = participantIndex % params.nConditions;
       for (let t = 0; t < params.nTrials; t++) {
-        trials.push(simulateBehavioralTrial(rng, params, persona, assignedCondition, t));
+        trials.push(simulateBehavioralTrial(rng, params, persona, assignedCondition, t, taskAbility));
       }
     }
   } else {
-    // Survey: one response per item
-    const latentTrait = normalDraw(rng, 0, 1);
+    // Survey: use latent profile's g as the latent trait (if available)
+    const latentTrait = latentProfile ? latentProfile.g * 0.5 + normalDraw(rng, 0, 0.7) : normalDraw(rng, 0, 1);
     for (let i = 0; i < params.nItems; i++) {
       trials.push(simulateSurveyResponse(rng, params, persona, i, latentTrait));
     }
@@ -201,21 +211,54 @@ export function simulateParticipant(
 // PILOT SIMULATION
 // ============================================================
 
+/**
+ * Simulate a full pilot dataset.
+ * If a shared cohort is provided, uses those latent profiles.
+ * Otherwise generates independent profiles (single-task mode).
+ * Shared cohort = realistic cross-task correlations.
+ */
 export function simulatePilot(
   design: ExperimentDesign,
   personas: PersonaDefinition[],
   masterSeed?: number,
+  sharedCohort?: Map<string, LatentProfile[]>,
 ): SimulatedDataset {
   const seed = masterSeed ?? hashString(design.id);
   const participants: SimulatedParticipant[] = [];
 
   for (const persona of personas) {
+    // Get or generate latent profiles for this persona's participants
+    const cohortKey = `${persona.id}-${design.nParticipantsPerPersona}`;
+    const profiles = sharedCohort?.get(cohortKey)
+      ?? generateCohort(design.nParticipantsPerPersona, seed + hashString(persona.id));
+
     for (let i = 0; i < design.nParticipantsPerPersona; i++) {
-      participants.push(simulateParticipant(design, persona, i, seed));
+      participants.push(simulateParticipant(design, persona, i, seed, profiles[i]));
     }
   }
 
   return { designId: design.id, participants, masterSeed: seed, generatedAt: Date.now() };
+}
+
+/**
+ * Simulate a full battery with SHARED latent profiles.
+ * The same participants take all tasks — their cognitive abilities
+ * are consistent across tasks, producing realistic cross-task correlations.
+ */
+export function simulateBattery(
+  designs: ExperimentDesign[],
+  personas: PersonaDefinition[],
+  masterSeed: number = 42,
+): SimulatedDataset[] {
+  // Generate shared cohort: same latent profiles used across all tasks
+  const sharedCohort = new Map<string, LatentProfile[]>();
+  for (const persona of personas) {
+    const n = designs[0]?.nParticipantsPerPersona ?? 20;
+    const key = `${persona.id}-${n}`;
+    sharedCohort.set(key, generateCohort(n, masterSeed + hashString(persona.id)));
+  }
+
+  return designs.map(design => simulatePilot(design, personas, masterSeed, sharedCohort));
 }
 
 function hashString(s: string): number {
