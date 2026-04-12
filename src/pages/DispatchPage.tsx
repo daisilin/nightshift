@@ -59,24 +59,18 @@ export function DispatchPage() {
         const allDatasets = simulateBattery(allDesigns, personas, 42);
         const allMetrics: any[] = [];
 
-        // Update UI and compute metrics per task
+        // Compute metrics per task and update UI
         for (let ti = 0; ti < battery.length; ti++) {
           const task = battery[ti];
           const design = allDesigns[ti];
           const dataset = allDatasets[ti];
           if (!design || !dataset) continue;
 
-          dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: task.paradigmId, update: { status: 'simulating', design, dataset } } });
-
           dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: task.paradigmId, update: { status: 'computing', design, dataset } } });
           const metrics = computePilotMetrics(design, dataset, personaNames);
+          allMetrics.push(metrics);
 
           dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: task.paradigmId, update: { status: 'done', design, dataset, metrics } } });
-
-          allDesigns.push(design);
-          allDatasets.push(dataset);
-          allMetrics.push(metrics);
-          paradigms.push(paradigm);
         }
 
         // Run full analysis pipeline (instant — all pure computation)
