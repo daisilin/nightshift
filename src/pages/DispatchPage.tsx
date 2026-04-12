@@ -6,10 +6,10 @@ import { INTERN_PROFILES } from '../lib/interns';
 import { proposeDesign, synthesizePilotResults, generatePeerReview, planAnalysis } from '../lib/ai';
 import { simulatePilot } from '../lib/simulation';
 import { computePilotMetrics } from '../lib/metrics';
-import { computeCrossTaskAnalysis } from '../lib/crossTaskAnalysis';
 import { runAnalysisPipeline, defaultBatteryPlan, defaultSingleTaskPlan } from '../lib/analysis/registry';
-import { taskBank, getParadigm } from '../data/taskBank';
+import { getParadigm } from '../data/taskBank';
 import { personaBank, getPersona } from '../data/personaBank';
+import type { ExperimentDesign } from '../lib/types';
 import type { InternRole } from '../context/types';
 import { stagger, staggerItem } from '../lib/animations';
 
@@ -27,58 +27,66 @@ export function DispatchPage() {
     const personaNames: Record<string, string> = {};
     personas.forEach(p => { personaNames[p.id] = p.name; });
 
-    const isBattery = (session.battery ?? []).length > 0;
+    const battery = session.battery ?? [];
+    const isBattery = battery.length > 0;
 
     (async () => {
       if (isBattery) {
-        const allDesigns: any[] = [];
-        const allMetrics: any[] = [];
+        // === BATTERY MODE: INSTANT simulation, NO Claude for design ===
+        // Use task bank defaults directly — this completes in <1 second for any number of tasks
+        const allDesigns: ExperimentDesign[] = [];
         const allDatasets: any[] = [];
-        const isBehavioralFlags: boolean[] = [];
+        const allMetrics: any[] = [];
+        const paradigms: any[] = [];
 
-        for (const task of (session.battery ?? [])) {
+        for (const task of battery) {
           const paradigm = getParadigm(task.paradigmId);
           if (!paradigm) continue;
 
-          dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: task.paradigmId, update: { status: 'proposing' } } });
-          const design = await proposeDesign('scout', session.brief, paradigm, personas);
+          dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: task.paradigmId, update: { status: 'simulating' } } });
 
-          dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: task.paradigmId, update: { status: 'simulating', design } } });
+          // Use task bank defaults — no Claude call needed
+          const design: ExperimentDesign = {
+            id: `design-${task.paradigmId}-${Date.now()}`,
+            name: paradigm.name,
+            paradigmId: task.paradigmId,
+            personaIds: session.personaIds,
+            params: paradigm.defaultParams,
+            nParticipantsPerPersona: 20,
+            hypotheses: [`Effect of condition on ${paradigm.dependentVariables[0]?.name || 'performance'}`],
+            rationale: `Standard ${paradigm.name} design from task bank`,
+            internRole: 'scout',
+          };
+
           const dataset = simulatePilot(design, personas);
 
-          dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: task.paradigmId, update: { status: 'computing', dataset } } });
+          dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: task.paradigmId, update: { status: 'computing', design, dataset } } });
           const metrics = computePilotMetrics(design, dataset, personaNames);
 
           dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: task.paradigmId, update: { status: 'done', design, dataset, metrics } } });
 
           allDesigns.push(design);
-          allMetrics.push(metrics);
           allDatasets.push(dataset);
-          isBehavioralFlags.push(paradigm.paradigmType === 'behavioral');
+          allMetrics.push(metrics);
+          paradigms.push(paradigm);
         }
 
-        if (allDatasets.length >= 2) {
-          const taskLabels = battery.map(t => getParadigm(t.paradigmId)?.name || t.paradigmId);
-          const crossTask = computeCrossTaskAnalysis(taskLabels, allDatasets, isBehavioralFlags);
-          dispatch({ type: 'SET_CROSS_TASK_ANALYSIS', payload: crossTask });
-        }
+        // Run full analysis pipeline (instant — all pure computation)
+        const plan = defaultBatteryPlan(allDatasets.length);
+        const analysisResults = runAnalysisPipeline(plan, {
+          datasets: allDatasets, designs: allDesigns, paradigms, personas,
+        });
+        dispatch({ type: 'SET_ANALYSIS_RESULTS', payload: analysisResults });
 
+        // THEN use Claude for interpretation + peer review (2 API calls, not N)
         const synthesis = await synthesizePilotResults(session.brief, allDesigns, allMetrics);
         dispatch({ type: 'SET_SYNTHESIS', payload: { synthesis, agreements: [], disagreements: [], openQuestions: [], nextMissions: [] } });
 
         const review = await generatePeerReview(session.brief, allDesigns, allMetrics);
         dispatch({ type: 'SET_PEER_REVIEW', payload: review });
 
-        // Run analysis pipeline
-        const taskLabelsForPlan = session.battery.map(t => getParadigm(t.paradigmId)?.name || t.paradigmId);
-        const paradigmsForAnalysis = session.battery.map(t => getParadigm(t.paradigmId)!).filter(Boolean);
-        const analysisPlan = await planAnalysis(session.brief, taskLabelsForPlan, allDatasets.length);
-        const analysisResults = runAnalysisPipeline(analysisPlan, {
-          datasets: allDatasets, designs: allDesigns, paradigms: paradigmsForAnalysis, personas,
-        });
-        dispatch({ type: 'SET_ANALYSIS_RESULTS', payload: analysisResults });
-
       } else {
+        // === SINGLE PARADIGM: 3 interns propose design variants ===
         const paradigm = getParadigm(session.paradigmId);
         if (!paradigm) return;
 
@@ -94,8 +102,15 @@ export function DispatchPage() {
           const metrics = computePilotMetrics(design, dataset, personaNames);
 
           dispatch({ type: 'UPDATE_DESIGN_REPORT', payload: { role, report: { status: 'done', metrics } } });
-          return { design, metrics };
+          return { design, dataset, metrics };
         }));
+
+        // Analysis on best design
+        const bestIdx = results.reduce((bi, r, i) => r.metrics.overallScore > results[bi].metrics.overallScore ? i : bi, 0);
+        const singleResults = runAnalysisPipeline(defaultSingleTaskPlan(), {
+          datasets: [results[bestIdx].dataset], designs: [results[bestIdx].design], paradigms: [paradigm], personas,
+        });
+        dispatch({ type: 'SET_ANALYSIS_RESULTS', payload: singleResults });
 
         const designs = results.map(r => r.design);
         const allMetrics = results.map(r => r.metrics);
@@ -104,18 +119,6 @@ export function DispatchPage() {
 
         const review = await generatePeerReview(session.brief, designs, allMetrics);
         dispatch({ type: 'SET_PEER_REVIEW', payload: review });
-
-        // Run analysis pipeline for single task
-        const singlePlan = await planAnalysis(session.brief, [paradigm.name], 1);
-        // Use the best design's dataset
-        const bestIdx = allMetrics.reduce((bi, m, i) => m.overallScore > allMetrics[bi].overallScore ? i : bi, 0);
-        const singleResults = runAnalysisPipeline(singlePlan, {
-          datasets: [results[bestIdx].design ? simulatePilot(results[bestIdx].design, personas, 42) : { designId: '', participants: [], masterSeed: 0, generatedAt: 0 }],
-          designs: [results[bestIdx].design],
-          paradigms: [paradigm],
-          personas,
-        });
-        dispatch({ type: 'SET_ANALYSIS_RESULTS', payload: singleResults });
       }
 
       dispatch({ type: 'SET_STEP', payload: 'report' });
@@ -128,7 +131,7 @@ export function DispatchPage() {
   const battery = session.battery ?? [];
   const isBattery = battery.length > 0;
   const statusLabels: Record<string, string> = {
-    pending: 'waiting...', proposing: 'designing...', simulating: 'simulating pilot...',
+    pending: 'waiting...', proposing: 'designing...', simulating: 'simulating...',
     computing: 'computing metrics...', done: 'done ✓', error: 'error',
   };
 
@@ -140,62 +143,42 @@ export function DispatchPage() {
           <span className="text-sm font-mono font-light text-text-3">nightshift</span>
         </motion.div>
         <motion.h2 variants={staggerItem} className="text-xl font-heading mb-2 text-text">
-          {isBattery ? `running ${battery.length}-task battery...` : 'designing experiments...'}
+          {isBattery ? `simulating ${battery.length}-task battery...` : 'designing experiments...'}
         </motion.h2>
         <motion.p variants={staggerItem} className="text-sm text-text-3 mb-6">
           {session.brief.slice(0, 80)}{session.brief.length > 80 ? '...' : ''}
         </motion.p>
 
         <div className="space-y-2">
-          {isBattery ? (
-            battery.map(task => {
-              const paradigm = getParadigm(task.paradigmId);
-              const done = task.status === 'done';
-              return (
-                <motion.div key={task.paradigmId} variants={staggerItem}
-                  className="card p-3 flex items-center gap-3"
-                  style={done ? { borderColor: 'rgba(143,184,154,0.3)' } : undefined}>
-                  <motion.div
-                    animate={!done ? { rotate: 360 } : {}}
-                    transition={!done ? { duration: 3, repeat: Infinity, ease: 'linear' } : {}}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-lg flex-shrink-0 bg-orchid/5">
-                    {paradigm?.emoji || '🔬'}
-                  </motion.div>
-                  <div className="flex-1 text-left">
-                    <div className="text-sm font-semibold text-text">{paradigm?.name || task.paradigmId}</div>
-                  </div>
-                  <span className={`text-[11px] font-mono ${done ? 'text-sage' : 'text-text-4'}`}>
-                    {statusLabels[task.status] || task.status}
-                  </span>
-                </motion.div>
-              );
-            })
-          ) : (
-            session.designReports.map(report => {
-              const profile = INTERN_PROFILES[report.role];
-              const done = report.status === 'done';
-              return (
-                <motion.div key={report.role} variants={staggerItem}
-                  className="card p-3 flex items-center gap-3"
-                  style={done ? { borderColor: `${profile.color}30` } : undefined}>
-                  <motion.div
-                    animate={!done ? { rotate: 360 } : {}}
-                    transition={!done ? { duration: 3, repeat: Infinity, ease: 'linear' } : {}}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-lg flex-shrink-0"
-                    style={{ background: `${profile.color}15` }}>
-                    {profile.emoji}
-                  </motion.div>
-                  <div className="flex-1 text-left">
-                    <div className="text-sm font-semibold" style={{ color: profile.color }}>{profile.name}</div>
-                    <div className="text-[10px] text-text-3">{profile.description}</div>
-                  </div>
-                  <span className={`text-[11px] font-mono ${done ? 'text-sage' : 'text-text-4'}`}>
-                    {statusLabels[report.status] || report.status}
-                  </span>
-                </motion.div>
-              );
-            })
-          )}
+          {isBattery ? battery.map(task => {
+            const paradigm = getParadigm(task.paradigmId);
+            const done = task.status === 'done';
+            return (
+              <motion.div key={task.paradigmId} variants={staggerItem}
+                className="card p-3 flex items-center gap-3"
+                style={done ? { borderColor: 'rgba(143,184,154,0.3)' } : undefined}>
+                <span className="text-lg">{paradigm?.emoji || '🔬'}</span>
+                <span className="flex-1 text-left text-sm text-text">{paradigm?.name}</span>
+                <span className={`text-[11px] font-mono ${done ? 'text-sage' : 'text-text-4'}`}>
+                  {statusLabels[task.status]}
+                </span>
+              </motion.div>
+            );
+          }) : (session.designReports ?? []).map(report => {
+            const profile = INTERN_PROFILES[report.role];
+            const done = report.status === 'done';
+            return (
+              <motion.div key={report.role} variants={staggerItem} className="card p-3 flex items-center gap-3">
+                <span className="text-lg">{profile.emoji}</span>
+                <div className="flex-1 text-left">
+                  <span className="text-sm font-semibold" style={{ color: profile.color }}>{profile.name}</span>
+                </div>
+                <span className={`text-[11px] font-mono ${done ? 'text-sage' : 'text-text-4'}`}>
+                  {statusLabels[report.status]}
+                </span>
+              </motion.div>
+            );
+          })}
         </div>
       </motion.div>
     </div>

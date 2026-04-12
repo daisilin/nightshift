@@ -12,6 +12,7 @@ import { DataExplorer } from '../components/report/DataExplorer';
 import { PeerReviewCard } from '../components/report/PeerReviewCard';
 import { CrossTaskView } from '../components/report/CrossTaskView';
 import { ResultRenderer } from '../components/report/ResultRenderer';
+import { AnalysisChat } from '../components/report/AnalysisChat';
 import { getParadigm } from '../data/taskBank';
 import { personaBank } from '../data/personaBank';
 import { stagger, staggerItem } from '../lib/animations';
@@ -232,6 +233,11 @@ export function ReportPage() {
             </div>
           </motion.div>
         )}
+
+        {/* Analysis Chat — iterate on analyses conversationally */}
+        <motion.div variants={staggerItem} className="mb-6">
+          <AnalysisChat />
+        </motion.div>
 
         {/* Actions */}
         <motion.div variants={staggerItem} className="flex gap-3 justify-center pt-4 pb-12">
