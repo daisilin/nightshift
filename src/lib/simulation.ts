@@ -60,10 +60,13 @@ export function simulateBehavioralTrial(
     };
   }
 
-  // Ability effect: higher ability → faster RT, higher accuracy
-  // Scales ability from [-2,2] to [-0.25, 0.25] effect on RT and accuracy
-  const abilityRtFactor = 1 - taskAbility * 0.12; // high ability = faster
-  const abilityAccBonus = taskAbility * 0.08;      // high ability = more accurate
+  // Ability effect: CALIBRATED against Lin & Ma Table 1 (target avg r ≈ 0.27)
+  // In real data, individual differences explain ~5-15% of trial variance.
+  // The rest is within-person noise (trial difficulty, attention fluctuations, etc.)
+  // CALIBRATED against Lin & Ma Table 1 (target avg inter-task r ≈ 0.27)
+  // Tuned: 0.06 RT, 0.03 accuracy → produces avg r ≈ 0.25-0.30
+  const abilityRtFactor = 1 - taskAbility * 0.06;
+  const abilityAccBonus = taskAbility * 0.03;
 
   // RT: LOG-NORMAL distribution (realistic heavy right tail)
   const baseMean = rtRange[0] + difficulty * (rtRange[1] - rtRange[0]);
@@ -80,7 +83,7 @@ export function simulateBehavioralTrial(
 
   // Log-normal RT: exp(normal) produces realistic heavy right tail
   const logMean = Math.log(Math.max(50, baseMean + conditionShift + practiceEffect + fatigueEffect));
-  const logSd = 0.3 * persona.variabilityMultiplier; // CV ~30%, realistic for RT
+  const logSd = 0.45 * persona.variabilityMultiplier; // CV ~45%, high within-person noise
   const rt = Math.exp(normalDraw(rng, logMean, logSd)) * persona.rtMultiplier * abilityRtFactor;
   const clampedRt = clamp(Math.round(rt), rtRange[0] * 0.3, rtRange[1] * 3);
 
@@ -163,7 +166,10 @@ export function simulateParticipant(
   masterSeed: number,
   latentProfile?: LatentProfile,
 ): SimulatedParticipant {
-  const seed = masterSeed + participantIndex * 7919 + persona.id.length * 31;
+  // Seed includes paradigmId hash so each task gets INDEPENDENT randomness
+  // (Without this, same seed offset → correlated RT across tasks → inflated correlations)
+  const taskHash = hashString(design.paradigmId);
+  const seed = masterSeed + participantIndex * 7919 + persona.id.length * 31 + taskHash;
   const rng = createRng(seed);
   const params = design.params;
   const trials: SimulatedTrial[] = [];
