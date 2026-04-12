@@ -1,5 +1,12 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
+import * as pdfjsLib from 'pdfjs-dist';
+
+// Configure PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url,
+).toString();
 
 export interface ExtractedDesign {
   brief: string;
@@ -37,18 +44,40 @@ Map tasks to closest ID:
 IMPORTANT: List ALL tasks in paradigmIds if the paper uses multiple.
 Return ONLY JSON.`;
 
+/** Extract text from PDF using PDF.js (the real library, not a hack) */
+async function extractPdfText(file: File): Promise<string> {
+  const buffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+  const pages: string[] = [];
+
+  // Extract text from first 15 pages (enough for abstract + methods)
+  const maxPages = Math.min(pdf.numPages, 15);
+  for (let i = 1; i <= maxPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    const text = content.items
+      .map((item: any) => item.str)
+      .join(' ');
+    pages.push(text);
+  }
+
+  return pages.join('\n\n');
+}
+
 export function PaperUpload({ onExtracted }: Props) {
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
   const [pasteText, setPasteText] = useState('');
+  const [dragging, setDragging] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const callClaude = async (text: string) => {
     if (text.trim().length < 30) {
-      setStatus('paste at least a few sentences');
+      setStatus('need more text — paste at least a few sentences');
       return;
     }
     setLoading(true);
-    setStatus('extracting...');
+    setStatus('analyzing paper...');
     try {
       const res = await fetch('/api/claude', {
         method: 'POST',
@@ -65,7 +94,6 @@ export function PaperUpload({ onExtracted }: Props) {
       const raw = data.content?.[0]?.text ?? '';
       if (!raw) throw new Error('empty response');
 
-      // Extract JSON from response
       let jsonStr = raw;
       const firstBrace = jsonStr.indexOf('{');
       const lastBrace = jsonStr.lastIndexOf('}');
@@ -73,13 +101,7 @@ export function PaperUpload({ onExtracted }: Props) {
         jsonStr = jsonStr.slice(firstBrace, lastBrace + 1);
       }
 
-      let parsed: any;
-      try { parsed = JSON.parse(jsonStr); } catch {
-        setStatus(`Claude couldn't produce JSON. Try pasting a cleaner section.`);
-        setLoading(false);
-        return;
-      }
-
+      const parsed = JSON.parse(jsonStr);
       const paradigmIds = parsed.paradigmIds ?? (parsed.paradigmId ? [parsed.paradigmId] : []);
       const result: ExtractedDesign = {
         paperTitle: parsed.paperTitle || 'Untitled',
@@ -98,16 +120,70 @@ export function PaperUpload({ onExtracted }: Props) {
     }
   };
 
+  const handleFile = async (file: File) => {
+    if (!file.name.toLowerCase().endsWith('.pdf') && file.type !== 'application/pdf') {
+      // Plain text file
+      const text = await file.text();
+      await callClaude(text);
+      return;
+    }
+
+    setLoading(true);
+    setStatus('reading PDF...');
+    try {
+      const text = await extractPdfText(file);
+      if (text.trim().length < 50) {
+        setStatus('could not extract text from this PDF — paste the abstract below');
+        setLoading(false);
+        return;
+      }
+      setStatus(`extracted ${text.length} chars from ${file.name} — analyzing...`);
+      setPasteText(text.slice(0, 3000)); // show extracted text so user can see it worked
+      await callClaude(text);
+    } catch (err) {
+      setStatus(`PDF error: ${err instanceof Error ? err.message : 'unknown'} — paste text below`);
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-2">
       <label className="text-xs font-mono text-text-3 uppercase tracking-wider block">
         reproduce a paper
       </label>
+
+      {/* PDF drop zone */}
+      <div
+        onDragOver={e => { e.preventDefault(); setDragging(true); }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={e => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files[0]; if (f) handleFile(f); }}
+        onClick={() => fileRef.current?.click()}
+        className={`card p-4 text-center cursor-pointer transition-all border-2 border-dashed ${
+          dragging ? 'border-orchid/40 bg-orchid/5' : 'border-orchid/15 hover:border-orchid/25'
+        }`}
+      >
+        <input ref={fileRef} type="file" accept=".pdf,.txt,.md" className="hidden"
+          onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
+        {loading ? (
+          <div className="flex items-center justify-center gap-2">
+            <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+              className="w-4 h-4 rounded-full border-2 border-orchid/30 border-t-orchid" />
+            <span className="text-sm text-text-2">{status}</span>
+          </div>
+        ) : (
+          <div>
+            <span className="text-lg">📄</span>
+            <span className="text-sm text-text-2 ml-2">drop a PDF or click to upload</span>
+          </div>
+        )}
+      </div>
+
+      {/* Paste area */}
       <textarea
         value={pasteText}
         onChange={e => setPasteText(e.target.value)}
-        className="w-full card p-3 text-sm text-text resize-none focus:outline-none min-h-[80px]"
-        placeholder="paste abstract or methods section here..."
+        className="w-full card p-3 text-sm text-text resize-none focus:outline-none min-h-[70px]"
+        placeholder="or paste abstract / methods section here..."
       />
       <div className="flex items-center gap-3">
         <motion.button
@@ -118,9 +194,9 @@ export function PaperUpload({ onExtracted }: Props) {
           className="px-4 py-2 rounded-xl text-xs font-semibold text-white cursor-pointer disabled:opacity-30"
           style={{ background: 'linear-gradient(135deg, #B07CC6, #D48BB5)' }}
         >
-          {loading ? 'extracting...' : 'extract design'}
+          {loading ? 'analyzing...' : 'extract design'}
         </motion.button>
-        {status && <span className="text-xs text-orchid">{status}</span>}
+        {status && !loading && <span className="text-xs text-orchid">{status}</span>}
       </div>
     </div>
   );
