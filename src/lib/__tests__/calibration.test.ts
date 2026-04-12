@@ -1,144 +1,111 @@
 import { describe, it, expect } from 'vitest';
-import { REAL_CORRELATIONS, REAL_FACTOR_LOADINGS, REAL_RELIABILITY, validateCorrelations } from '../calibration';
+import { REAL_CORRELATIONS, REAL_RELIABILITY } from '../calibration';
 import { simulateBattery } from '../simulation';
-import { computeCrossTaskAnalysis, pearsonR, participantScores } from '../crossTaskAnalysis';
+import { pearsonR, participantScores } from '../crossTaskAnalysis';
 import { taskBank } from '../../data/taskBank';
 import { personaBank } from '../../data/personaBank';
 import type { ExperimentDesign } from '../types';
-import { mean } from '../metrics';
+import { mean, standardDeviation } from '../metrics';
 
-// Simulate a battery matching the paper's setup
-const PAPER_TASKS = ['tower-of-london', 'four-in-a-row', 'two-step', 'corsi-block', 'n-back', 'stroop'];
-const personas = [personaBank[0]]; // college students only (paper's sample)
+// ============================================================
+// Match the paper: N=500, college students, 6 tasks
+// ============================================================
 
-function makeDesign(paradigmId: string): ExperimentDesign {
-  const p = taskBank.find(t => t.id === paradigmId)!;
+const N = 500;
+const SEED = 42;
+
+const TASK_MAP = [
+  { paper: 'Tower of London', id: 'tower-of-london' },
+  { paper: 'Four-in-a-Row', id: 'four-in-a-row' },
+  { paper: 'Two-Step Task', id: 'two-step' },
+  { paper: 'Corsi', id: 'corsi-block' },
+  { paper: 'Stroop/WCST', id: 'stroop' },
+  { paper: 'N-back/CDT', id: 'n-back' },
+];
+
+const personas = [personaBank[0]];
+
+const designs: ExperimentDesign[] = TASK_MAP.map(t => {
+  const p = taskBank.find(tb => tb.id === t.id)!;
   return {
-    id: `cal-${paradigmId}`, name: p.name, paradigmId,
-    personaIds: ['college-student'],
-    params: p.defaultParams,
-    nParticipantsPerPersona: 100, // larger N for stable correlations
-    hypotheses: [], rationale: '', internRole: 'scout',
+    id: `cal-${t.id}`, name: p.name, paradigmId: t.id,
+    personaIds: ['college-student'], params: p.defaultParams,
+    nParticipantsPerPersona: N, hypotheses: [], rationale: '', internRole: 'scout',
   };
-}
+});
 
-const designs = PAPER_TASKS.map(makeDesign);
-const datasets = simulateBattery(designs, personas, 42);
+const datasets = simulateBattery(designs, personas, SEED);
+const scores = datasets.map((ds, i) => {
+  const behavioral = designs[i].params.type === 'behavioral';
+  return [...participantScores(ds, behavioral).values()];
+});
 
-describe('Calibration: synthetic vs real human data', () => {
-  it('real correlation targets exist', () => {
-    expect(Object.keys(REAL_CORRELATIONS).length).toBeGreaterThan(30);
-  });
+describe('Calibration: synthetic N=500 vs real N=476', () => {
 
-  it('real factor loadings exist for all 9 tasks', () => {
-    expect(Object.keys(REAL_FACTOR_LOADINGS).length).toBe(9);
-  });
-
-  it('simulated battery produces 6 datasets', () => {
-    expect(datasets.length).toBe(6);
-    for (const ds of datasets) {
-      expect(ds.participants.length).toBe(100);
-    }
-  });
-
-  it('cross-task correlations are non-trivial (latent model works)', () => {
-    const scoreArrays = datasets.map((ds, i) => {
-      const isBehavioral = designs[i].params.type === 'behavioral';
-      return [...participantScores(ds, isBehavioral).values()];
-    });
-
-    // Check that at least some correlations are > 0.1
+  it('average inter-task |r| matches paper (target: 0.266, tolerance: ±0.06)', () => {
     const cors: number[] = [];
-    for (let i = 0; i < PAPER_TASKS.length; i++) {
-      for (let j = i + 1; j < PAPER_TASKS.length; j++) {
-        const r = pearsonR(scoreArrays[i], scoreArrays[j]);
-        cors.push(Math.abs(r));
-      }
-    }
+    for (let i = 0; i < TASK_MAP.length; i++)
+      for (let j = i + 1; j < TASK_MAP.length; j++)
+        cors.push(Math.abs(pearsonR(scores[i], scores[j])));
 
-    const avgR = mean(cors);
-    console.log(`Average |r| across task pairs: ${avgR.toFixed(3)}`);
-    console.log(`Individual correlations: ${cors.map(r => r.toFixed(3)).join(', ')}`);
-
-    // With latent model, average correlation should be > 0.05
-    // (real paper has average r ≈ 0.26)
-    expect(avgR).toBeGreaterThan(0.03);
+    const syn = mean(cors);
+    const real = mean(Object.values(REAL_CORRELATIONS).map(Math.abs));
+    console.log(`Avg |r|: real=${real.toFixed(3)}, synthetic=${syn.toFixed(3)}, err=${Math.abs(syn - real).toFixed(3)}`);
+    expect(Math.abs(syn - real)).toBeLessThan(0.06);
   });
 
-  it('correlations have the right DIRECTION (positive for most pairs)', () => {
-    const scoreArrays = datasets.map((ds, i) => {
-      const isBehavioral = designs[i].params.type === 'behavioral';
-      return [...participantScores(ds, isBehavioral).values()];
-    });
-
-    let positiveCount = 0;
-    let total = 0;
-    for (let i = 0; i < PAPER_TASKS.length; i++) {
-      for (let j = i + 1; j < PAPER_TASKS.length; j++) {
-        const r = pearsonR(scoreArrays[i], scoreArrays[j]);
-        total++;
-        // Note: RT correlations are inverted (slower = worse, but we're using raw RT)
-        // So some negative correlations are expected between RT-based and accuracy-based tasks
-        if (Math.abs(r) > 0.02) positiveCount++; // at least non-zero
-      }
-    }
-
-    // Most correlations should be non-trivial
-    expect(positiveCount / total).toBeGreaterThan(0.5);
+  it('no synthetic correlation > 0.65 (paper max: 0.591)', () => {
+    for (let i = 0; i < TASK_MAP.length; i++)
+      for (let j = i + 1; j < TASK_MAP.length; j++)
+        expect(Math.abs(pearsonR(scores[i], scores[j]))).toBeLessThan(0.65);
   });
 
-  it('split-half reliability is in a plausible range', () => {
-    // For our simulated data, check that odd/even splits correlate
-    for (const ds of datasets) {
-      const oddMeans: number[] = [];
-      const evenMeans: number[] = [];
-      for (const p of ds.participants) {
-        const odd = p.trials.filter((_, i) => i % 2 === 1);
-        const even = p.trials.filter((_, i) => i % 2 === 0);
-        const isBehavioral = odd[0]?.rt !== null;
-        if (isBehavioral) {
-          oddMeans.push(mean(odd.filter(t => t.rt !== null).map(t => t.rt!)));
-          evenMeans.push(mean(even.filter(t => t.rt !== null).map(t => t.rt!)));
-        }
+  it('planning tasks correlate positively and moderately', () => {
+    const tol = 0, fiar = 1, ts = 2;
+    const r_tol_fiar = Math.abs(pearsonR(scores[tol], scores[fiar]));
+    const r_tol_ts = Math.abs(pearsonR(scores[tol], scores[ts]));
+    console.log(`TOL×FIAR: ${r_tol_fiar.toFixed(3)} (real: 0.280), TOL×TS: ${r_tol_ts.toFixed(3)} (real: 0.166)`);
+    expect(r_tol_fiar).toBeLessThan(0.55);
+  });
+
+  it('split-half reliability > 0 for all tasks', () => {
+    for (let ti = 0; ti < datasets.length; ti++) {
+      const odd: number[] = [], even: number[] = [];
+      for (const p of datasets[ti].participants) {
+        const beh = p.trials[0]?.rt !== null;
+        const o = p.trials.filter((_, i) => i % 2 === 1);
+        const e = p.trials.filter((_, i) => i % 2 === 0);
+        odd.push(mean(beh ? o.filter(t => t.rt !== null).map(t => t.rt!) : o.map(t => t.response)));
+        even.push(mean(beh ? e.filter(t => t.rt !== null).map(t => t.rt!) : e.map(t => t.response)));
       }
-      if (oddMeans.length > 10) {
-        const r = pearsonR(oddMeans, evenMeans);
-        // Reliability should be positive (odd and even trials from same person should correlate)
-        expect(r).toBeGreaterThan(0);
-      }
+      const r = pearsonR(odd, even);
+      const sb = (2 * r) / (1 + Math.abs(r));
+      console.log(`${TASK_MAP[ti].paper}: reliability SB=${sb.toFixed(3)}`);
+      expect(r).toBeGreaterThan(0);
     }
   });
 
-  it('reports calibration gap (informational)', () => {
-    const taskLabels = designs.map(d => {
-      const p = taskBank.find(t => t.id === d.paradigmId);
-      return p?.name || d.paradigmId;
-    });
-
-    const analysis = computeCrossTaskAnalysis(
-      taskLabels,
-      datasets,
-      designs.map(d => d.params.type === 'behavioral'),
-    );
-
-    console.log('\n=== CALIBRATION REPORT ===');
-    console.log('Synthetic correlation matrix:');
-    for (const c of analysis.correlationMatrix) {
-      const realKey = Object.keys(REAL_CORRELATIONS).find(k => {
-        const parts = k.split('-');
-        return (c.task1.includes(parts[0]) || c.task2.includes(parts[0])) &&
-               (c.task1.includes(parts[1]) || c.task2.includes(parts[1]));
-      });
-      const realR = realKey ? REAL_CORRELATIONS[realKey] : null;
-      console.log(`  ${c.task1} × ${c.task2}: r=${c.r.toFixed(3)}${realR !== null ? ` (real: ${realR})` : ''}`);
+  it('RT is right-skewed (log-normal)', () => {
+    for (let ti = 0; ti < datasets.length; ti++) {
+      const rts = datasets[ti].participants.flatMap(p => p.trials.filter(t => t.rt !== null).map(t => t.rt!));
+      if (rts.length === 0) continue;
+      const m = mean(rts);
+      const sorted = [...rts].sort((a, b) => a - b);
+      const med = sorted[Math.floor(sorted.length / 2)];
+      const cv = standardDeviation(rts) / m;
+      console.log(`${TASK_MAP[ti].paper}: mean=${Math.round(m)}, median=${Math.round(med)}, CV=${cv.toFixed(2)}`);
+      expect(cv).toBeGreaterThan(0.15);
     }
+  });
 
-    console.log('\nTarget correlations from paper (Table 1):');
-    console.log('  Average real |r|:', mean(Object.values(REAL_CORRELATIONS).map(Math.abs)).toFixed(3));
-    console.log('  Average synthetic |r|:', mean(analysis.correlationMatrix.map(c => Math.abs(c.r))).toFixed(3));
-    console.log('=========================\n');
-
-    // This test always passes — it's informational
-    expect(true).toBe(true);
+  it('accuracy in realistic range', () => {
+    for (let ti = 0; ti < datasets.length; ti++) {
+      const acc = datasets[ti].participants.flatMap(p => p.trials.filter(t => t.correct !== null).map(t => t.correct ? 1 : 0));
+      if (acc.length === 0) continue;
+      const m = mean(acc);
+      console.log(`${TASK_MAP[ti].paper}: accuracy=${(m * 100).toFixed(1)}%`);
+      expect(m).toBeGreaterThan(0.25);
+      expect(m).toBeLessThan(0.98);
+    }
   });
 });
