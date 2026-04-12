@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 import { taskBank } from '../data/taskBank';
 import { personaBank } from '../data/personaBank';
+import { PaperUpload } from '../components/PaperUpload';
 import { stagger, staggerItem } from '../lib/animations';
 
 export function LandingPage() {
@@ -39,6 +40,25 @@ export function LandingPage() {
               pick a paradigm, pick populations, describe what you're testing.
               interns propose designs, simulate pilots, compute metrics.
             </p>
+          </motion.div>
+
+          {/* Paper Upload */}
+          <motion.div variants={staggerItem} className="mb-6">
+            <PaperUpload onExtracted={(extracted) => {
+              setBrief(extracted.brief);
+              if (taskBank.find(t => t.id === extracted.paradigmId)) {
+                setSelectedTask(extracted.paradigmId);
+              }
+              if (extracted.personaIds.length > 0) {
+                setSelectedPersonas(extracted.personaIds);
+              }
+            }} />
+          </motion.div>
+
+          <motion.div variants={staggerItem} className="flex items-center gap-3 mb-4">
+            <div className="flex-1 h-px bg-orchid/10" />
+            <span className="text-xs text-text-4">or configure manually</span>
+            <div className="flex-1 h-px bg-orchid/10" />
           </motion.div>
 
           {/* Task Bank */}
