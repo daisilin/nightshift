@@ -110,6 +110,42 @@ export const taskBank: ParadigmDefinition[] = [
     ],
   },
 
+  // === COMPLEX PLANNING ===
+  {
+    id: 'chess',
+    name: 'Chess Puzzles',
+    emoji: '♟',
+    category: 'planning',
+    paradigmType: 'behavioral',
+    description: 'Tactical chess puzzles — find the best move in a given position',
+    defaultParams: {
+      type: 'behavioral', difficulty: 0.6, nTrials: 20, nConditions: 3,
+      conditionLabels: ['1-move', '2-move', '3-move'],
+      withinSubject: true, rtRange: [5000, 60000], baseAccuracy: 0.65,
+    },
+    dependentVariables: [
+      { name: 'solutionTime', type: 'continuous', unit: 'ms', expectedRange: [3000, 120000], higherIsBetter: false },
+      { name: 'accuracy', type: 'binary', unit: 'proportion', expectedRange: [0, 1], higherIsBetter: true },
+    ],
+  },
+  {
+    id: 'two-step',
+    name: 'Two-Step Task',
+    emoji: '🎲',
+    category: 'learning',
+    paradigmType: 'behavioral',
+    description: 'Sequential decision-making — reveals model-based vs model-free reasoning',
+    defaultParams: {
+      type: 'behavioral', difficulty: 0.5, nTrials: 200, nConditions: 2,
+      conditionLabels: ['common-transition', 'rare-transition'],
+      withinSubject: true, rtRange: [300, 2000], baseAccuracy: 0.60,
+    },
+    dependentVariables: [
+      { name: 'rt', type: 'continuous', unit: 'ms', expectedRange: [200, 3000], higherIsBetter: false },
+      { name: 'stayProbability', type: 'continuous', unit: 'proportion', expectedRange: [0, 1], higherIsBetter: true },
+    ],
+  },
+
   // === SURVEYS ===
   {
     id: 'likert-survey',

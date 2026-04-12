@@ -7,6 +7,7 @@ import { DesignEditor } from '../components/report/DesignEditor';
 import { PersonaComparison } from '../components/report/PersonaComparison';
 import { MetricCard } from '../components/report/MetricCard';
 import { DistributionChart } from '../components/report/DistributionChart';
+import { TaskPreview } from '../components/preview/TaskPreview';
 import { getParadigm } from '../data/taskBank';
 import { personaBank } from '../data/personaBank';
 import { stagger, staggerItem } from '../lib/animations';
@@ -19,6 +20,7 @@ export function ReportPage() {
   const session = state.currentSession;
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [editing, setEditing] = useState(false);
+  const [previewing, setPreviewing] = useState(false);
 
   if (!session) return null;
 
@@ -72,6 +74,24 @@ export function ReportPage() {
             ))}
           </div>
         </motion.div>
+
+        {/* Try it + Preview */}
+        {selected.design && (
+          <motion.div variants={staggerItem} className="mb-4">
+            {!previewing ? (
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setPreviewing(true)}
+                className="w-full py-3 rounded-[14px] text-sm font-semibold text-orchid border border-orchid/20 bg-orchid/5 cursor-pointer hover:bg-orchid/10 transition-all"
+              >
+                🎮 try this experiment yourself
+              </motion.button>
+            ) : (
+              <TaskPreview design={selected.design} onClose={() => setPreviewing(false)} />
+            )}
+          </motion.div>
+        )}
 
         {/* Tweak button + Editor */}
         <motion.div variants={staggerItem} className="mb-6">
