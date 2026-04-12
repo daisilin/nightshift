@@ -27,6 +27,7 @@ export function ReportPage() {
 
   if (!session) return null;
 
+  const battery = session.battery ?? [];
   const selectedPersonas = session.personaIds
     .map(id => personaBank.find(p => p.id === id))
     .filter(Boolean) as typeof personaBank;
@@ -181,11 +182,11 @@ export function ReportPage() {
         )}
 
         {/* Battery tasks overview */}
-        {session.battery.length > 0 && (
+        {battery.length > 0 && (
           <motion.div variants={staggerItem} className="card p-5 mb-6">
-            <h3 className="text-sm font-heading text-text mb-3">battery tasks ({session.battery.length})</h3>
+            <h3 className="text-sm font-heading text-text mb-3">battery tasks ({battery.length})</h3>
             <div className="space-y-2">
-              {session.battery.filter(t => t.metrics).map(task => {
+              {battery.filter(t => t.metrics).map(task => {
                 const paradigm = getParadigm(task.paradigmId);
                 return (
                   <div key={task.paradigmId} className="flex items-center justify-between p-2 rounded-lg bg-surface/50">

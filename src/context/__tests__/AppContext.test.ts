@@ -77,6 +77,37 @@ describe('reducer', () => {
     expect(s.step).toBe('dispatch');
   });
 
+  it('START_BATTERY creates session with battery tasks', () => {
+    const s = r(initialState, { type: 'START_BATTERY', payload: {
+      brief: 'test', paradigmIds: ['stroop', 'n-back', 'tower-of-london'], personaIds: ['college-student'],
+    }});
+    expect(s.currentSession).toBeTruthy();
+    expect(s.currentSession!.battery).toHaveLength(3);
+    expect(s.currentSession!.battery[0].paradigmId).toBe('stroop');
+    expect(s.currentSession!.paradigmIds).toEqual(['stroop', 'n-back', 'tower-of-london']);
+    expect(s.step).toBe('dispatch');
+  });
+
+  it('UPDATE_BATTERY_TASK updates correct task', () => {
+    let s = r(initialState, { type: 'START_BATTERY', payload: {
+      brief: 'test', paradigmIds: ['stroop', 'n-back'], personaIds: ['college-student'],
+    }});
+    s = r(s, { type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: 'stroop', update: { status: 'done' } } });
+    expect(s.currentSession!.battery[0].status).toBe('done');
+    expect(s.currentSession!.battery[1].status).toBe('pending');
+  });
+
+  it('SET_PEER_REVIEW stores review', () => {
+    const missions = createMissions('test');
+    let s = r(initialState, { type: 'START_SESSION', payload: { brief: 'test', missions } });
+    s = r(s, { type: 'SET_PEER_REVIEW', payload: {
+      strengths: ['good'], weaknesses: ['bad'], suggestions: ['fix'],
+      verdict: 'minor-revisions', confidence: 0.8,
+    }});
+    expect(s.currentSession!.peerReview).toBeTruthy();
+    expect(s.currentSession!.peerReview!.verdict).toBe('minor-revisions');
+  });
+
   it('does not mutate previous state', () => {
     const before = { ...initialState };
     r(before, { type: 'SET_STEP', payload: 'brief' });

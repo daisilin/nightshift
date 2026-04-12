@@ -164,8 +164,27 @@ const AppContext = createContext<{ state: AppState; dispatch: React.Dispatch<App
 export function AppProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState, () => {
     try {
-      const s = localStorage.getItem(STORAGE_KEY);
-      if (s) return JSON.parse(s) as AppState;
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as any;
+        // Migrate old sessions missing new fields
+        const migrate = (s: any) => ({
+          ...s,
+          paradigmIds: s.paradigmIds ?? [],
+          battery: s.battery ?? [],
+          peerReview: s.peerReview ?? null,
+          crossTaskAnalysis: s.crossTaskAnalysis ?? null,
+          designReports: s.designReports ?? [],
+          selectedDesignIndex: s.selectedDesignIndex ?? 0,
+          paradigmId: s.paradigmId ?? '',
+          personaIds: s.personaIds ?? [],
+        });
+        return {
+          ...parsed,
+          currentSession: parsed.currentSession ? migrate(parsed.currentSession) : null,
+          sessions: (parsed.sessions ?? []).map(migrate),
+        } as AppState;
+      }
     } catch { /* ignore */ }
     return initialState;
   });

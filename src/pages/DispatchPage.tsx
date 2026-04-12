@@ -26,7 +26,7 @@ export function DispatchPage() {
     const personaNames: Record<string, string> = {};
     personas.forEach(p => { personaNames[p.id] = p.name; });
 
-    const isBattery = session.battery.length > 0;
+    const isBattery = (session.battery ?? []).length > 0;
 
     (async () => {
       if (isBattery) {
@@ -35,7 +35,7 @@ export function DispatchPage() {
         const allDatasets: any[] = [];
         const isBehavioralFlags: boolean[] = [];
 
-        for (const task of session.battery) {
+        for (const task of (session.battery ?? [])) {
           const paradigm = getParadigm(task.paradigmId);
           if (!paradigm) continue;
 
@@ -57,7 +57,7 @@ export function DispatchPage() {
         }
 
         if (allDatasets.length >= 2) {
-          const taskLabels = session.battery.map(t => getParadigm(t.paradigmId)?.name || t.paradigmId);
+          const taskLabels = battery.map(t => getParadigm(t.paradigmId)?.name || t.paradigmId);
           const crossTask = computeCrossTaskAnalysis(taskLabels, allDatasets, isBehavioralFlags);
           dispatch({ type: 'SET_CROSS_TASK_ANALYSIS', payload: crossTask });
         }
@@ -103,7 +103,8 @@ export function DispatchPage() {
 
   if (!session) return null;
 
-  const isBattery = session.battery.length > 0;
+  const battery = session.battery ?? [];
+  const isBattery = battery.length > 0;
   const statusLabels: Record<string, string> = {
     pending: 'waiting...', proposing: 'designing...', simulating: 'simulating pilot...',
     computing: 'computing metrics...', done: 'done ✓', error: 'error',
@@ -117,7 +118,7 @@ export function DispatchPage() {
           <span className="text-sm font-mono font-light text-text-3">nightshift</span>
         </motion.div>
         <motion.h2 variants={staggerItem} className="text-xl font-heading mb-2 text-text">
-          {isBattery ? `running ${session.battery.length}-task battery...` : 'designing experiments...'}
+          {isBattery ? `running ${battery.length}-task battery...` : 'designing experiments...'}
         </motion.h2>
         <motion.p variants={staggerItem} className="text-sm text-text-3 mb-6">
           {session.brief.slice(0, 80)}{session.brief.length > 80 ? '...' : ''}
@@ -125,7 +126,7 @@ export function DispatchPage() {
 
         <div className="space-y-2">
           {isBattery ? (
-            session.battery.map(task => {
+            battery.map(task => {
               const paradigm = getParadigm(task.paradigmId);
               const done = task.status === 'done';
               return (
