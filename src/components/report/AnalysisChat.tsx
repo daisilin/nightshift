@@ -1,16 +1,58 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useApp } from '../../context/AppContext';
-import { runAnalysisPipeline, getStep, getAllSteps } from '../../lib/analysis/registry';
+import { runAnalysisPipeline, getAllSteps } from '../../lib/analysis/registry';
 import { getParadigm } from '../../data/taskBank';
 import { personaBank } from '../../data/personaBank';
 import { ResultRenderer } from './ResultRenderer';
-import type { AnalysisResult } from '../../lib/analysis/types';
+import type { AnalysisResult, AnalysisPlanStep } from '../../lib/analysis/types';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   results?: AnalysisResult[];
+}
+
+// Direct keyword → analysis step mapping (works without Claude)
+function parseRequest(text: string): { steps: AnalysisPlanStep[]; explanation: string } | null {
+  const lower = text.toLowerCase();
+
+  if (lower.includes('correlation') || lower.includes('corr matrix')) {
+    const perms = lower.match(/(\d+)\s*perm/)?.[1];
+    return { steps: [{ id: 'correlation-matrix', params: { permutations: perms ? parseInt(perms) : 500 } }], explanation: 'computing pairwise correlation matrix' };
+  }
+  if (lower.includes('factor') || lower.includes('efa') || lower.includes('pca')) {
+    const nf = lower.match(/(\d+)\s*factor/)?.[1];
+    return { steps: [{ id: 'exploratory-fa', params: { nFactors: nf ? parseInt(nf) : 3 } }], explanation: `running exploratory factor analysis with ${nf || 3} factors` };
+  }
+  if (lower.includes('ceiling') || lower.includes('floor')) {
+    return { steps: [{ id: 'ceiling-floor' }], explanation: 'checking for ceiling and floor effects' };
+  }
+  if (lower.includes('reliab') || lower.includes('split-half') || lower.includes('split half')) {
+    return { steps: [{ id: 'split-half-reliability' }], explanation: 'computing split-half reliability for each task' };
+  }
+  if (lower.includes('effect size') || lower.includes('cohen') || lower.includes('condition')) {
+    return { steps: [{ id: 'condition-effects' }], explanation: 'computing condition effect sizes (Cohen\'s d)' };
+  }
+  if (lower.includes('population') || lower.includes('persona') || lower.includes('compare')) {
+    return { steps: [{ id: 'persona-differences' }], explanation: 'comparing performance across populations' };
+  }
+  if (lower.includes('descriptive') || lower.includes('summary') || lower.includes('mean')) {
+    return { steps: [{ id: 'descriptive-stats' }], explanation: 'computing descriptive statistics' };
+  }
+  if (lower.includes('outlier')) {
+    return { steps: [{ id: 'outlier-detection' }], explanation: 'running outlier detection' };
+  }
+  if (lower.includes('all') || lower.includes('everything') || lower.includes('full')) {
+    const steps: AnalysisPlanStep[] = [
+      { id: 'descriptive-stats' }, { id: 'split-half-reliability' },
+      { id: 'ceiling-floor' }, { id: 'condition-effects' },
+      { id: 'persona-differences' }, { id: 'correlation-matrix', params: { permutations: 500 } },
+      { id: 'exploratory-fa', params: { nFactors: 3 } },
+    ];
+    return { steps, explanation: 'running the full analysis suite' };
+  }
+  return null;
 }
 
 export function AnalysisChat() {
@@ -27,7 +69,6 @@ export function AnalysisChat() {
 
   if (!session) return null;
 
-  // Get all datasets from the session
   const battery = session.battery ?? [];
   const isBattery = battery.length > 0;
 
@@ -45,99 +86,80 @@ export function AnalysisChat() {
   const personas = session.personaIds
     .map(id => personaBank.find(p => p.id === id)).filter(Boolean) as any[];
 
-  const handleSend = async () => {
-    const text = input.trim();
-    if (!text || loading) return;
+  const handleSend = async (text?: string) => {
+    const query = (text || input).trim();
+    if (!query || loading) return;
     setInput('');
-    setMessages(prev => [...prev, { role: 'user', content: text }]);
+    setMessages(prev => [...prev, { role: 'user', content: query }]);
     setLoading(true);
 
+    // First try direct keyword matching (instant, no API call)
+    const direct = parseRequest(query);
+    if (direct && direct.steps.length > 0 && datasets.length > 0) {
+      const results = runAnalysisPipeline({ steps: direct.steps }, { datasets, designs, paradigms, personas });
+      const existing = session.analysisResults ?? [];
+      dispatch({ type: 'SET_ANALYSIS_RESULTS', payload: [...existing, ...results] });
+      setMessages(prev => [...prev, { role: 'assistant', content: direct.explanation, results }]);
+      setLoading(false);
+      return;
+    }
+
+    // Fallback: ask Claude
     try {
-      // Ask Claude to interpret the user's request into analysis steps
       const res = await fetch('/api/claude', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
-          max_tokens: 600,
-          system: `You help researchers analyze their simulated experiment data.
-Available analysis steps: ${getAllSteps().map(s => `${s.id} (${s.name})`).join(', ')}
-Available tasks in this session: ${paradigms.map((p: any) => p.name).join(', ')}
-Populations: ${personas.map((p: any) => p.name).join(', ')}
-
-When the user asks for an analysis, return JSON:
-{ "steps": [{ "id": "step-id", "params": {} }], "explanation": "what you're doing" }
-
-If they ask something that doesn't map to a step, just return:
-{ "steps": [], "explanation": "your conversational response" }
-
-Examples:
-- "show correlation matrix" → { "steps": [{"id": "correlation-matrix", "params": {"permutations": 500}}], "explanation": "computing pairwise correlations across all ${paradigms.length} tasks" }
-- "factor analysis with 2 factors" → { "steps": [{"id": "exploratory-fa", "params": {"nFactors": 2}}], "explanation": "running EFA with 2 factors and Varimax rotation" }
-- "are there ceiling effects?" → { "steps": [{"id": "ceiling-floor"}], "explanation": "checking for ceiling and floor effects across tasks and populations" }
-
-Return ONLY JSON.`,
-          messages: [{ role: 'user', content: text }],
+          max_tokens: 400,
+          system: `You help researchers analyze simulated experiment data. Available analyses: ${getAllSteps().map(s => s.id).join(', ')}. Tasks in session: ${paradigms.map((p: any) => p.name).join(', ')}. Return JSON: { "steps": [{"id": "step-id", "params": {}}], "explanation": "..." } or just { "steps": [], "explanation": "your response" }. Return ONLY JSON.`,
+          messages: [{ role: 'user', content: query }],
         }),
       });
-
       const data = await res.json();
       const raw = data.content?.[0]?.text ?? '';
       const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+      const parsed = JSON.parse(cleaned);
 
-      let parsed: { steps: any[]; explanation: string };
-      try {
-        parsed = JSON.parse(cleaned);
-      } catch {
-        parsed = { steps: [], explanation: raw || "I couldn't parse that request. Try asking for a specific analysis like 'correlation matrix' or 'factor analysis with 3 factors'." };
-      }
-
-      // Run the analysis steps
-      let results: AnalysisResult[] = [];
       if (parsed.steps?.length > 0 && datasets.length > 0) {
-        results = runAnalysisPipeline({ steps: parsed.steps }, { datasets, designs, paradigms, personas });
-
-        // Also store these in the session so they persist
+        const results = runAnalysisPipeline({ steps: parsed.steps }, { datasets, designs, paradigms, personas });
         const existing = session.analysisResults ?? [];
         dispatch({ type: 'SET_ANALYSIS_RESULTS', payload: [...existing, ...results] });
+        setMessages(prev => [...prev, { role: 'assistant', content: parsed.explanation || 'done', results }]);
+      } else {
+        setMessages(prev => [...prev, { role: 'assistant', content: parsed.explanation || raw }]);
       }
-
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: parsed.explanation || 'Analysis complete.',
-        results: results.length > 0 ? results : undefined,
-      }]);
     } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: 'Something went wrong. Try again.' }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: "Couldn't reach the API. Try a keyword like 'correlation matrix' or 'factor analysis 3'." }]);
     } finally {
       setLoading(false);
     }
   };
 
   const suggestions = [
-    'show correlation matrix',
+    'correlation matrix',
     'factor analysis with 3 factors',
-    'are there ceiling effects?',
+    'ceiling & floor effects',
     'compare populations',
-    'condition effect sizes',
-    'split-half reliability',
+    'effect sizes',
+    'reliability',
+    'run everything',
   ].filter(s => {
-    // Only show multi-task suggestions if we have multiple tasks
-    if (['show correlation matrix', 'factor analysis with 3 factors'].includes(s) && datasets.length < 2) return false;
+    if (['correlation matrix', 'factor analysis with 3 factors'].includes(s) && datasets.length < 2) return false;
     return true;
   });
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="card p-5">
-      <h3 className="text-sm font-heading text-text mb-3">ask the analysis agent</h3>
+      <h3 className="text-sm font-heading text-text mb-2">analysis agent</h3>
       <p className="text-xs text-text-3 mb-3">
-        chat to run additional analyses on your data. {datasets.length} task(s) × {personas.length} population(s) in memory.
+        {datasets.length} task(s) × {personas.length} population(s) in memory. ask for any analysis.
       </p>
 
       {/* Suggestions */}
       <div className="flex flex-wrap gap-1.5 mb-3">
         {suggestions.map(s => (
-          <button key={s} onClick={() => { setInput(s); }}
+          <button key={s} onClick={() => handleSend(s)}
             className="px-2.5 py-1 rounded-full text-[11px] text-text-3 border border-orchid/10 hover:border-orchid/25 hover:text-text-2 cursor-pointer transition-all">
             {s}
           </button>
@@ -145,37 +167,29 @@ Return ONLY JSON.`,
       </div>
 
       {/* Messages */}
-      <div ref={scrollRef} className="max-h-[400px] overflow-y-auto space-y-3 mb-3">
+      <div ref={scrollRef} className="max-h-[500px] overflow-y-auto space-y-3 mb-3">
         {messages.map((msg, i) => (
           <div key={i}>
             <div className={`text-xs ${msg.role === 'user' ? 'text-orchid font-medium' : 'text-text-2'}`}>
               {msg.role === 'user' ? '→ ' : ''}{msg.content}
             </div>
             {msg.results?.map((r, ri) => (
-              <div key={ri} className="mt-2">
-                <ResultRenderer result={r} />
-              </div>
+              <div key={ri} className="mt-2"><ResultRenderer result={r} /></div>
             ))}
           </div>
         ))}
-        {loading && <div className="text-xs text-text-3 italic">thinking...</div>}
+        {loading && <div className="text-xs text-text-3 italic">running analysis...</div>}
       </div>
 
       {/* Input */}
       <div className="flex gap-2">
-        <input
-          value={input}
-          onChange={e => setInput(e.target.value)}
+        <input value={input} onChange={e => setInput(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') handleSend(); }}
-          placeholder="what analysis do you want to see?"
+          placeholder="correlation matrix, factor analysis 3, compare populations..."
           className="flex-1 px-3 py-2 rounded-xl text-sm border border-orchid/15 bg-white text-text focus:outline-none focus:border-orchid/40"
-          disabled={loading}
-        />
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={handleSend}
-          disabled={!input.trim() || loading}
+          disabled={loading} />
+        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+          onClick={() => handleSend()} disabled={!input.trim() || loading}
           className="px-4 py-2 rounded-xl text-sm font-semibold text-white cursor-pointer disabled:opacity-30"
           style={{ background: 'linear-gradient(135deg, #B07CC6, #D48BB5)' }}>
           run
