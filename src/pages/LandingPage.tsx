@@ -56,12 +56,12 @@ export function LandingPage() {
           <motion.div variants={staggerItem} className="mb-6">
             <PaperUpload onExtracted={(extracted) => {
               setBrief(extracted.brief);
-              if (taskBank.find(t => t.id === extracted.paradigmId)) {
-                setSelectedTasks([extracted.paradigmId]);
-              }
-              if (extracted.personaIds.length > 0) {
-                setSelectedPersonas(extracted.personaIds);
-              }
+              // Set ALL detected tasks from the paper
+              const validIds = (extracted.paradigmIds ?? [extracted.paradigmId]).filter(
+                id => taskBank.find(t => t.id === id)
+              );
+              if (validIds.length > 0) setSelectedTasks(validIds);
+              if (extracted.personaIds?.length > 0) setSelectedPersonas(extracted.personaIds);
             }} />
           </motion.div>
 

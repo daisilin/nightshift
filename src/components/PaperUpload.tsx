@@ -1,9 +1,10 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-interface ExtractedDesign {
+export interface ExtractedDesign {
   brief: string;
-  paradigmId: string;
+  paradigmIds: string[];  // ALL tasks from the paper
+  paradigmId: string;     // primary (for backward compat)
   personaIds: string[];
   paperTitle: string;
   keyDetails: string;
@@ -18,11 +19,25 @@ Given paper text, return ONLY valid JSON:
 {
   "paperTitle": "string",
   "brief": "one sentence describing the main experiment to reproduce",
-  "paradigmId": one of: "tower-of-london", "four-in-a-row", "rush-hour", "corsi-block", "n-back", "stroop", "chess", "two-step", "likert-survey", "forced-choice",
-  "personaIds": ["college-student"] by default — add "older-adult", "child", "mturk-worker", "clinical-adhd" if the paper studies those populations,
-  "keyDetails": "2-3 sentences about specific parameters: n participants, trials, conditions, measures"
+  "paradigmIds": ["task-id", "task-id", ...] — ALL tasks used in the paper,
+  "personaIds": ["college-student"] by default — add "older-adult", "child", "mturk-worker", "clinical-adhd" if studied,
+  "keyDetails": "2-3 sentences about parameters: n participants, trials, conditions, measures"
 }
-If the paper uses MULTIPLE tasks, pick the primary one for paradigmId.
+
+Available task IDs: tower-of-london, four-in-a-row, rush-hour, corsi-block, n-back, stroop, chess, two-step, likert-survey, forced-choice
+
+IMPORTANT: If the paper uses multiple tasks (e.g., a battery study), list ALL of them in paradigmIds.
+For example, a paper studying planning with Tower of London, Four-in-a-Row, and Two-Step Task:
+  "paradigmIds": ["tower-of-london", "four-in-a-row", "two-step"]
+
+Map tasks to the closest available ID:
+- "Corsi span" or "spatial span" → "corsi-block"
+- "change detection" or "working memory" → "n-back"
+- "WCST" or "Wisconsin Card Sort" → "stroop" (closest inhibition task)
+- "Raven's" or "fluid intelligence" or "SPM" → "n-back" (closest g-loaded task)
+- "mental rotation" → "rush-hour" (closest spatial task)
+- "pattern detection" → "stroop" (closest visual task)
+
 Return ONLY JSON.`;
 
 /**
@@ -91,9 +106,17 @@ export function PaperUpload({ onExtracted }: Props) {
       const data = await res.json();
       const raw = data.content?.[0]?.text ?? '';
       const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-      const parsed = JSON.parse(cleaned) as ExtractedDesign;
-      setStatus(`✓ ${parsed.paperTitle}`);
-      onExtracted(parsed);
+      const parsed = JSON.parse(cleaned);
+      // Normalize: ensure paradigmIds is an array, handle old paradigmId format
+      const paradigmIds = parsed.paradigmIds ?? (parsed.paradigmId ? [parsed.paradigmId] : []);
+      const result: ExtractedDesign = {
+        ...parsed,
+        paradigmIds,
+        paradigmId: paradigmIds[0] || 'tower-of-london',
+        personaIds: parsed.personaIds ?? ['college-student'],
+      };
+      setStatus(`✓ ${result.paperTitle} — ${paradigmIds.length} task(s) detected`);
+      onExtracted(result);
     } catch {
       setStatus('could not parse — try pasting a longer section');
     } finally {
