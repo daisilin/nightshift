@@ -1,4 +1,4 @@
-import type { AnalysisStepDef, AnalysisPlan, AnalysisInput, AnalysisResult } from './types';
+import type { AnalysisStepDef, AnalysisPlan, AnalysisPlanStep, AnalysisInput, AnalysisResult } from './types';
 import { descriptiveStats, splitHalfReliability } from './descriptive';
 import { ceilingFloorCheck, outlierCheck } from './quality';
 import { conditionEffects, personaDifferences } from './effects';
