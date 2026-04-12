@@ -8,6 +8,7 @@ import { PersonaComparison } from '../components/report/PersonaComparison';
 import { MetricCard } from '../components/report/MetricCard';
 import { DistributionChart } from '../components/report/DistributionChart';
 import { TaskPreview } from '../components/preview/TaskPreview';
+import { DataExplorer } from '../components/report/DataExplorer';
 import { getParadigm } from '../data/taskBank';
 import { personaBank } from '../data/personaBank';
 import { stagger, staggerItem } from '../lib/animations';
@@ -153,6 +154,13 @@ export function ReportPage() {
           <motion.div variants={staggerItem} className="mb-6">
             <h2 className="text-xs font-mono text-text-3 uppercase tracking-wider mb-3">distributions</h2>
             <DistributionChart label="RT by condition" groups={distributionGroups} unit="ms" />
+          </motion.div>
+        )}
+
+        {/* Data Explorer */}
+        {selected.dataset && selected.design && (
+          <motion.div variants={staggerItem} className="mb-6">
+            <DataExplorer dataset={selected.dataset} design={selected.design} />
           </motion.div>
         )}
 
