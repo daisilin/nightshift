@@ -134,7 +134,7 @@ export function ReportPage() {
               personas={selectedPersonas}
               onApply={(newDesign, newMetrics) => {
                 dispatch({ type: 'UPDATE_DESIGN_REPORT', payload: {
-                  role: selected.role,
+                  role: 'role' in selected ? selected.role : 'scout',
                   report: { design: newDesign, metrics: newMetrics },
                 }});
                 setEditing(false);

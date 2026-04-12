@@ -1,5 +1,4 @@
-import type { SimulatedDataset, CrossTaskAnalysis } from './types';
-import type { CrossTaskAnalysis as CTA } from '../context/types';
+import type { CrossTaskAnalysis } from '../context/types';
 import { mean, standardDeviation } from './metrics';
 
 /**
@@ -50,14 +49,14 @@ export function computeCrossTaskAnalysis(
   taskLabels: string[],
   datasets: SimulatedDataset[],
   isBehavioral: boolean[],
-): CTA {
+): CrossTaskAnalysis {
   // Get participant scores per task
   const allScores: number[][] = datasets.map((ds, i) =>
     [...participantScores(ds, isBehavioral[i]).values()]
   );
 
   // Correlation matrix
-  const correlationMatrix: CTA['correlationMatrix'] = [];
+  const correlationMatrix: CrossTaskAnalysis['correlationMatrix'] = [];
   for (let i = 0; i < taskLabels.length; i++) {
     for (let j = i + 1; j < taskLabels.length; j++) {
       const r = pearsonR(allScores[i], allScores[j]);
@@ -68,7 +67,7 @@ export function computeCrossTaskAnalysis(
   // Simple 2-factor PCA approximation via correlation structure
   // Factor 1: average correlation with all tasks (general ability)
   // Factor 2: deviation from factor 1 (specific ability)
-  const factorLoadings: CTA['factorLoadings'] = taskLabels.map((task, i) => {
+  const factorLoadings: CrossTaskAnalysis['factorLoadings'] = taskLabels.map((task, i) => {
     const corsWithOthers = correlationMatrix
       .filter(c => c.task1 === task || c.task2 === task)
       .map(c => c.r);
