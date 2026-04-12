@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 import { INTERN_PROFILES } from '../lib/interns';
-import { proposeDesign, synthesizePilotResults, generatePeerReview } from '../lib/ai';
+import { proposeDesign, synthesizePilotResults, generatePeerReview, planAnalysis } from '../lib/ai';
 import { simulatePilot } from '../lib/simulation';
 import { computePilotMetrics } from '../lib/metrics';
 import { computeCrossTaskAnalysis } from '../lib/crossTaskAnalysis';
-import { getParadigm } from '../data/taskBank';
+import { runAnalysisPipeline, defaultBatteryPlan, defaultSingleTaskPlan } from '../lib/analysis/registry';
+import { taskBank, getParadigm } from '../data/taskBank';
 import { personaBank, getPersona } from '../data/personaBank';
 import type { InternRole } from '../context/types';
 import { stagger, staggerItem } from '../lib/animations';
@@ -68,6 +69,15 @@ export function DispatchPage() {
         const review = await generatePeerReview(session.brief, allDesigns, allMetrics);
         dispatch({ type: 'SET_PEER_REVIEW', payload: review });
 
+        // Run analysis pipeline
+        const taskLabelsForPlan = session.battery.map(t => getParadigm(t.paradigmId)?.name || t.paradigmId);
+        const paradigmsForAnalysis = session.battery.map(t => getParadigm(t.paradigmId)!).filter(Boolean);
+        const analysisPlan = await planAnalysis(session.brief, taskLabelsForPlan, allDatasets.length);
+        const analysisResults = runAnalysisPipeline(analysisPlan, {
+          datasets: allDatasets, designs: allDesigns, paradigms: paradigmsForAnalysis, personas,
+        });
+        dispatch({ type: 'SET_ANALYSIS_RESULTS', payload: analysisResults });
+
       } else {
         const paradigm = getParadigm(session.paradigmId);
         if (!paradigm) return;
@@ -94,6 +104,18 @@ export function DispatchPage() {
 
         const review = await generatePeerReview(session.brief, designs, allMetrics);
         dispatch({ type: 'SET_PEER_REVIEW', payload: review });
+
+        // Run analysis pipeline for single task
+        const singlePlan = await planAnalysis(session.brief, [paradigm.name], 1);
+        // Use the best design's dataset
+        const bestIdx = allMetrics.reduce((bi, m, i) => m.overallScore > allMetrics[bi].overallScore ? i : bi, 0);
+        const singleResults = runAnalysisPipeline(singlePlan, {
+          datasets: [results[bestIdx].design ? simulatePilot(results[bestIdx].design, personas, 42) : { designId: '', participants: [], masterSeed: 0, generatedAt: 0 }],
+          designs: [results[bestIdx].design],
+          paradigms: [paradigm],
+          personas,
+        });
+        dispatch({ type: 'SET_ANALYSIS_RESULTS', payload: singleResults });
       }
 
       dispatch({ type: 'SET_STEP', payload: 'report' });

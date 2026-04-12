@@ -184,4 +184,50 @@ Return ONLY JSON.`;
   }
 }
 
+// ============================================================
+// ANALYSIS PLANNING — Claude decides what analyses to run
+// ============================================================
+
+import type { AnalysisPlan } from './analysis/types';
+import { defaultSingleTaskPlan, defaultBatteryPlan } from './analysis/registry';
+
+export async function planAnalysis(
+  brief: string,
+  taskNames: string[],
+  nTasks: number,
+): Promise<AnalysisPlan> {
+  const availableSteps = [
+    'descriptive-stats', 'split-half-reliability', 'ceiling-floor',
+    'outlier-detection', 'condition-effects', 'persona-differences',
+    'correlation-matrix', 'exploratory-fa',
+  ];
+
+  const system = `You plan statistical analyses for behavioral research.
+Given a research brief and task list, return a JSON analysis plan.
+
+Available steps: ${availableSteps.join(', ')}
+
+Rules:
+- Always include descriptive-stats and split-half-reliability
+- Include correlation-matrix and exploratory-fa ONLY for 2+ tasks
+- exploratory-fa needs nFactors param (usually 2-3, max tasks/2)
+- correlation-matrix can take permutations param (default 500)
+- Include condition-effects for behavioral tasks
+- Include ceiling-floor for quality check
+
+Return ONLY JSON: { "steps": [{ "id": "step-id", "params": {} }, ...] }`;
+
+  const raw = await callClaude(system,
+    `Brief: "${brief}"\nTasks: ${taskNames.join(', ')} (${nTasks} tasks)\nPlan the analyses.`, 400);
+
+  try {
+    const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    const parsed = JSON.parse(cleaned) as AnalysisPlan;
+    if (parsed.steps?.length > 0) return parsed;
+  } catch { /* fall through */ }
+
+  // Fallback to default plan
+  return nTasks > 1 ? defaultBatteryPlan(nTasks) : defaultSingleTaskPlan();
+}
+
 export type DispatchStatus = 'proposing' | 'simulating' | 'computing' | 'done' | 'error';

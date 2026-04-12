@@ -11,6 +11,7 @@ import { TaskPreview } from '../components/preview/TaskPreview';
 import { DataExplorer } from '../components/report/DataExplorer';
 import { PeerReviewCard } from '../components/report/PeerReviewCard';
 import { CrossTaskView } from '../components/report/CrossTaskView';
+import { ResultRenderer } from '../components/report/ResultRenderer';
 import { getParadigm } from '../data/taskBank';
 import { personaBank } from '../data/personaBank';
 import { stagger, staggerItem } from '../lib/animations';
@@ -183,6 +184,16 @@ export function ReportPage() {
         {selected.dataset && selected.design && (
           <motion.div variants={staggerItem} className="mb-6">
             <DataExplorer dataset={selected.dataset} design={selected.design} />
+          </motion.div>
+        )}
+
+        {/* Dynamic Analysis Results */}
+        {(session.analysisResults ?? []).length > 0 && (
+          <motion.div variants={staggerItem} className="mb-6">
+            <h2 className="text-xs font-mono text-text-3 uppercase tracking-wider mb-3">analysis pipeline</h2>
+            {(session.analysisResults ?? []).map((result: any, i: number) => (
+              <ResultRenderer key={`${result.stepId}-${i}`} result={result} />
+            ))}
           </motion.div>
         )}
 

@@ -88,6 +88,7 @@ export interface ResearchSession {
   round: number;
   previousSessionId: string | null;
   selectedDesignIndex: number;
+  analysisResults: any[]; // AnalysisResult[] — stored as any for localStorage compat
 }
 
 export interface AppState {
@@ -109,6 +110,7 @@ export type AppAction =
   | { type: 'SET_SYNTHESIS'; payload: { synthesis: string; agreements: string[]; disagreements: string[]; openQuestions: string[]; nextMissions: string[] } }
   | { type: 'SET_FEEDBACK'; payload: { findingId: string; feedback: FindingFeedback } }
   | { type: 'SELECT_DESIGN'; payload: number }
+  | { type: 'SET_ANALYSIS_RESULTS'; payload: any[] }
   | { type: 'ITERATE_SESSION'; payload: { refinedBrief: string; missions: Intern[] } }
   | { type: 'COMPLETE_SESSION' }
   | { type: 'RESET' };

@@ -29,7 +29,7 @@ export function reducer(state: AppState, action: AppAction): AppState {
         crossTaskAnalysis: null,
         synthesis: null, agreements: [], disagreements: [], openQuestions: [], nextMissions: [],
         createdAt: Date.now(), completedAt: null,
-        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0,
+        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0, analysisResults: [],
       };
       return { ...state, currentSession: session, step: 'dispatch' };
     }
@@ -49,7 +49,7 @@ export function reducer(state: AppState, action: AppAction): AppState {
         peerReview: null, crossTaskAnalysis: null,
         synthesis: null, agreements: [], disagreements: [], openQuestions: [], nextMissions: [],
         createdAt: Date.now(), completedAt: null,
-        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0,
+        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0, analysisResults: [],
       };
       return { ...state, currentSession: session, step: 'dispatch' };
     }
@@ -66,7 +66,7 @@ export function reducer(state: AppState, action: AppAction): AppState {
         peerReview: null, crossTaskAnalysis: null,
         synthesis: null, agreements: [], disagreements: [], openQuestions: [], nextMissions: [],
         createdAt: Date.now(), completedAt: null,
-        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0,
+        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0, analysisResults: [],
       };
       return { ...state, currentSession: session, step: 'dispatch' };
     }
@@ -121,6 +121,11 @@ export function reducer(state: AppState, action: AppAction): AppState {
       return { ...state, currentSession: { ...state.currentSession, crossTaskAnalysis: action.payload } };
     }
 
+    case 'SET_ANALYSIS_RESULTS': {
+      if (!state.currentSession) return state;
+      return { ...state, currentSession: { ...state.currentSession, analysisResults: action.payload } };
+    }
+
     case 'SELECT_DESIGN': {
       if (!state.currentSession) return state;
       return { ...state, currentSession: { ...state.currentSession, selectedDesignIndex: action.payload } };
@@ -140,7 +145,7 @@ export function reducer(state: AppState, action: AppAction): AppState {
         peerReview: null, crossTaskAnalysis: null,
         synthesis: null, agreements: [], disagreements: [], openQuestions: [], nextMissions: [],
         createdAt: Date.now(), completedAt: null,
-        round: archived.round + 1, previousSessionId: archived.id, selectedDesignIndex: 0,
+        round: archived.round + 1, previousSessionId: archived.id, selectedDesignIndex: 0, analysisResults: [],
       };
       return { ...state, sessions: [...state.sessions, archived], currentSession: newSession, step: 'dispatch' };
     }
@@ -176,7 +181,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           crossTaskAnalysis: s.crossTaskAnalysis ?? null,
           designReports: s.designReports ?? [],
           selectedDesignIndex: s.selectedDesignIndex ?? 0,
-          paradigmId: s.paradigmId ?? '',
+          paradigmId: s.paradigmId ?? '', analysisResults: s.analysisResults ?? [],
           personaIds: s.personaIds ?? [],
         });
         return {
