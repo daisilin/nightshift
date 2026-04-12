@@ -32,10 +32,18 @@ export function ReportPage() {
     .map(id => personaBank.find(p => p.id === id))
     .filter(Boolean) as typeof personaBank;
 
-  const doneReports = session.designReports.filter(r => r.status === 'done' && r.design && r.metrics);
-  if (doneReports.length === 0) return <div className="min-h-screen flex items-center justify-center text-text-3">loading reports...</div>;
+  const isBatteryMode = battery.length > 0;
+  const doneBatteryTasks = battery.filter(t => t.status === 'done' && t.design && t.metrics);
+  const doneReports = (session.designReports ?? []).filter(r => r.status === 'done' && r.design && r.metrics);
 
-  const selected = doneReports[selectedIdx] || doneReports[0];
+  // In battery mode, use battery tasks; in single mode, use design reports
+  const hasResults = isBatteryMode ? doneBatteryTasks.length > 0 : doneReports.length > 0;
+  if (!hasResults) return <div className="min-h-screen flex items-center justify-center text-text-3">loading reports...</div>;
+
+  // For single mode: selected design from the 3 intern proposals
+  const selected = isBatteryMode
+    ? (doneBatteryTasks[selectedIdx] || doneBatteryTasks[0])
+    : (doneReports[selectedIdx] || doneReports[0]);
   const paradigm = getParadigm(session.paradigmId);
 
   // Distribution data from selected design
@@ -64,18 +72,29 @@ export function ReportPage() {
           <span className="text-sm font-mono font-light text-text-3">nightshift · pilot report</span>
           <h1 className="text-xl sm:text-2xl font-heading text-text mt-1">{session.brief}</h1>
           <p className="text-xs text-text-4 mt-1">
-            {paradigm?.emoji} {paradigm?.name} · round {session.round} · {session.personaIds.length} populations
+            {isBatteryMode
+            ? `${battery.length} tasks · round ${session.round} · ${session.personaIds.length} populations`
+            : `${paradigm?.emoji} ${paradigm?.name} · round ${session.round} · ${session.personaIds.length} populations`
+          }
           </p>
         </motion.div>
 
         {/* Design Comparison */}
         <motion.div variants={staggerItem} className="mb-6">
-          <h2 className="text-xs font-mono text-text-3 uppercase tracking-wider mb-3">experiment designs</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {doneReports.map((r, i) => (
-              <DesignCard key={r.role} design={r.design!} metrics={r.metrics!}
-                selected={selectedIdx === i} onSelect={() => setSelectedIdx(i)} />
-            ))}
+          <h2 className="text-xs font-mono text-text-3 uppercase tracking-wider mb-3">
+            {isBatteryMode ? 'battery tasks' : 'experiment designs'}
+          </h2>
+          <div className={`grid grid-cols-1 ${isBatteryMode ? 'sm:grid-cols-2 lg:grid-cols-3' : 'sm:grid-cols-3'} gap-3`}>
+            {isBatteryMode
+              ? doneBatteryTasks.map((t, i) => (
+                  <DesignCard key={t.paradigmId} design={t.design!} metrics={t.metrics!}
+                    selected={selectedIdx === i} onSelect={() => setSelectedIdx(i)} />
+                ))
+              : doneReports.map((r, i) => (
+                  <DesignCard key={r.role} design={r.design!} metrics={r.metrics!}
+                    selected={selectedIdx === i} onSelect={() => setSelectedIdx(i)} />
+                ))
+            }
           </div>
         </motion.div>
 
