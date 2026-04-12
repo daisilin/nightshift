@@ -20,6 +20,7 @@ export function ReportPage() {
   const [selectedIdx, setSelectedIdx] = useState(0);
   const [editing, setEditing] = useState(false);
   const [previewing, setPreviewing] = useState(false);
+  const [iterationFeedback, setIterationFeedback] = useState('');
 
   if (!session) return null;
 
@@ -195,32 +196,49 @@ export function ReportPage() {
           <AnalysisChat />
         </motion.div>
 
-        {/* Actions */}
-        <motion.div variants={staggerItem} className="flex gap-3 justify-center pt-4 pb-12">
-          <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-            onClick={() => { dispatch({ type: 'COMPLETE_SESSION' }); nav('/'); }}
-            className="px-6 py-3 rounded-[14px] text-sm font-semibold text-white cursor-pointer"
-            style={{ background: 'linear-gradient(135deg, #B07CC6, #D48BB5)', boxShadow: '0 4px 14px rgba(176,124,198,0.25)' }}>
-            done — new research 🌙
-          </motion.button>
-          <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-            onClick={() => {
-              // Re-dispatch with same paradigm + personas but as next round
-              dispatch({ type: 'ITERATE_SESSION', payload: {
-                refinedBrief: session.brief,
-                missions: [],
-              }});
-              // Restart as experiment
-              dispatch({ type: 'START_EXPERIMENT', payload: {
-                brief: session.brief,
-                paradigmId: session.paradigmId,
-                personaIds: session.personaIds,
-              }});
-              nav('/dispatch');
-            }}
-            className="px-6 py-3 rounded-[14px] text-sm font-semibold text-text-2 border border-orchid/15 bg-orchid/5 cursor-pointer">
-            new round — different designs →
-          </motion.button>
+        {/* Iteration: feedback → next round */}
+        <motion.div variants={staggerItem} className="card p-5 mb-6">
+          <h3 className="text-sm font-heading text-text mb-2">iterate</h3>
+          <p className="text-xs text-text-3 mb-3">what should change in the next round? your feedback shapes the next experiment.</p>
+          <textarea
+            value={iterationFeedback}
+            onChange={e => setIterationFeedback(e.target.value)}
+            placeholder="e.g., 'increase difficulty on Tower of London — too easy for college students' or 'add a survey measure' or 'try with children instead'"
+            rows={2}
+            className="w-full card p-3 text-sm text-text resize-none focus:outline-none mb-3"
+          />
+          <div className="flex gap-2">
+            <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+              onClick={() => {
+                const feedback = iterationFeedback.trim();
+                const newBrief = feedback ? `${session.brief} [iteration feedback: ${feedback}]` : session.brief;
+                dispatch({ type: 'ITERATE_SESSION', payload: { refinedBrief: newBrief, missions: [] } });
+                if (isBatteryMode) {
+                  dispatch({ type: 'START_BATTERY', payload: { brief: newBrief, paradigmIds: session.paradigmIds ?? [session.paradigmId], personaIds: session.personaIds } });
+                } else {
+                  dispatch({ type: 'START_EXPERIMENT', payload: { brief: newBrief, paradigmId: session.paradigmId, personaIds: session.personaIds } });
+                }
+                nav('/dispatch');
+              }}
+              disabled={!iterationFeedback.trim()}
+              className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white cursor-pointer disabled:opacity-30"
+              style={{ background: 'linear-gradient(135deg, #B07CC6, #D48BB5)' }}>
+              next round with feedback →
+            </motion.button>
+            <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+              onClick={() => { dispatch({ type: 'COMPLETE_SESSION' }); nav('/'); }}
+              className="px-4 py-2.5 rounded-xl text-xs text-text-3 border border-orchid/15 cursor-pointer hover:bg-orchid/5">
+              done
+            </motion.button>
+          </div>
+        </motion.div>
+
+        {/* Back to design studio */}
+        <motion.div variants={staggerItem} className="flex justify-center pb-12">
+          <button onClick={() => { dispatch({ type: 'COMPLETE_SESSION' }); nav('/'); }}
+            className="text-xs text-text-3 cursor-pointer hover:text-orchid">
+            ← back to design studio
+          </button>
         </motion.div>
       </motion.div>
     </div>

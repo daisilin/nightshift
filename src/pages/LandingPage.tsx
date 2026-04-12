@@ -5,9 +5,11 @@ import { useApp } from '../context/AppContext';
 import { taskBank } from '../data/taskBank';
 import { personaBank } from '../data/personaBank';
 import { PaperUpload } from '../components/PaperUpload';
+import { TaskPreview } from '../components/preview/TaskPreview';
 import { stagger, staggerItem } from '../lib/animations';
+import type { ExperimentDesign } from '../lib/types';
 
-type Mode = 'start' | 'design' | 'configure';
+type Mode = 'start' | 'design' | 'configure' | 'explore';
 
 export function LandingPage() {
   const nav = useNavigate();
@@ -18,6 +20,7 @@ export function LandingPage() {
   const [selectedPersonas, setSelectedPersonas] = useState(['college-student', 'mturk-worker', 'older-adult']);
   const [designChat, setDesignChat] = useState<{ role: 'user' | 'assistant'; content: string }[]>([]);
   const [chatInput, setChatInput] = useState('');
+  const [exploringTask, setExploringTask] = useState<string | null>(null);
   const [chatLoading, setChatLoading] = useState(false);
 
   const toggleTask = (id: string) => setSelectedTasks(prev => prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]);
@@ -129,16 +132,43 @@ Be conversational. Explain WHY. Suggest variants and point out design gaps.`,
                 </div>
               </div>
 
-              <div className="text-[10px] text-text-4 text-center">or explore tasks directly:</div>
+              <div className="text-[10px] text-text-4 text-center">or explore tasks — click to try:</div>
               <div className="grid grid-cols-5 gap-1.5">
                 {taskBank.slice(0, 10).map(t => (
-                  <button key={t.id} onClick={() => { setSelectedTasks([t.id]); setBrief(`${t.name} experiment`); setMode('design'); }}
-                    className="card p-2 text-center cursor-pointer hover:border-orchid/20">
+                  <button key={t.id} onClick={() => setExploringTask(exploringTask === t.id ? null : t.id)}
+                    className={`card p-2 text-center cursor-pointer transition-all ${exploringTask === t.id ? 'ring-1 ring-orchid/40 bg-orchid/5' : 'hover:border-orchid/20'}`}>
                     <span className="text-lg">{t.emoji}</span>
                     <div className="text-[8px] text-text-3 mt-0.5 leading-tight">{t.name}</div>
                   </button>
                 ))}
               </div>
+
+              {/* Inline task preview */}
+              {exploringTask && (() => {
+                const t = taskBank.find(tb => tb.id === exploringTask);
+                if (!t) return null;
+                const dummyDesign: ExperimentDesign = {
+                  id: `explore-${t.id}`, name: t.name, paradigmId: t.id,
+                  personaIds: [], params: t.defaultParams,
+                  nParticipantsPerPersona: 20, hypotheses: [], rationale: '', internRole: 'scout',
+                };
+                return (
+                  <div className="mt-3">
+                    <TaskPreview design={dummyDesign} onClose={() => setExploringTask(null)} />
+                    <div className="flex gap-2 mt-2">
+                      <button onClick={() => { toggleTask(t.id); setExploringTask(null); setMode('design'); setBrief(brief || `${t.name} experiment`); }}
+                        className="px-3 py-1.5 rounded-lg text-[11px] font-semibold text-white cursor-pointer"
+                        style={{ background: 'linear-gradient(135deg, #B07CC6, #D48BB5)' }}>
+                        add to experiment
+                      </button>
+                      <button onClick={() => setExploringTask(null)}
+                        className="text-[11px] text-text-3 cursor-pointer hover:text-text">
+                        explore others ←
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
             </motion.div>
           )}
 
