@@ -102,23 +102,40 @@ export function PaperUpload({ onExtracted }: Props) {
           messages: [{ role: 'user', content: `Extract the experimental design:\n\n${text.slice(0, 10000)}` }],
         }),
       });
-      if (!res.ok) throw new Error(`${res.status}`);
+      if (!res.ok) {
+        const errText = await res.text().catch(() => 'unknown');
+        throw new Error(`API ${res.status}: ${errText.slice(0, 200)}`);
+      }
       const data = await res.json();
       const raw = data.content?.[0]?.text ?? '';
-      const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-      const parsed = JSON.parse(cleaned);
-      // Normalize: ensure paradigmIds is an array, handle old paradigmId format
+      if (!raw) throw new Error('empty response from Claude');
+
+      // Try to extract JSON from Claude's response
+      let jsonStr = raw;
+      // Remove markdown code fences
+      jsonStr = jsonStr.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+      // Find the first { and last }
+      const firstBrace = jsonStr.indexOf('{');
+      const lastBrace = jsonStr.lastIndexOf('}');
+      if (firstBrace >= 0 && lastBrace > firstBrace) {
+        jsonStr = jsonStr.slice(firstBrace, lastBrace + 1);
+      }
+
+      const parsed = JSON.parse(jsonStr);
       const paradigmIds = parsed.paradigmIds ?? (parsed.paradigmId ? [parsed.paradigmId] : []);
       const result: ExtractedDesign = {
-        ...parsed,
+        paperTitle: parsed.paperTitle || 'Untitled',
+        brief: parsed.brief || text.slice(0, 100),
         paradigmIds,
         paradigmId: paradigmIds[0] || 'tower-of-london',
         personaIds: parsed.personaIds ?? ['college-student'],
+        keyDetails: parsed.keyDetails || '',
       };
       setStatus(`✓ ${result.paperTitle} — ${paradigmIds.length} task(s) detected`);
       onExtracted(result);
-    } catch {
-      setStatus('could not parse — try pasting a longer section');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'unknown error';
+      setStatus(`error: ${msg.slice(0, 150)} — try pasting the abstract text directly`);
     } finally {
       setLoading(false);
     }
