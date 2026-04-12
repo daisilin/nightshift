@@ -13,6 +13,8 @@ export function LandingPage() {
   const [brief, setBrief] = useState('');
   const [selectedTasks, setSelectedTasks] = useState<string[]>([taskBank[0].id]);
   const [selectedPersonas, setSelectedPersonas] = useState(['college-student', 'mturk-worker', 'older-adult']);
+  const [customPersona, setCustomPersona] = useState('');
+  const [showCustom, setShowCustom] = useState(false);
 
   const toggleTask = (id: string) => {
     setSelectedTasks(prev => prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]);
@@ -101,7 +103,24 @@ export function LandingPage() {
                 </button>
               ))}
             </div>
-            <p className="text-[10px] text-text-4 mt-1 italic">illustrative multipliers, not population estimates</p>
+            <div className="mt-2">
+              <button onClick={() => setShowCustom(!showCustom)}
+                className="text-[11px] text-orchid hover:underline cursor-pointer">
+                {showCustom ? '▾ hide custom persona' : '+ add custom population'}
+              </button>
+              {showCustom && (
+                <textarea
+                  value={customPersona}
+                  onChange={e => setCustomPersona(e.target.value)}
+                  placeholder="describe any population: 'rural elderly adults with limited tech experience' or 'bilingual children ages 6-8 in low-income schools' — Claude will generate a behavioral profile"
+                  rows={2}
+                  className="w-full mt-2 card p-3 text-sm text-text resize-none focus:outline-none"
+                />
+              )}
+            </div>
+            <p className="text-[10px] text-text-4 mt-1 italic">
+              preset personas use parametric models · custom personas use LLM-generated profiles
+            </p>
           </motion.div>
 
           {/* Brief */}

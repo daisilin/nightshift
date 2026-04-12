@@ -4,13 +4,14 @@ import { StroopPreview } from './StroopPreview';
 import { SurveyPreview } from './SurveyPreview';
 import { TowerOfLondonPreview } from './TowerOfLondonPreview';
 import { FourInARowPreview } from './FourInARowPreview';
+import { ChessPreview } from './ChessPreview';
 
 interface Props {
   design: ExperimentDesign;
   onClose: () => void;
 }
 
-const PLAYABLE = ['stroop', 'tower-of-london', 'four-in-a-row', 'likert-survey', 'forced-choice'];
+const PLAYABLE = ['stroop', 'tower-of-london', 'four-in-a-row', 'chess', 'likert-survey', 'forced-choice'];
 
 export function TaskPreview({ design, onClose }: Props) {
   const id = design.paradigmId;
@@ -27,6 +28,7 @@ export function TaskPreview({ design, onClose }: Props) {
       )}
       {id === 'tower-of-london' && <TowerOfLondonPreview />}
       {id === 'four-in-a-row' && <FourInARowPreview />}
+      {id === 'chess' && <ChessPreview />}
       {(id === 'likert-survey' || id === 'forced-choice') && design.params.type === 'survey' && (
         <SurveyPreview params={design.params as SurveyParams} />
       )}
