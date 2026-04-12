@@ -15,12 +15,12 @@ export const INTERN_PROFILES: Record<InternRole, Omit<Intern, 'mission'>> = {
     color: '#B07CC6',
     description: 'Deep dive — picks the strongest angle and goes deep',
   },
-  contrarian: {
-    role: 'contrarian',
-    name: 'Contrarian',
-    emoji: '🪞',
+  reviewer: {
+    role: 'reviewer',
+    name: 'Reviewer',
+    emoji: '📝',
     color: '#E8A87C',
-    description: 'Devil\'s advocate — finds risks, blind spots, and opposing views',
+    description: 'Simulated peer reviewer — critiques design, methods, and statistical power',
   },
 };
 
@@ -28,7 +28,7 @@ export function createMissions(brief: string): Intern[] {
   return [
     { ...INTERN_PROFILES.scout, mission: `Survey the landscape around: "${brief}". Map key players, trends, and options. Focus on breadth.` },
     { ...INTERN_PROFILES.analyst, mission: `Deep-dive into the most promising angle of: "${brief}". Find specific data, examples, and actionable details.` },
-    { ...INTERN_PROFILES.contrarian, mission: `Challenge the assumptions in: "${brief}". Find risks, counterexamples, and what people get wrong about this.` },
+    { ...INTERN_PROFILES.reviewer, mission: `Review the experimental approach for: "${brief}". Identify methodological issues, suggest improvements, evaluate statistical power.` },
   ];
 }
 

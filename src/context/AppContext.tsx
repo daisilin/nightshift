@@ -2,7 +2,7 @@ import { createContext, useContext, useReducer, useEffect, type ReactNode } from
 import type { AppState, AppAction, InternRole } from './types';
 
 const STORAGE_KEY = 'nightshift-state';
-const ROLES: InternRole[] = ['scout', 'analyst', 'contrarian'];
+const ROLES: InternRole[] = ['scout', 'analyst', 'reviewer'];
 
 export const initialState: AppState = {
   currentSession: null,
@@ -17,26 +17,39 @@ export function reducer(state: AppState, action: AppAction): AppState {
         id: `s-${Date.now()}`,
         brief: action.payload.brief,
         paradigmId: action.payload.paradigmId,
+        paradigmIds: [action.payload.paradigmId],
         personaIds: action.payload.personaIds,
         missions: [],
         reports: [],
         designReports: ROLES.map(role => ({
-          role,
-          design: null,
-          dataset: null,
-          metrics: null,
-          status: 'pending' as const,
+          role, design: null, dataset: null, metrics: null, status: 'pending' as const,
         })),
-        synthesis: null,
-        agreements: [],
-        disagreements: [],
-        openQuestions: [],
-        nextMissions: [],
-        createdAt: Date.now(),
-        completedAt: null,
-        round: state.sessions.length + 1,
-        previousSessionId: null,
-        selectedDesignIndex: 0,
+        battery: [],
+        peerReview: null,
+        crossTaskAnalysis: null,
+        synthesis: null, agreements: [], disagreements: [], openQuestions: [], nextMissions: [],
+        createdAt: Date.now(), completedAt: null,
+        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0,
+      };
+      return { ...state, currentSession: session, step: 'dispatch' };
+    }
+
+    case 'START_BATTERY': {
+      const session = {
+        id: `s-${Date.now()}`,
+        brief: action.payload.brief,
+        paradigmId: action.payload.paradigmIds[0],
+        paradigmIds: action.payload.paradigmIds,
+        personaIds: action.payload.personaIds,
+        missions: [], reports: [],
+        designReports: [],
+        battery: action.payload.paradigmIds.map(pid => ({
+          paradigmId: pid, design: null, dataset: null, metrics: null, status: 'pending' as const,
+        })),
+        peerReview: null, crossTaskAnalysis: null,
+        synthesis: null, agreements: [], disagreements: [], openQuestions: [], nextMissions: [],
+        createdAt: Date.now(), completedAt: null,
+        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0,
       };
       return { ...state, currentSession: session, step: 'dispatch' };
     }
@@ -45,11 +58,12 @@ export function reducer(state: AppState, action: AppAction): AppState {
       const session = {
         id: `s-${Date.now()}`,
         brief: action.payload.brief,
-        paradigmId: '',
+        paradigmId: '', paradigmIds: [],
         personaIds: [],
         missions: action.payload.missions,
         reports: action.payload.missions.map(m => ({ role: m.role, summary: '', findings: [], status: 'pending' as const })),
-        designReports: [],
+        designReports: [], battery: [],
+        peerReview: null, crossTaskAnalysis: null,
         synthesis: null, agreements: [], disagreements: [], openQuestions: [], nextMissions: [],
         createdAt: Date.now(), completedAt: null,
         round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0,
@@ -89,6 +103,24 @@ export function reducer(state: AppState, action: AppAction): AppState {
       return { ...state, currentSession: { ...state.currentSession, reports } };
     }
 
+    case 'UPDATE_BATTERY_TASK': {
+      if (!state.currentSession) return state;
+      const battery = state.currentSession.battery.map(t =>
+        t.paradigmId === action.payload.paradigmId ? { ...t, ...action.payload.update } : t
+      );
+      return { ...state, currentSession: { ...state.currentSession, battery } };
+    }
+
+    case 'SET_PEER_REVIEW': {
+      if (!state.currentSession) return state;
+      return { ...state, currentSession: { ...state.currentSession, peerReview: action.payload } };
+    }
+
+    case 'SET_CROSS_TASK_ANALYSIS': {
+      if (!state.currentSession) return state;
+      return { ...state, currentSession: { ...state.currentSession, crossTaskAnalysis: action.payload } };
+    }
+
     case 'SELECT_DESIGN': {
       if (!state.currentSession) return state;
       return { ...state, currentSession: { ...state.currentSession, selectedDesignIndex: action.payload } };
@@ -104,6 +136,8 @@ export function reducer(state: AppState, action: AppAction): AppState {
         missions: action.payload.missions,
         reports: action.payload.missions.map(m => ({ role: m.role, summary: '', findings: [], status: 'pending' as const })),
         designReports: ROLES.map(role => ({ role, design: null, dataset: null, metrics: null, status: 'pending' as const })),
+        battery: archived.battery.map(t => ({ ...t, design: null, dataset: null, metrics: null, status: 'pending' as const })),
+        peerReview: null, crossTaskAnalysis: null,
         synthesis: null, agreements: [], disagreements: [], openQuestions: [], nextMissions: [],
         createdAt: Date.now(), completedAt: null,
         round: archived.round + 1, previousSessionId: archived.id, selectedDesignIndex: 0,

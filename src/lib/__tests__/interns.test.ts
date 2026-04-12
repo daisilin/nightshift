@@ -10,7 +10,7 @@ describe('createMissions', () => {
     expect(missions).toHaveLength(3);
     expect(missions[0].role).toBe('scout');
     expect(missions[1].role).toBe('analyst');
-    expect(missions[2].role).toBe('contrarian');
+    expect(missions[2].role).toBe('reviewer');
   });
 
   it('includes the brief in each mission', () => {
@@ -25,7 +25,7 @@ describe('createMissions', () => {
     const missions = createMissions('test');
     expect(missions[0].emoji).toBe('🔭');
     expect(missions[1].color).toBe('#B07CC6');
-    expect(missions[2].name).toBe('Contrarian');
+    expect(missions[2].name).toBe('Reviewer');
   });
 });
 
@@ -57,7 +57,7 @@ describe('parseFindingsFromResponse', () => {
 Short.
 1. A real finding with enough content to matter
 Not numbered but long enough`;
-    const findings = parseFindingsFromResponse(text, 'contrarian');
+    const findings = parseFindingsFromResponse(text, 'reviewer');
     expect(findings).toHaveLength(1);
   });
 

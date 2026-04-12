@@ -9,6 +9,8 @@ import { MetricCard } from '../components/report/MetricCard';
 import { DistributionChart } from '../components/report/DistributionChart';
 import { TaskPreview } from '../components/preview/TaskPreview';
 import { DataExplorer } from '../components/report/DataExplorer';
+import { PeerReviewCard } from '../components/report/PeerReviewCard';
+import { CrossTaskView } from '../components/report/CrossTaskView';
 import { getParadigm } from '../data/taskBank';
 import { personaBank } from '../data/personaBank';
 import { stagger, staggerItem } from '../lib/animations';
@@ -161,6 +163,42 @@ export function ReportPage() {
         {selected.dataset && selected.design && (
           <motion.div variants={staggerItem} className="mb-6">
             <DataExplorer dataset={selected.dataset} design={selected.design} />
+          </motion.div>
+        )}
+
+        {/* Cross-task analysis (battery mode) */}
+        {session.crossTaskAnalysis && (
+          <motion.div variants={staggerItem} className="mb-6">
+            <CrossTaskView analysis={session.crossTaskAnalysis} />
+          </motion.div>
+        )}
+
+        {/* Peer review */}
+        {session.peerReview && (
+          <motion.div variants={staggerItem} className="mb-6">
+            <PeerReviewCard review={session.peerReview} />
+          </motion.div>
+        )}
+
+        {/* Battery tasks overview */}
+        {session.battery.length > 0 && (
+          <motion.div variants={staggerItem} className="card p-5 mb-6">
+            <h3 className="text-sm font-heading text-text mb-3">battery tasks ({session.battery.length})</h3>
+            <div className="space-y-2">
+              {session.battery.filter(t => t.metrics).map(task => {
+                const paradigm = getParadigm(task.paradigmId);
+                return (
+                  <div key={task.paradigmId} className="flex items-center justify-between p-2 rounded-lg bg-surface/50">
+                    <span className="text-sm text-text-2">{paradigm?.emoji} {paradigm?.name}</span>
+                    <span className="text-xs font-mono" style={{
+                      color: task.metrics!.overallScore >= 75 ? '#8FB89A' : task.metrics!.overallScore >= 50 ? '#E8A87C' : '#D47B7B'
+                    }}>
+                      {task.metrics!.overallScore}/100
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </motion.div>
         )}
 

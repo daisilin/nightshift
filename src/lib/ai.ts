@@ -67,7 +67,7 @@ Populations to simulate: ${personas.map(p => `${p.name} (${p.description})`).joi
 
 ${role === 'scout' ? 'Design a standard, well-established version of this paradigm. Prioritize proven approaches.' : ''}
 ${role === 'analyst' ? 'Design a targeted version that maximizes the effect for the specific research question. Be creative with parameters.' : ''}
-${role === 'contrarian' ? 'Design a version that tests an alternative hypothesis or unexpected angle. Challenge the obvious approach.' : ''}
+${role === 'reviewer' ? 'Design a version that tests an alternative hypothesis or unexpected angle. Challenge the obvious approach.' : ''}
 
 Return ONLY the JSON object, no explanation.`;
 
@@ -123,12 +123,65 @@ Keep it under 100 words. Use lowercase, be direct.`;
 }
 
 // ============================================================
-// RUN FULL PIPELINE (propose → simulate → compute → synthesize)
+// PEER REVIEW — simulates actual reviewer behavior
 // ============================================================
 
-export interface PipelineResult {
-  design: ExperimentDesign;
-  metrics: PilotMetrics;
+import type { PeerReview } from '../context/types';
+
+export async function generatePeerReview(
+  brief: string,
+  designs: ExperimentDesign[],
+  allMetrics: PilotMetrics[],
+): Promise<PeerReview> {
+  const system = `You are Reviewer 2 for a top cognitive science journal (e.g., Nature Communications, Psychological Science).
+You are reviewing a pilot study report. Be rigorous but constructive, like a real reviewer.
+
+Consider:
+- Is the sample size adequate for the effect sizes observed?
+- Are there ceiling/floor effects that compromise the design?
+- Is the task appropriate for the research question?
+- Are the dependent variables well-chosen?
+- Would this design survive a methods review?
+- Are there confounds or alternative explanations?
+
+Return ONLY valid JSON:
+{
+  "strengths": ["2-3 specific strengths"],
+  "weaknesses": ["2-3 specific methodological concerns"],
+  "suggestions": ["2-3 actionable revision suggestions"],
+  "verdict": one of "accept", "minor-revisions", "major-revisions", "reject",
+  "confidence": 0.0-1.0 (your confidence in this review)
+}
+
+Be specific. Cite the actual metric values you see. Do not be generic.
+A good reviewer catches real problems (underpowered study, ceiling effects, wrong task for the question).
+Return ONLY JSON.`;
+
+  const metricsText = allMetrics.map((m, i) => {
+    const d = designs[i];
+    const flags = m.byPersona.flatMap(p => p.metrics.filter(met => met.flag).map(met => `${p.personaName}: ${met.flag}`));
+    return `Design: "${d.name}" (${d.paradigmId})
+  Score: ${m.overallScore}/100, Recommendation: ${m.recommendation}
+  Participants: ${d.nParticipantsPerPersona}/persona × ${d.personaIds.length} personas
+  ${d.params.type === 'behavioral' ? `Trials: ${d.params.nTrials}, Conditions: ${d.params.nConditions}, Difficulty: ${d.params.difficulty}` : `Items: ${d.params.nItems}, Scale: ${d.params.scalePoints}-point`}
+  Flags: ${flags.length > 0 ? flags.join('; ') : 'none'}
+  Per-persona metrics: ${m.byPersona.map(p => `${p.personaName}: ${p.metrics.map(met => `${met.name}=${met.value}`).join(', ')}`).join(' | ')}`;
+  }).join('\n\n');
+
+  const raw = await callClaude(system, `Research brief: "${brief}"\n\nPilot results:\n${metricsText}`, 600);
+
+  try {
+    const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    return JSON.parse(cleaned) as PeerReview;
+  } catch {
+    return {
+      strengths: ['Study addresses a clear research question'],
+      weaknesses: ['Sample size may need justification', 'Consider additional control conditions'],
+      suggestions: ['Increase sample size', 'Add manipulation check'],
+      verdict: 'major-revisions',
+      confidence: 0.5,
+    };
+  }
 }
 
 export type DispatchStatus = 'proposing' | 'simulating' | 'computing' | 'done' | 'error';

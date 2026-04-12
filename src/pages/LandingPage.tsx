@@ -11,8 +11,12 @@ export function LandingPage() {
   const nav = useNavigate();
   const { state, dispatch } = useApp();
   const [brief, setBrief] = useState('');
-  const [selectedTask, setSelectedTask] = useState(taskBank[0].id);
+  const [selectedTasks, setSelectedTasks] = useState<string[]>([taskBank[0].id]);
   const [selectedPersonas, setSelectedPersonas] = useState(['college-student', 'mturk-worker', 'older-adult']);
+
+  const toggleTask = (id: string) => {
+    setSelectedTasks(prev => prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]);
+  };
 
   const togglePersona = (id: string) => {
     setSelectedPersonas(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]);
@@ -20,8 +24,12 @@ export function LandingPage() {
 
   const go = () => {
     const b = brief.trim();
-    if (!b || selectedPersonas.length === 0) return;
-    dispatch({ type: 'START_EXPERIMENT', payload: { brief: b, paradigmId: selectedTask, personaIds: selectedPersonas } });
+    if (!b || selectedPersonas.length === 0 || selectedTasks.length === 0) return;
+    if (selectedTasks.length === 1) {
+      dispatch({ type: 'START_EXPERIMENT', payload: { brief: b, paradigmId: selectedTasks[0], personaIds: selectedPersonas } });
+    } else {
+      dispatch({ type: 'START_BATTERY', payload: { brief: b, paradigmIds: selectedTasks, personaIds: selectedPersonas } });
+    }
     nav('/dispatch');
   };
 
@@ -47,7 +55,7 @@ export function LandingPage() {
             <PaperUpload onExtracted={(extracted) => {
               setBrief(extracted.brief);
               if (taskBank.find(t => t.id === extracted.paradigmId)) {
-                setSelectedTask(extracted.paradigmId);
+                setSelectedTasks([extracted.paradigmId]);
               }
               if (extracted.personaIds.length > 0) {
                 setSelectedPersonas(extracted.personaIds);
@@ -63,17 +71,22 @@ export function LandingPage() {
 
           {/* Task Bank */}
           <motion.div variants={staggerItem} className="mb-5">
-            <label className="text-xs font-mono text-text-3 uppercase tracking-wider mb-2 block">paradigm</label>
+            <label className="text-xs font-mono text-text-3 uppercase tracking-wider mb-2 block">
+              paradigms <span className="text-text-4">(select multiple for a battery)</span>
+            </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {taskBank.map(t => (
-                <button key={t.id} onClick={() => setSelectedTask(t.id)}
-                  className={`card p-3 text-left cursor-pointer transition-all ${selectedTask === t.id ? 'ring-2 ring-orchid/40 bg-orchid/5' : 'hover:border-orchid/20'}`}>
+                <button key={t.id} onClick={() => toggleTask(t.id)}
+                  className={`card p-3 text-left cursor-pointer transition-all ${selectedTasks.includes(t.id) ? 'ring-2 ring-orchid/40 bg-orchid/5' : 'hover:border-orchid/20'}`}>
                   <span className="text-lg">{t.emoji}</span>
                   <div className="text-xs font-semibold text-text mt-1">{t.name}</div>
                   <div className="text-[10px] text-text-3">{t.category}</div>
                 </button>
               ))}
             </div>
+            {selectedTasks.length > 1 && (
+              <p className="text-[10px] text-orchid mt-1">{selectedTasks.length} tasks selected — will run as a battery on the same participants</p>
+            )}
           </motion.div>
 
           {/* Personas */}
@@ -100,7 +113,7 @@ export function LandingPage() {
                 placeholder="what are you testing? e.g., 'does planning improve with practice under time pressure?'"
                 rows={3} className="w-full bg-transparent px-4 py-3 text-[15px] text-text placeholder-text-4 resize-none focus:outline-none" autoFocus />
               <div className="flex justify-between items-center px-4 pb-2">
-                <span className="text-xs text-text-4">{taskBank.find(t => t.id === selectedTask)?.name} · {selectedPersonas.length} pop.</span>
+                <span className="text-xs text-text-4">{selectedTasks.length} task{selectedTasks.length > 1 ? 's' : ''} · {selectedPersonas.length} pop.</span>
                 <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={go}
                   disabled={!brief.trim() || selectedPersonas.length === 0}
                   className="px-5 py-2 rounded-xl text-sm font-semibold text-white cursor-pointer disabled:opacity-30 transition-all"
