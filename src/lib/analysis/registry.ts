@@ -75,7 +75,7 @@ export function defaultSingleTaskPlan(): AnalysisPlan {
 
 /** Default plan for multi-task battery */
 export function defaultBatteryPlan(nTasks: number): AnalysisPlan {
-  const steps = [
+  const steps: AnalysisPlanStep[] = [
     { id: 'descriptive-stats' },
     { id: 'split-half-reliability' },
     { id: 'ceiling-floor' },

@@ -147,7 +147,7 @@ function powerIteration(matrix: number[][], nComponents: number): { eigenvalues:
 
   for (let comp = 0; comp < nComponents; comp++) {
     // Initialize random vector
-    let v = Array.from({ length: n }, (_, i) => (i === comp ? 1 : 0.1));
+    let v: number[] = Array.from({ length: n }, (_, i) => (i === comp ? 1 : 0.1));
     let eigenvalue = 0;
 
     // Power iteration (50 iterations is plenty for n < 20)
