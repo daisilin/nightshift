@@ -13,16 +13,28 @@ interface Props {
   onExtracted: (design: ExtractedDesign) => void;
 }
 
+const SYSTEM_PROMPT = `You extract experimental designs from academic papers.
+Given paper text (or description), return ONLY valid JSON:
+{
+  "paperTitle": "string",
+  "brief": "one sentence describing the main experiment to reproduce",
+  "paradigmId": one of: "tower-of-london", "four-in-a-row", "rush-hour", "corsi-block", "n-back", "stroop", "chess", "two-step", "likert-survey", "forced-choice",
+  "personaIds": ["college-student"] (default) — add "older-adult", "child", "mturk-worker", "clinical-adhd" if the paper studies those populations,
+  "keyDetails": "2-3 sentences about the specific parameters: number of trials, conditions, difficulty levels, measures, sample size"
+}
+Pick the closest paradigmId. If the paper uses multiple tasks, pick the PRIMARY one.
+Return ONLY JSON, no explanation.`;
+
 export function PaperUpload({ onExtracted }: Props) {
-  const [dragging, setDragging] = useState(false);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
+  const [pasteText, setPasteText] = useState('');
+  const [showPaste, setShowPaste] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const extractFromPaper = async (text: string) => {
+  const callClaude = async (userContent: string) => {
     setLoading(true);
-    setStatus('reading paper...');
-
+    setStatus('extracting experimental design...');
     try {
       const res = await fetch('/api/claude', {
         method: 'POST',
@@ -30,34 +42,19 @@ export function PaperUpload({ onExtracted }: Props) {
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
           max_tokens: 1000,
-          system: `You extract experimental designs from academic papers.
-Given paper text, return ONLY valid JSON:
-{
-  "paperTitle": "string",
-  "brief": "one sentence describing the main experiment to reproduce",
-  "paradigmId": one of: "tower-of-london", "four-in-a-row", "rush-hour", "corsi-block", "n-back", "stroop", "chess", "two-step", "likert-survey", "forced-choice",
-  "personaIds": ["college-student"] (default) — add "older-adult", "child", "mturk-worker", "clinical-adhd" if the paper studies those populations,
-  "keyDetails": "2-3 sentences about the specific parameters: number of trials, conditions, difficulty levels, measures"
-}
-Pick the closest paradigmId. If the paper uses multiple tasks, pick the primary one.
-Return ONLY JSON.`,
-          messages: [{
-            role: 'user',
-            content: `Extract the experimental design from this paper:\n\n${text.slice(0, 8000)}`,
-          }],
+          system: SYSTEM_PROMPT,
+          messages: [{ role: 'user', content: userContent }],
         }),
       });
-
-      if (!res.ok) throw new Error(`API error: ${res.status}`);
+      if (!res.ok) throw new Error(`${res.status}`);
       const data = await res.json();
       const raw = data.content?.[0]?.text ?? '';
       const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-      const parsed = JSON.parse(cleaned);
-
-      setStatus(`found: ${parsed.paperTitle}`);
+      const parsed = JSON.parse(cleaned) as ExtractedDesign;
+      setStatus(`✓ ${parsed.paperTitle}`);
       onExtracted(parsed);
-    } catch (err) {
-      setStatus('could not extract design — try pasting the abstract instead');
+    } catch {
+      setStatus('could not parse — try pasting more text or a different section');
     } finally {
       setLoading(false);
     }
@@ -65,35 +62,68 @@ Return ONLY JSON.`,
 
   const handleFile = async (file: File) => {
     if (file.type === 'application/pdf') {
-      // For PDF: read as text (basic extraction)
-      // In production, use a proper PDF parser. For now, read as arraybuffer
-      // and send to Claude which can handle raw text from PDFs
+      // Read PDF as base64 and send to Claude with document type
       setStatus('reading PDF...');
-      const text = await file.text();
-      // If text extraction fails (binary PDF), fall back to name-based extraction
-      if (text.length < 100) {
-        setStatus('PDF text extraction limited — paste the abstract below instead');
-        return;
+      const buffer = await file.arrayBuffer();
+      const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+
+      setLoading(true);
+      setStatus('sending to Claude for analysis...');
+      try {
+        const res = await fetch('/api/claude', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 1000,
+            system: SYSTEM_PROMPT,
+            messages: [{
+              role: 'user',
+              content: [
+                {
+                  type: 'document',
+                  source: { type: 'base64', media_type: 'application/pdf', data: base64 },
+                },
+                {
+                  type: 'text',
+                  text: 'Extract the experimental design from this paper. Return JSON only.',
+                },
+              ],
+            }],
+          }),
+        });
+        if (!res.ok) {
+          const errText = await res.text();
+          // If PDF too large or not supported, ask user to paste
+          if (errText.includes('too large') || errText.includes('size')) {
+            setStatus('PDF too large — paste the abstract or methods section below');
+            setShowPaste(true);
+            setLoading(false);
+            return;
+          }
+          throw new Error(errText);
+        }
+        const data = await res.json();
+        const raw = data.content?.[0]?.text ?? '';
+        const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+        const parsed = JSON.parse(cleaned) as ExtractedDesign;
+        setStatus(`✓ ${parsed.paperTitle}`);
+        onExtracted(parsed);
+      } catch {
+        setStatus('PDF parsing failed — paste the abstract below instead');
+        setShowPaste(true);
+      } finally {
+        setLoading(false);
       }
-      await extractFromPaper(text);
-    } else if (file.type === 'text/plain' || file.name.endsWith('.txt') || file.name.endsWith('.md')) {
-      const text = await file.text();
-      await extractFromPaper(text);
     } else {
-      setStatus('drop a PDF or text file, or paste the abstract');
+      const text = await file.text();
+      await callClaude(`Extract the experimental design from this paper:\n\n${text.slice(0, 12000)}`);
     }
   };
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setDragging(false);
-    const file = e.dataTransfer.files[0];
-    if (file) handleFile(file);
-  };
-
-  const handlePaste = async (text: string) => {
-    if (text.trim().length > 50) {
-      await extractFromPaper(text.trim());
+  const handlePasteSubmit = () => {
+    if (pasteText.trim().length > 30) {
+      callClaude(`Extract the experimental design from this paper text:\n\n${pasteText.trim()}`);
     }
   };
 
@@ -101,17 +131,13 @@ Return ONLY JSON.`,
     <div className="space-y-3">
       {/* Drop zone */}
       <div
-        onDragOver={e => { e.preventDefault(); setDragging(true); }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={handleDrop}
+        onDragOver={e => { e.preventDefault(); }}
+        onDrop={e => { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) handleFile(f); }}
         onClick={() => fileRef.current?.click()}
-        className={`card p-6 text-center cursor-pointer transition-all border-2 border-dashed ${
-          dragging ? 'border-orchid/40 bg-orchid/5' : 'border-orchid/15 hover:border-orchid/25'
-        }`}
+        className="card p-5 text-center cursor-pointer transition-all border-2 border-dashed border-orchid/15 hover:border-orchid/25"
       >
         <input ref={fileRef} type="file" accept=".pdf,.txt,.md" className="hidden"
           onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} />
-
         {loading ? (
           <div>
             <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
@@ -120,27 +146,41 @@ Return ONLY JSON.`,
           </div>
         ) : (
           <div>
-            <p className="text-2xl mb-2">📄</p>
+            <p className="text-xl mb-1">📄</p>
             <p className="text-sm text-text-2 font-semibold">drop a paper to reproduce</p>
-            <p className="text-xs text-text-3 mt-1">PDF or text — we'll extract the experimental design</p>
+            <p className="text-xs text-text-3 mt-1">PDF, text, or paste below</p>
           </div>
         )}
       </div>
 
-      {/* Or paste abstract */}
-      <details className="text-xs text-text-3">
-        <summary className="cursor-pointer hover:text-text-2">or paste abstract / methods section</summary>
-        <textarea
-          className="w-full mt-2 card p-3 text-sm text-text resize-none focus:outline-none min-h-[80px]"
-          placeholder="paste paper text here..."
-          onBlur={e => handlePaste(e.target.value)}
-        />
-      </details>
+      {/* Paste area — always visible */}
+      <div>
+        <div className="flex items-center gap-2 mb-1 cursor-pointer" onClick={() => setShowPaste(!showPaste)}>
+          <span className="text-xs text-text-3">{showPaste ? '▾' : '▸'} paste abstract or methods</span>
+        </div>
+        {showPaste && (
+          <div className="space-y-2">
+            <textarea
+              value={pasteText}
+              onChange={e => setPasteText(e.target.value)}
+              className="w-full card p-3 text-sm text-text resize-none focus:outline-none min-h-[100px]"
+              placeholder="paste the abstract, methods section, or just describe the experiment..."
+            />
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handlePasteSubmit}
+              disabled={pasteText.trim().length < 30 || loading}
+              className="px-4 py-2 rounded-xl text-xs font-semibold text-white cursor-pointer disabled:opacity-30"
+              style={{ background: 'linear-gradient(135deg, #B07CC6, #D48BB5)' }}
+            >
+              extract design
+            </motion.button>
+          </div>
+        )}
+      </div>
 
-      {/* Status */}
-      {status && !loading && (
-        <p className="text-xs text-orchid">{status}</p>
-      )}
+      {status && !loading && <p className="text-xs text-orchid">{status}</p>}
     </div>
   );
 }
