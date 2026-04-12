@@ -62,13 +62,27 @@ export function PaperUpload({ onExtracted }: Props) {
 
   const handleFile = async (file: File) => {
     if (file.type === 'application/pdf') {
-      // Read PDF as base64 and send to Claude with document type
-      setStatus('reading PDF...');
-      const buffer = await file.arrayBuffer();
-      const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
+      // Size check — Claude API limit is ~25MB for documents
+      if (file.size > 10 * 1024 * 1024) {
+        setStatus('PDF too large (>10MB) — paste the abstract below');
+        setShowPaste(true);
+        return;
+      }
 
       setLoading(true);
-      setStatus('sending to Claude for analysis...');
+      setStatus('reading PDF...');
+
+      // Chunked base64 encoding (spread operator crashes on large arrays)
+      const buffer = await file.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      let binary = '';
+      const chunkSize = 8192;
+      for (let i = 0; i < bytes.length; i += chunkSize) {
+        binary += String.fromCharCode(...bytes.slice(i, i + chunkSize));
+      }
+      const base64 = btoa(binary);
+
+      setStatus('analyzing paper...');
       try {
         const res = await fetch('/api/claude', {
           method: 'POST',
