@@ -5,13 +5,20 @@ import { SurveyPreview } from './SurveyPreview';
 import { TowerOfLondonPreview } from './TowerOfLondonPreview';
 import { FourInARowPreview } from './FourInARowPreview';
 import { ChessPreview } from './ChessPreview';
+import { NBackPreview } from './NBackPreview';
+import { CorsiPreview } from './CorsiPreview';
+import { TwoStepPreview } from './TwoStepPreview';
 
 interface Props {
   design: ExperimentDesign;
   onClose: () => void;
 }
 
-const PLAYABLE = ['stroop', 'tower-of-london', 'four-in-a-row', 'chess', 'likert-survey', 'forced-choice'];
+const PLAYABLE = [
+  'stroop', 'tower-of-london', 'four-in-a-row', 'chess',
+  'n-back', 'corsi-block', 'two-step',
+  'likert-survey', 'forced-choice',
+];
 
 export function TaskPreview({ design, onClose }: Props) {
   const id = design.paradigmId;
@@ -29,6 +36,9 @@ export function TaskPreview({ design, onClose }: Props) {
       {id === 'tower-of-london' && <TowerOfLondonPreview />}
       {id === 'four-in-a-row' && <FourInARowPreview />}
       {id === 'chess' && <ChessPreview />}
+      {id === 'n-back' && <NBackPreview nLevel={2} />}
+      {id === 'corsi-block' && <CorsiPreview />}
+      {id === 'two-step' && <TwoStepPreview />}
       {(id === 'likert-survey' || id === 'forced-choice') && design.params.type === 'survey' && (
         <SurveyPreview params={design.params as SurveyParams} />
       )}
