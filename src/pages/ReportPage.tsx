@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 import { DesignCard } from '../components/report/DesignCard';
+import { DesignEditor } from '../components/report/DesignEditor';
 import { PersonaComparison } from '../components/report/PersonaComparison';
 import { MetricCard } from '../components/report/MetricCard';
 import { DistributionChart } from '../components/report/DistributionChart';
 import { getParadigm } from '../data/taskBank';
+import { personaBank } from '../data/personaBank';
 import { stagger, staggerItem } from '../lib/animations';
 
 const CONDITION_COLORS = ['#8BACD4', '#B07CC6', '#E8A87C', '#8FB89A', '#D48BB5'];
@@ -16,8 +18,13 @@ export function ReportPage() {
   const { state, dispatch } = useApp();
   const session = state.currentSession;
   const [selectedIdx, setSelectedIdx] = useState(0);
+  const [editing, setEditing] = useState(false);
 
   if (!session) return null;
+
+  const selectedPersonas = session.personaIds
+    .map(id => personaBank.find(p => p.id === id))
+    .filter(Boolean) as typeof personaBank;
 
   const doneReports = session.designReports.filter(r => r.status === 'done' && r.design && r.metrics);
   if (doneReports.length === 0) return <div className="min-h-screen flex items-center justify-center text-text-3">loading reports...</div>;
@@ -66,6 +73,34 @@ export function ReportPage() {
           </div>
         </motion.div>
 
+        {/* Tweak button + Editor */}
+        <motion.div variants={staggerItem} className="mb-6">
+          {!editing ? (
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setEditing(true)}
+              className="w-full py-3 rounded-[14px] text-sm font-semibold text-text-2 border border-dashed border-orchid/20 bg-orchid/3 cursor-pointer hover:bg-orchid/8 transition-all"
+            >
+              tweak this design — adjust params and re-simulate instantly
+            </motion.button>
+          ) : selected.design && selected.metrics ? (
+            <DesignEditor
+              design={selected.design}
+              originalMetrics={selected.metrics}
+              personas={selectedPersonas}
+              onApply={(newDesign, newMetrics) => {
+                dispatch({ type: 'UPDATE_DESIGN_REPORT', payload: {
+                  role: selected.role,
+                  report: { design: newDesign, metrics: newMetrics },
+                }});
+                setEditing(false);
+              }}
+              onClose={() => setEditing(false)}
+            />
+          ) : null}
+        </motion.div>
+
         {/* AI Synthesis */}
         {session.synthesis && (
           <motion.div variants={staggerItem} className="card p-5 mb-6">
@@ -110,9 +145,22 @@ export function ReportPage() {
             done — new research 🌙
           </motion.button>
           <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
-            onClick={() => { dispatch({ type: 'COMPLETE_SESSION' }); nav('/'); }}
+            onClick={() => {
+              // Re-dispatch with same paradigm + personas but as next round
+              dispatch({ type: 'ITERATE_SESSION', payload: {
+                refinedBrief: session.brief,
+                missions: [],
+              }});
+              // Restart as experiment
+              dispatch({ type: 'START_EXPERIMENT', payload: {
+                brief: session.brief,
+                paradigmId: session.paradigmId,
+                personaIds: session.personaIds,
+              }});
+              nav('/dispatch');
+            }}
             className="px-6 py-3 rounded-[14px] text-sm font-semibold text-text-2 border border-orchid/15 bg-orchid/5 cursor-pointer">
-            iterate →
+            new round — different designs →
           </motion.button>
         </motion.div>
       </motion.div>
