@@ -1,3 +1,4 @@
+import type { SimulatedDataset } from './types';
 import type { CrossTaskAnalysis } from '../context/types';
 import { mean, standardDeviation } from './metrics';
 
