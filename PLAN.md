@@ -3,54 +3,70 @@
 ## What This Is
 
 An overnight experiment iteration system for behavioral researchers. Three pillars:
-1. **Task Bank** — Classic cognitive paradigms (games + surveys) every cogsci researcher knows
+1. **Task Bank** — Classic cognitive paradigms (games + surveys)
 2. **Persona Bank** — Simulated populations with documented behavioral priors
-3. **Computation Engine** — Deterministic simulation + real metrics. Claude proposes; system computes.
+3. **Computation Engine** — Deterministic simulation + real metrics
 
-**Framing**: Compress weeks of pre-pilot iteration into overnight agent runs. Simulation catches bad designs early — does NOT replace real human data.
+**What nightshift IS**: A calibratable synthetic cohort engine for rapid experiment design iteration.  
+**What nightshift is NOT**: A replacement for human data collection or a validated population simulator.
 
-**Architecture**: Claude proposes structured designs → System simulates with personas → System computes metrics → Report shows charts + numbers → Claude interprets
+Simulation catches bad designs early — ceiling effects, low power, wrong task for the question. It does NOT prove that results will replicate with real humans.
 
----
+## Honest Limitations
 
-## Task Bank (8 paradigms)
+- **Generic trial generator**: Tower of London, Rush Hour, Stroop etc. share the same RT/accuracy model with different parameter defaults. They do not implement distinct cognitive processes.
+- **Latent loadings from one paper**: Factor structure is from Lin & Ma (Nature Comms). Other papers may have different structures.
+- **LLM personas are priors, not evidence**: `agentPersona.ts` generates plausible profiles, not calibrated ones.
+- **No empirical validation yet**: Synthetic data has not been compared to any real human dataset.
 
-| Task | Category | DVs | Difficulty axis |
-|------|----------|-----|-----------------|
-| Tower of London | planning | moves, planning time | # moves (2-7) |
-| Four-in-a-Row | strategic planning | move quality, think time | board size |
-| Corsi Block | visuospatial WM | span, accuracy | sequence length (2-9) |
-| Rush Hour | constraint planning | moves, time, optimality | # blockers |
-| Stroop | cognitive control | RT, accuracy, interference | % congruent |
-| N-back | working memory | hits, false alarms, d' | n level (1-3) |
-| Likert Survey | survey | item responses, subscales | # items |
-| Forced-Choice Survey | survey | proportions, consistency | # options |
+## Roadmap (from senior review)
 
-v1 uses a shared generative scaffold per paradigmType (behavioral / survey) with paradigm-specific parameterization. Adding a task = adding a config object.
+### Phase 1: Gold Benchmark (highest leverage)
+- Pick ONE paradigm (Tower of London or Stroop)
+- Find ONE public human dataset (or use your own pilot data)
+- Report synthetic vs real: MAE, ICC, correlation structure agreement
+- This becomes the honesty backbone
 
-## Persona Bank (5 populations)
+### Phase 2: Faithful Task Implementations
+- Split "demo paradigms" (generic behavioral sim) from "paper-faithful paradigms" (task-specific models)
+- Tower of London: implement move-counting, state-space search depth
+- Stroop: implement congruency proportion effects, RT distribution shape matching
+- Label which are demo vs faithful in the UI
 
-| Persona | RT | Accuracy | Variability | Fatigue | Lapse | Survey bias |
-|---------|-----|----------|-------------|---------|-------|-------------|
-| College student | 1.0x | baseline | 1.0x | low | low | low acquiescence |
-| MTurk worker | 1.05x | -0.03 | 1.2x | medium | medium | moderate |
-| Older adult (65+) | 1.4x | -0.05 | 1.3x | high | low | high acquiescence |
-| Child (8-12) | 1.25x | -0.10 | 1.6x | high | high | extreme responding |
-| Clinical (ADHD) | 1.1x | -0.08 | 1.8x | high | very high | — |
+### Phase 3: Validation Layer
+- For each paradigm: expected vs observed summary statistics
+- Tolerance bands, not point estimates
+- CI coverage checks
 
-**These are illustrative multipliers for simulation, not population estimates.** Personas are editable priors — tunable assumptions for stress-testing designs, not empirical claims.
+### Phase 4: Academic gstack Skills
+- Portable slash commands: /prereg, /methods, /analysis, /review
+- Artifact outputs: preregistration section, methods paragraph, OSF manifest
+- Frozen seeds + git SHA per reproduction run
 
----
+## Current Architecture
 
-## Build Order
+```
+Landing → select tasks + personas + brief (or drop paper)
+    ↓
+Dispatch → instant simulation (shared latent profiles across battery)
+    ↓
+Report → analysis pipeline (Claude-planned, dynamically rendered)
+       → analysis chat (iterate with Claude)
+       → playable previews (Stroop, ToL, FIAR, Chess, Survey)
+       → peer review (simulated Reviewer 2)
+       → design editor (tweak params, re-simulate instantly)
+```
 
-### Phase 1: Types + Banks + Simulation + Metrics (pure computation, no UI)
-### Phase 2: AI layer (structured JSON) + State management
-### Phase 3: Report components (MetricCard, DistributionChart, PersonaComparison)
-### Phase 4: Pages (Landing with task picker, Dispatch 4-step, Report dashboard)
-### Phase 5: Deploy
+## Tech Stack
+- React 19 + TypeScript + Tailwind CSS v4 + Vite
+- Framer Motion for animations
+- Claude API for design proposals, analysis planning, peer review
+- Deterministic simulation engine (seeded PRNG, 91 tests)
+- Vercel deployment with serverless API proxy
 
-## Honesty Labels
-- Reports: "Synthetic pilots with tunable assumptions — for stress-testing designs, not scientific claims."
-- Personas: "Illustrative multipliers, not population estimates."
-- overallScore: "Heuristic composite — transparent weighted sum, not objective science."
+## Test Coverage: 91 tests
+- Simulation: RNG, behavioral trials, survey responses, participants, pilots, batteries
+- Metrics: mean, SD, CI, Cohen's d, Cronbach's alpha, ceiling/floor, SNR, outliers
+- Analysis pipeline: registry, executor, descriptive, reliability, effects, quality, correlation matrix, factor analysis
+- State: reducer actions (START_EXPERIMENT, START_BATTERY, UPDATE_BATTERY_TASK, etc.)
+- Integration: 5-task battery → full pipeline → verify shapes + non-trivial values

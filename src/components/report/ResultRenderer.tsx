@@ -133,6 +133,10 @@ export function ResultRenderer({ result }: { result: AnalysisResult }) {
       {result.interpretation && (
         <p className="text-[10px] text-text-3 mt-3 italic">{result.interpretation}</p>
       )}
+      <p className="text-[9px] text-text-4 mt-2 border-t border-orchid/5 pt-2">
+        synthetic data from parametric simulation — for experiment design iteration, not empirical claims.
+        task models share a generic behavioral generator; paradigm-specific cognitive models not yet implemented.
+      </p>
     </motion.div>
   );
 }

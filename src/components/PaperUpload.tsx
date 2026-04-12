@@ -121,7 +121,17 @@ export function PaperUpload({ onExtracted }: Props) {
         jsonStr = jsonStr.slice(firstBrace, lastBrace + 1);
       }
 
-      const parsed = JSON.parse(jsonStr);
+      let parsed: any;
+      try {
+        parsed = JSON.parse(jsonStr);
+      } catch {
+        // Claude refused or returned prose — not JSON
+        // Show Claude's actual response so user knows what happened
+        setStatus(`Claude said: "${raw.slice(0, 120)}..." — paste cleaner text or the abstract directly`);
+        setLoading(false);
+        return;
+      }
+
       const paradigmIds = parsed.paradigmIds ?? (parsed.paradigmId ? [parsed.paradigmId] : []);
       const result: ExtractedDesign = {
         paperTitle: parsed.paperTitle || 'Untitled',
@@ -135,7 +145,7 @@ export function PaperUpload({ onExtracted }: Props) {
       onExtracted(result);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'unknown error';
-      setStatus(`error: ${msg.slice(0, 150)} — try pasting the abstract text directly`);
+      setStatus(`error: ${msg.slice(0, 150)}`);
     } finally {
       setLoading(false);
     }
