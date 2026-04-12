@@ -13,9 +13,11 @@ interface ChatMessage {
   results?: AnalysisResult[];
 }
 
-function buildSystemPrompt(taskNames: string[], personaNames: string[], nDatasets: number) {
+function buildSystemPrompt(taskNames: string[], personaNames: string[], nDatasets: number, existingResultsSummary: string) {
   const steps = getAllSteps();
   return `You are an analysis agent for a behavioral research platform. You have ${nDatasets} simulated datasets in memory for these tasks: ${taskNames.join(', ')}. Populations: ${personaNames.join(', ')}.
+
+${existingResultsSummary ? `EXISTING ANALYSIS RESULTS (already computed):\n${existingResultsSummary}\n\nYou can reference these results when the user asks about conclusions or interpretations.` : ''}
 
 You can run these analysis steps (return their IDs in a JSON plan):
 ${steps.map(s => `- "${s.id}" — ${s.name} (${s.category}, requires: ${s.requires})`).join('\n')}
@@ -45,6 +47,7 @@ export function AnalysisChat() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const autoRan = useRef(false);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
@@ -68,6 +71,27 @@ export function AnalysisChat() {
 
   const taskNames = paradigms.map((p: any) => p.name);
   const personaNames = personas.map((p: any) => p.name);
+  const existingResults = session.analysisResults ?? [];
+
+  // Auto-run full analysis on first load if no results exist
+  useEffect(() => {
+    if (autoRan.current || datasets.length === 0 || existingResults.length > 0) return;
+    autoRan.current = true;
+
+    import('../../lib/analysis/registry').then(({ runAnalysisPipeline, defaultBatteryPlan, defaultSingleTaskPlan }) => {
+      const plan = datasets.length > 1 ? defaultBatteryPlan(datasets.length) : defaultSingleTaskPlan();
+      const results = runAnalysisPipeline(plan, { datasets, designs, paradigms, personas });
+
+      if (results.length > 0) {
+        dispatch({ type: 'SET_ANALYSIS_RESULTS', payload: results });
+        setMessages([{
+          role: 'assistant',
+          content: `auto-ran ${results.length} analyses on ${datasets.length} task(s) × ${personas.length} population(s). results are above. ask me to dig deeper, run specific analyses, or explain what you see.`,
+          results,
+        }]);
+      }
+    });
+  }, [datasets.length]);
 
   const handleSend = async (text?: string) => {
     const query = (text || input).trim();
@@ -83,7 +107,9 @@ export function AnalysisChat() {
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
           max_tokens: 500,
-          system: buildSystemPrompt(taskNames, personaNames, datasets.length),
+          system: buildSystemPrompt(taskNames, personaNames, datasets.length,
+            existingResults.map((r: any) => `${r.title}: ${r.type === 'text' ? r.data : `${r.type} with ${JSON.stringify(r.data).length} chars of data`}`).join('\n')
+          ),
           messages: [
             // Include conversation history so Claude has context
             ...messages.slice(-6).map(m => ({ role: m.role, content: m.content })),
