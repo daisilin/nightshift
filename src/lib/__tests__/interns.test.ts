@@ -91,13 +91,15 @@ describe('getInternSystemPrompt', () => {
 
 describe('buildRefinedBrief', () => {
   const makeSession = (findings: { text: string; feedback: string | null }[]): ResearchSession => ({
-    id: 's1', brief: 'test question', missions: [], reports: [{
+    id: 's1', brief: 'test question', paradigmId: 'stroop', personaIds: ['test'],
+    missions: [], reports: [{
       role: 'scout', summary: '', status: 'done',
       findings: findings.map((f, i) => ({
         id: `f${i}`, internRole: 'scout' as const, text: f.text, confidence: 0.8,
         feedback: f.feedback as any,
       })),
     }],
+    designReports: [], selectedDesignIndex: 0,
     synthesis: null, agreements: [], disagreements: [],
     openQuestions: ['what about X?'], nextMissions: [],
     createdAt: 0, completedAt: null, round: 1, previousSessionId: null,
