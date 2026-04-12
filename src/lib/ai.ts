@@ -1,14 +1,20 @@
-import type { Intern, InternRole } from '../context/types';
-import { getInternSystemPrompt, parseFindingsFromResponse } from './interns';
+import type { ExperimentDesign, PilotMetrics } from './types';
+import type { ParadigmDefinition, PersonaDefinition } from './types';
+import { INTERN_PROFILES } from './interns';
+import type { InternRole } from '../context/types';
 
-async function callClaude(system: string, user: string): Promise<string> {
+// ============================================================
+// LOW-LEVEL CLAUDE CALL
+// ============================================================
+
+async function callClaude(system: string, user: string, maxTokens = 1200): Promise<string> {
   try {
     const res = await fetch('/api/claude', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 800,
+        max_tokens: maxTokens,
         system,
         messages: [{ role: 'user', content: user }],
       }),
@@ -21,89 +27,108 @@ async function callClaude(system: string, user: string): Promise<string> {
   }
 }
 
-export interface InternResult {
-  role: InternRole;
-  summary: string;
-  findings: ReturnType<typeof parseFindingsFromResponse>;
-  raw: string;
-}
-
-export async function runIntern(intern: Intern): Promise<InternResult> {
-  const system = getInternSystemPrompt(intern);
-  const raw = await callClaude(system, `Research this: ${intern.mission}`);
-
-  if (!raw) {
-    return { role: intern.role, summary: 'Failed to complete research', findings: [], raw: '' };
-  }
-
-  const lines = raw.split('\n').filter(l => l.trim());
-  const summary = lines[0] || 'Research complete';
-  const findings = parseFindingsFromResponse(raw, intern.role);
-
-  return { role: intern.role, summary, findings, raw };
-}
-
-export async function runAllInterns(
-  interns: Intern[],
-  onProgress: (role: InternRole, status: 'working' | 'done') => void,
-): Promise<InternResult[]> {
-  onProgress(interns[0].role, 'working');
-  onProgress(interns[1].role, 'working');
-  onProgress(interns[2].role, 'working');
-
-  const results = await Promise.all(
-    interns.map(async (intern) => {
-      const result = await runIntern(intern);
-      onProgress(intern.role, 'done');
-      return result;
-    })
-  );
-
-  return results;
-}
-
-export async function synthesizeReports(brief: string, results: InternResult[]): Promise<{
-  synthesis: string;
-  agreements: string[];
-  disagreements: string[];
-  openQuestions: string[];
-  nextMissions: string[];
-}> {
-  const system = `You are a research manager synthesizing reports from 3 research interns.
-Return a JSON object with these keys:
-- "synthesis": 2-3 sentence executive summary
-- "agreements": array of 2-3 points where all interns agree
-- "disagreements": array of 1-2 points where they disagree
-- "openQuestions": array of 2-3 unresolved questions
-- "nextMissions": array of 2-3 suggested follow-up research directions
-
-Return ONLY valid JSON, no markdown code fences.`;
-
-  const user = `Research brief: "${brief}"
-
-Scout's report:
-${results.find(r => r.role === 'scout')?.raw || 'No data'}
-
-Analyst's report:
-${results.find(r => r.role === 'analyst')?.raw || 'No data'}
-
-Contrarian's report:
-${results.find(r => r.role === 'contrarian')?.raw || 'No data'}
-
-Synthesize these into a manager-quality briefing.`;
-
-  const raw = await callClaude(system, user);
-
+function parseJSON<T>(raw: string, fallback: T): T {
   try {
     const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-    return JSON.parse(cleaned);
+    return JSON.parse(cleaned) as T;
   } catch {
-    return {
-      synthesis: 'Research complete. Review individual intern reports below.',
-      agreements: ['Multiple interns found relevant information'],
-      disagreements: ['Approaches varied across interns'],
-      openQuestions: ['Further research may be needed'],
-      nextMissions: ['Consider deeper investigation into key findings'],
-    };
+    return fallback;
   }
 }
+
+// ============================================================
+// PROPOSE EXPERIMENT DESIGN
+// ============================================================
+
+export async function proposeDesign(
+  role: InternRole,
+  brief: string,
+  paradigm: ParadigmDefinition,
+  personas: PersonaDefinition[],
+): Promise<ExperimentDesign> {
+  const intern = INTERN_PROFILES[role];
+
+  const system = `You are ${intern.name}, a research intern designing behavioral experiments.
+Your approach: ${intern.description}
+
+You must return ONLY valid JSON matching this schema:
+{
+  "name": "string — short experiment name",
+  "params": ${paradigm.paradigmType === 'behavioral'
+    ? '{ "type": "behavioral", "difficulty": 0-1, "nTrials": 20-100, "nConditions": 2-4, "conditionLabels": ["string"...], "withinSubject": true/false, "rtRange": [min_ms, max_ms], "baseAccuracy": 0.5-0.95 }'
+    : '{ "type": "survey", "nItems": 10-40, "scalePoints": 2|5|7, "nSubscales": 1-5, "subscaleNames": ["string"...], "reverseCodedIndices": [int...] }'},
+  "nParticipantsPerPersona": 15-30,
+  "hypotheses": ["string", "string"],
+  "rationale": "1-2 sentences explaining your design choice"
+}
+
+Paradigm: ${paradigm.name} — ${paradigm.description}
+Populations to simulate: ${personas.map(p => `${p.name} (${p.description})`).join(', ')}
+
+${role === 'scout' ? 'Design a standard, well-established version of this paradigm. Prioritize proven approaches.' : ''}
+${role === 'analyst' ? 'Design a targeted version that maximizes the effect for the specific research question. Be creative with parameters.' : ''}
+${role === 'contrarian' ? 'Design a version that tests an alternative hypothesis or unexpected angle. Challenge the obvious approach.' : ''}
+
+Return ONLY the JSON object, no explanation.`;
+
+  const raw = await callClaude(system, `Research brief: "${brief}"\nParadigm: ${paradigm.name}\nPropose an experiment design.`);
+
+  const parsed = parseJSON(raw, {
+    name: `${intern.name}'s ${paradigm.name} design`,
+    params: paradigm.defaultParams,
+    nParticipantsPerPersona: 20,
+    hypotheses: ['Effect of condition on dependent variable'],
+    rationale: `Standard ${paradigm.name} design proposed by ${intern.name}.`,
+  });
+
+  return {
+    id: `design-${role}-${Date.now()}`,
+    paradigmId: paradigm.id,
+    personaIds: personas.map(p => p.id),
+    internRole: role,
+    name: parsed.name || `${intern.name}'s design`,
+    params: parsed.params?.type ? parsed.params : paradigm.defaultParams,
+    nParticipantsPerPersona: parsed.nParticipantsPerPersona || 20,
+    hypotheses: parsed.hypotheses || ['Effect of condition on DV'],
+    rationale: parsed.rationale || '',
+  };
+}
+
+// ============================================================
+// SYNTHESIZE PILOT RESULTS (interprets computed metrics)
+// ============================================================
+
+export async function synthesizePilotResults(
+  brief: string,
+  designs: ExperimentDesign[],
+  allMetrics: PilotMetrics[],
+): Promise<string> {
+  const system = `You are a research manager interpreting pilot experiment results.
+You receive COMPUTED metrics — do not invent numbers. Refer only to the numbers given.
+Write 3-4 sentences: which design looks best, any concerns (ceiling effects, low reliability, etc.),
+and what to try next. Be specific and cite the metric values.
+Keep it under 100 words. Use lowercase, be direct.`;
+
+  const metricsText = allMetrics.map((m, i) => {
+    const d = designs[i];
+    const personaSummary = m.byPersona.map(p =>
+      `${p.personaName}: ${p.metrics.map(met => `${met.name}=${met.value}${met.flag ? ` ⚠${met.flag}` : ''}`).join(', ')}`
+    ).join('\n    ');
+    return `Design "${d.name}" (${d.internRole}) — score: ${m.overallScore}/100, recommendation: ${m.recommendation}
+    ${personaSummary}`;
+  }).join('\n\n');
+
+  const raw = await callClaude(system, `Brief: "${brief}"\n\nPilot results:\n${metricsText}\n\nInterpret these results.`, 400);
+  return raw || `Three designs were tested. Best overall score: ${Math.max(...allMetrics.map(m => m.overallScore))}/100. Review per-persona metrics below for details.`;
+}
+
+// ============================================================
+// RUN FULL PIPELINE (propose → simulate → compute → synthesize)
+// ============================================================
+
+export interface PipelineResult {
+  design: ExperimentDesign;
+  metrics: PilotMetrics;
+}
+
+export type DispatchStatus = 'proposing' | 'simulating' | 'computing' | 'done' | 'error';

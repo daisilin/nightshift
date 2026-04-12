@@ -2,135 +2,111 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
-import { createMissions } from '../lib/interns';
+import { taskBank } from '../data/taskBank';
+import { personaBank } from '../data/personaBank';
 import { stagger, staggerItem } from '../lib/animations';
-
-const examples = [
-  'what are the best tools for building a portfolio site in 2026?',
-  'how are top startups thinking about AI-native onboarding?',
-  'what does the competitive landscape look like for AI coding tools?',
-  'what are the most promising approaches to AI-assisted learning?',
-  'how do successful indie hackers find their first 100 users?',
-];
 
 export function LandingPage() {
   const nav = useNavigate();
   const { state, dispatch } = useApp();
   const [brief, setBrief] = useState('');
+  const [selectedTask, setSelectedTask] = useState(taskBank[0].id);
+  const [selectedPersonas, setSelectedPersonas] = useState(['college-student', 'mturk-worker', 'older-adult']);
 
-  const submit = (text: string) => {
-    const t = text.trim();
-    if (!t) return;
-    const missions = createMissions(t);
-    dispatch({ type: 'START_SESSION', payload: { brief: t, missions } });
+  const togglePersona = (id: string) => {
+    setSelectedPersonas(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]);
+  };
+
+  const go = () => {
+    const b = brief.trim();
+    if (!b || selectedPersonas.length === 0) return;
+    dispatch({ type: 'START_EXPERIMENT', payload: { brief: b, paradigmId: selectedTask, personaIds: selectedPersonas } });
     nav('/dispatch');
   };
 
   return (
-    <div className="min-h-screen relative" style={{ background: 'linear-gradient(160deg, #FFFAF7 0%, #FFEEE6 30%, #F5E6F0 60%, #E8EEF5 100%)' }}>
-      {/* Decorative blobs */}
-      <div className="pointer-events-none fixed top-[-10%] right-[-5%] w-[400px] h-[400px] opacity-[0.06]"
-        style={{ background: 'radial-gradient(circle, #D9B8E8, transparent 70%)', animation: 'morph 12s ease-in-out infinite', borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%' }} />
-      <div className="pointer-events-none fixed bottom-[-10%] left-[-5%] w-[350px] h-[350px] opacity-[0.05]"
-        style={{ background: 'radial-gradient(circle, #F3CDB2, transparent 70%)', animation: 'morph 15s ease-in-out infinite reverse', borderRadius: '60% 40% 30% 70% / 60% 30% 70% 40%' }} />
-
-      <div className="relative z-10 max-w-2xl mx-auto px-6 pt-20 pb-16">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(160deg, #FFFAF7 0%, #FFEEE6 30%, #F5E6F0 60%, #E8EEF5 100%)' }}>
+      <div className="max-w-2xl mx-auto px-6 pt-14 pb-16">
         <motion.div variants={stagger} initial="initial" animate="animate">
           {/* Header */}
-          <motion.div variants={staggerItem} className="mb-12">
-            <span className="text-sm font-mono font-light text-text-3 tracking-wider">nightshift</span>
+          <motion.div variants={staggerItem} className="mb-8">
+            <span className="text-sm font-mono font-light text-text-3">nightshift</span>
+            <h1 className="text-3xl sm:text-4xl font-heading leading-[1.1] mt-2">
+              overnight experiment<br />
+              <span className="bg-gradient-to-r from-orchid via-rose to-peach bg-clip-text text-transparent">iteration engine</span>
+            </h1>
+            <p className="text-text-2 mt-3 max-w-lg">
+              pick a paradigm, pick populations, describe what you're testing.
+              interns propose designs, simulate pilots, compute metrics.
+            </p>
           </motion.div>
 
-          {/* Hero */}
-          <motion.h1 variants={staggerItem} className="text-4xl sm:text-5xl md:text-6xl font-heading leading-[1.1] mb-4">
-            agent interns that
-            <br />
-            <span className="bg-gradient-to-r from-orchid via-rose to-peach bg-clip-text text-transparent">
-              work while you sleep
-            </span>
-          </motion.h1>
+          {/* Task Bank */}
+          <motion.div variants={staggerItem} className="mb-5">
+            <label className="text-xs font-mono text-text-3 uppercase tracking-wider mb-2 block">paradigm</label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {taskBank.map(t => (
+                <button key={t.id} onClick={() => setSelectedTask(t.id)}
+                  className={`card p-3 text-left cursor-pointer transition-all ${selectedTask === t.id ? 'ring-2 ring-orchid/40 bg-orchid/5' : 'hover:border-orchid/20'}`}>
+                  <span className="text-lg">{t.emoji}</span>
+                  <div className="text-xs font-semibold text-text mt-1">{t.name}</div>
+                  <div className="text-[10px] text-text-3">{t.category}</div>
+                </button>
+              ))}
+            </div>
+          </motion.div>
 
-          <motion.p variants={staggerItem} className="text-lg text-text-2 leading-relaxed mb-10 max-w-lg">
-            give a messy research brief. three interns explore it from different angles overnight.
-            wake up to a clean visual report. steer and iterate daily.
-          </motion.p>
+          {/* Personas */}
+          <motion.div variants={staggerItem} className="mb-5">
+            <label className="text-xs font-mono text-text-3 uppercase tracking-wider mb-2 block">populations</label>
+            <div className="flex flex-wrap gap-2">
+              {personaBank.map(p => (
+                <button key={p.id} onClick={() => togglePersona(p.id)}
+                  className={`px-3 py-2 rounded-xl text-xs cursor-pointer transition-all border ${
+                    selectedPersonas.includes(p.id) ? 'bg-orchid/10 border-orchid/25 text-text' : 'bg-white border-orchid/8 text-text-3'}`}>
+                  {p.emoji} {p.name}
+                </button>
+              ))}
+            </div>
+            <p className="text-[10px] text-text-4 mt-1 italic">illustrative multipliers, not population estimates</p>
+          </motion.div>
 
-          {/* Brief input */}
-          <motion.div variants={staggerItem}>
-            <div className="card p-2 mb-3">
-              <textarea
-                value={brief}
-                onChange={e => setBrief(e.target.value)}
-                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(brief); }}}
-                placeholder="what do you want to figure out?"
-                rows={3}
-                className="w-full bg-transparent px-4 py-3 text-[17px] text-text placeholder-text-4 resize-none focus:outline-none font-body"
-                autoFocus
-              />
+          {/* Brief */}
+          <motion.div variants={staggerItem} className="mb-4">
+            <label className="text-xs font-mono text-text-3 uppercase tracking-wider mb-2 block">research brief</label>
+            <div className="card p-2">
+              <textarea value={brief} onChange={e => setBrief(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); go(); }}}
+                placeholder="what are you testing? e.g., 'does planning improve with practice under time pressure?'"
+                rows={3} className="w-full bg-transparent px-4 py-3 text-[15px] text-text placeholder-text-4 resize-none focus:outline-none" autoFocus />
               <div className="flex justify-between items-center px-4 pb-2">
-                <span className="text-xs text-text-4">enter to dispatch</span>
-                <motion.button
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.96 }}
-                  onClick={() => submit(brief)}
-                  disabled={!brief.trim()}
+                <span className="text-xs text-text-4">{taskBank.find(t => t.id === selectedTask)?.name} · {selectedPersonas.length} pop.</span>
+                <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={go}
+                  disabled={!brief.trim() || selectedPersonas.length === 0}
                   className="px-5 py-2 rounded-xl text-sm font-semibold text-white cursor-pointer disabled:opacity-30 transition-all"
-                  style={{ background: brief.trim() ? 'linear-gradient(135deg, #B07CC6, #D48BB5)' : 'rgba(176,124,198,0.15)' }}
-                >
+                  style={{ background: brief.trim() ? 'linear-gradient(135deg, #B07CC6, #D48BB5)' : 'rgba(176,124,198,0.15)' }}>
                   dispatch interns 🌙
                 </motion.button>
               </div>
             </div>
           </motion.div>
 
-          {/* Example briefs */}
-          <motion.div variants={staggerItem} className="flex flex-wrap gap-2 mt-4">
-            {examples.map(ex => (
-              <button
-                key={ex}
-                onClick={() => submit(ex)}
-                className="px-3 py-1.5 rounded-full text-xs text-text-3 border border-orchid/10 bg-white/60 hover:bg-orchid/8 hover:text-text-2 transition-all cursor-pointer"
-              >
-                {ex.slice(0, 45)}...
-              </button>
-            ))}
-          </motion.div>
-
           {/* Past sessions */}
           {state.sessions.length > 0 && (
-            <motion.div variants={staggerItem} className="mt-12 pt-8 border-t border-orchid/10">
-              <h3 className="text-sm font-mono font-light text-text-3 mb-3">past research</h3>
+            <motion.div variants={staggerItem} className="mt-8 pt-6 border-t border-orchid/10">
+              <h3 className="text-xs font-mono text-text-3 mb-2">past research</h3>
               {state.sessions.slice(-3).reverse().map(s => (
-                <div key={s.id} className="card p-4 mb-2 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-text font-medium">{s.brief.slice(0, 60)}{s.brief.length > 60 ? '...' : ''}</p>
-                    <p className="text-xs text-text-3 mt-0.5">round {s.round} · {new Date(s.createdAt).toLocaleDateString()}</p>
-                  </div>
-                  <span className="text-xs text-sage font-mono">done</span>
+                <div key={s.id} className="card p-3 mb-2">
+                  <p className="text-sm text-text">{s.brief.slice(0, 60)}{s.brief.length > 60 ? '...' : ''}</p>
+                  <p className="text-[10px] text-text-3 mt-0.5">round {s.round} · {new Date(s.createdAt).toLocaleDateString()}</p>
                 </div>
               ))}
             </motion.div>
           )}
-
-          {/* Intern intro */}
-          <motion.div variants={staggerItem} className="mt-12 grid grid-cols-3 gap-3">
-            {[
-              { emoji: '🔭', name: 'Scout', desc: 'maps the landscape', color: '#8BACD4' },
-              { emoji: '🔬', name: 'Analyst', desc: 'goes deep', color: '#B07CC6' },
-              { emoji: '🪞', name: 'Contrarian', desc: 'challenges assumptions', color: '#E8A87C' },
-            ].map(i => (
-              <div key={i.name} className="card p-4 text-center">
-                <div className="text-2xl mb-2">{i.emoji}</div>
-                <div className="text-sm font-semibold" style={{ color: i.color }}>{i.name}</div>
-                <div className="text-xs text-text-3 mt-0.5">{i.desc}</div>
-              </div>
-            ))}
-          </motion.div>
         </motion.div>
       </div>
-
-      <footer className="relative z-10 text-center pb-6 text-xs text-text-4">
-        a prototype by <a href="https://daisilin.github.io" className="underline hover:text-text-3">daisy lin</a> · exploring agent interfaces for human capability
+      <footer className="text-center pb-6 text-xs text-text-4">
+        by <a href="https://daisilin.github.io" className="underline hover:text-text-3">daisy lin</a> · compress experiment iteration into nights
       </footer>
     </div>
   );
