@@ -44,7 +44,7 @@ export function LandingPage() {
     } else {
       dispatch({ type: 'START_BATTERY', payload: { brief: b, paradigmIds: selectedTasks, personaIds: selectedPersonas } });
     }
-    nav('/dispatch');
+    nav(simMode === 'llm' ? '/dispatch?mode=llm' : '/dispatch');
   };
 
   const sendToDesignAgent = async (text?: string) => {

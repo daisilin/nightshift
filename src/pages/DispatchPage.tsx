@@ -23,6 +23,10 @@ export function DispatchPage() {
   const ran = useRef(false);
   const [llmProgress, setLlmProgress] = useState({ current: 0, total: 0, status: '' });
 
+  // Check URL param for LLM mode
+  const searchParams = new URLSearchParams(window.location.search);
+  const isLLMFromUrl = searchParams.get('mode') === 'llm';
+
   useEffect(() => {
     if (!session || ran.current || state.step !== 'dispatch') return;
     ran.current = true;
@@ -33,7 +37,7 @@ export function DispatchPage() {
 
     const battery = session.battery ?? [];
     const isBattery = battery.length > 0;
-    const isLLM = (session as any).simulationMode === 'llm';
+    const isLLM = isLLMFromUrl || (session as any).simulationMode === 'llm';
 
     (async () => {
       // === LLM SIMULATION MODE ===
