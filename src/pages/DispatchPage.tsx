@@ -61,6 +61,7 @@ export function DispatchPage() {
 
         const allDatasets: SimulatedDataset[] = [];
         const allDesigns: ExperimentDesign[] = [];
+        const allMetrics: any[] = [];
         const paradigms: any[] = [];
 
         for (const task of llmBattery) {
@@ -122,10 +123,10 @@ export function DispatchPage() {
           allDatasets.push(dataset);
 
           const metrics = computePilotMetrics(design, dataset, personaNames);
+          allMetrics.push(metrics);
           if (isBattery) {
             dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: task.paradigmId, update: { status: 'done', design, dataset, metrics } } });
           } else {
-            // Single task — store in designReports so report page can find it
             dispatch({ type: 'UPDATE_DESIGN_REPORT', payload: { role: 'scout', report: { status: 'done', design, dataset, metrics } } });
           }
         }
@@ -135,8 +136,11 @@ export function DispatchPage() {
         const analysisResults = runAnalysisPipeline(plan, { datasets: allDatasets, designs: allDesigns, paradigms, personas });
         dispatch({ type: 'SET_ANALYSIS_RESULTS', payload: analysisResults });
 
-        const synthesis = await synthesizePilotResults(session.brief, allDesigns, []);
+        const synthesis = await synthesizePilotResults(session.brief, allDesigns, allMetrics);
         dispatch({ type: 'SET_SYNTHESIS', payload: { synthesis, agreements: [], disagreements: [], openQuestions: [], nextMissions: [] } });
+
+        const review = await generatePeerReview(session.brief, allDesigns, allMetrics);
+        dispatch({ type: 'SET_PEER_REVIEW', payload: review });
 
         dispatch({ type: 'SET_STEP', payload: 'report' });
         nav('/report');
