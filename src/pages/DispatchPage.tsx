@@ -263,11 +263,7 @@ Only include fields that the feedback asks to change. Return {} if no param chan
     })();
   }, [session, dispatch, nav]);
 
-  // No session = shouldn't be here, go back to landing
-  if (!session) {
-    nav('/');
-    return null;
-  }
+  if (!session) return <div className="min-h-screen flex items-center justify-center text-text-3">loading...</div>;
 
   const battery = session.battery ?? [];
   const isBattery = battery.length > 0;

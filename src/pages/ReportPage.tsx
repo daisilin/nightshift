@@ -22,7 +22,7 @@ export function ReportPage() {
   const [previewing, setPreviewing] = useState(false);
   const [iterationFeedback, setIterationFeedback] = useState('');
 
-  if (!session) { nav('/'); return null; }
+  if (!session) return <div className="min-h-screen flex items-center justify-center text-text-3">loading...</div>;
 
   const battery = session.battery ?? [];
   const selectedPersonas = session.personaIds
