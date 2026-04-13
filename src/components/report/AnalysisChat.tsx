@@ -105,9 +105,30 @@ export function AnalysisChat() {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
-          max_tokens: 500,
+          max_tokens: 800,
           system: buildSystemPrompt(taskNames, personaNames, datasets.length,
-            existingResults.map((r: any) => `${r.title}: ${r.type === 'text' ? r.data : `${r.type} with ${JSON.stringify(r.data).length} chars of data`}`).join('\n'),
+            // Include ACTUAL data from results, not just type summaries
+            existingResults.map((r: any) => {
+              if (r.type === 'text') return `${r.title}: ${r.data}`;
+              if (r.type === 'table' && r.data?.rows) {
+                const preview = r.data.rows.slice(0, 5).map((row: any[]) => row.join(' | ')).join('\n');
+                return `${r.title} (${r.data.rows.length} rows):\n${r.data.headers?.join(' | ') || ''}\n${preview}`;
+              }
+              if (r.type === 'matrix' && r.data?.values) {
+                const labels = r.data.labels || [];
+                const rows = r.data.values.map((row: number[], i: number) =>
+                  `${labels[i] || i}: ${row.map((v: number) => v.toFixed(2)).join(', ')}`
+                ).join('\n');
+                return `${r.title}:\n${rows}`;
+              }
+              if (r.type === 'factor-loadings' && r.data?.loadings) {
+                const rows = r.data.tasks.map((t: string, i: number) =>
+                  `${t}: ${r.data.loadings[i].map((v: number) => v.toFixed(2)).join(', ')}`
+                ).join('\n');
+                return `${r.title}:\n${rows}\nVariance: ${r.data.varianceExplained?.join('%, ')}%`;
+              }
+              return `${r.title}: ${JSON.stringify(r.data).slice(0, 200)}`;
+            }).join('\n\n'),
             session.paperContext || ''
           ),
           messages: [

@@ -127,8 +127,15 @@ Be conversational. Explain WHY. Suggest variants and point out design gaps.`,
                 if (valid.length > 0) setSelectedTasks(valid);
                 if (extracted.personaIds?.length > 0) setSelectedPersonas(extracted.personaIds);
                 setBrief(extracted.brief || '');
-                // Store paper context locally — will be set on session after dispatch
-                setPaperContext(`Paper: "${extracted.paperTitle}"\nBrief: ${extracted.brief}\nKey details: ${extracted.keyDetails}\nTasks: ${valid.join(', ')}`);
+                // Store FULL paper text for analysis agent — not just the extracted summary
+                const fullContext = [
+                  `Paper: "${extracted.paperTitle}"`,
+                  `Brief: ${extracted.brief}`,
+                  `Key details: ${extracted.keyDetails}`,
+                  `Tasks detected: ${valid.join(', ')}`,
+                  extracted.rawText ? `\nFull paper text:\n${extracted.rawText}` : '',
+                ].filter(Boolean).join('\n');
+                setPaperContext(fullContext);
                 setDesignChat([{ role: 'assistant', content: `from "${extracted.paperTitle}": ${valid.length} task(s) detected. ${extracted.keyDetails || ''}\n\nadjust below or ask me to modify.` }]);
                 setMode('design');
               }} />
