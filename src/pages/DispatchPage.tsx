@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
@@ -7,9 +7,12 @@ import { proposeDesign, synthesizePilotResults, generatePeerReview, planAnalysis
 import { simulatePilot, simulateBattery } from '../lib/simulation';
 import { computePilotMetrics } from '../lib/metrics';
 import { runAnalysisPipeline, defaultBatteryPlan, defaultSingleTaskPlan } from '../lib/analysis/registry';
+import { runLLMTrial } from '../lib/llmParticipant';
+import { generatePool, type SimulatedPerson } from '../lib/participantPool';
+import { buildTaskPrompt } from '../lib/personaPrompts';
 import { getParadigm } from '../data/taskBank';
 import { personaBank, getPersona } from '../data/personaBank';
-import type { ExperimentDesign } from '../lib/types';
+import type { ExperimentDesign, SimulatedDataset, SimulatedParticipant, SimulatedTrial } from '../lib/types';
 import type { InternRole } from '../context/types';
 import { stagger, staggerItem } from '../lib/animations';
 
@@ -18,9 +21,9 @@ export function DispatchPage() {
   const { state, dispatch } = useApp();
   const session = state.currentSession;
   const ran = useRef(false);
+  const [llmProgress, setLlmProgress] = useState({ current: 0, total: 0, status: '' });
 
   useEffect(() => {
-    // Only run if we have a session AND we were explicitly sent here (step === dispatch)
     if (!session || ran.current || state.step !== 'dispatch') return;
     ran.current = true;
 
@@ -30,10 +33,99 @@ export function DispatchPage() {
 
     const battery = session.battery ?? [];
     const isBattery = battery.length > 0;
+    const isLLM = (session as any).simulationMode === 'llm';
 
     (async () => {
+      // === LLM SIMULATION MODE ===
+      if (isLLM && isBattery) {
+        const nParticipants = 5; // small N for LLM (each is an API call)
+        const paradigmIds = battery.map(t => t.paradigmId);
+        const totalCalls = paradigmIds.length * nParticipants * 3; // 3 trials per task per participant
+        let callsDone = 0;
+
+        setLlmProgress({ current: 0, total: totalCalls, status: 'generating participant pool...' });
+
+        // Generate diverse pool
+        const popType = session.personaIds[0] || 'college-student';
+        const pool = generatePool(popType, nParticipants);
+
+        const allDatasets: SimulatedDataset[] = [];
+        const allDesigns: ExperimentDesign[] = [];
+        const paradigms: any[] = [];
+
+        for (const task of battery) {
+          const paradigm = getParadigm(task.paradigmId);
+          if (!paradigm) continue;
+          paradigms.push(paradigm);
+
+          dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: task.paradigmId, update: { status: 'simulating' } } });
+
+          const design: ExperimentDesign = {
+            id: `llm-${task.paradigmId}-${Date.now()}`, name: paradigm.name,
+            paradigmId: task.paradigmId, personaIds: session.personaIds,
+            params: paradigm.defaultParams, nParticipantsPerPersona: nParticipants,
+            hypotheses: [], rationale: 'LLM-based simulation', internRole: 'scout',
+          };
+          allDesigns.push(design);
+
+          // Run LLM trials for each participant
+          const participants: SimulatedParticipant[] = [];
+          const taskPrompt = buildTaskPrompt(task.paradigmId, paradigm.description);
+
+          for (let pi = 0; pi < nParticipants; pi++) {
+            const person = pool[pi];
+            setLlmProgress({ current: callsDone, total: totalCalls, status: `${paradigm.name}: participant ${pi + 1}/${nParticipants} (${person.demographics.gender}, ${person.demographics.age})` });
+
+            const trials: SimulatedTrial[] = [];
+            // Run 3 trials per task (enough for LLM, each is an API call)
+            for (let ti = 0; ti < 3; ti++) {
+              const result = await runLLMTrial({
+                taskDescription: taskPrompt,
+                stimulus: `Trial ${ti + 1}: ${paradigm.description}. Respond as if you are actually doing this task.`,
+                personaPrompt: person.llmPrompt,
+                responseFormat: '{ "response": number (1-5 for survey, 0 or 1 for accuracy), "confidence": number (0-1), "reaction_time_estimate": "fast/medium/slow" }',
+              });
+
+              const rtEstimate = result.response?.reaction_time_estimate === 'fast' ? 500 : result.response?.reaction_time_estimate === 'slow' ? 2000 : 1000;
+              trials.push({
+                trialIndex: ti,
+                condition: paradigm.defaultParams.type === 'behavioral' ? (paradigm.defaultParams as any).conditionLabels?.[ti % 2] || 'default' : 'survey',
+                rt: rtEstimate + result.latencyMs * 0.1, // API latency as proxy
+                response: result.response?.response ?? Math.round(Math.random()),
+                correct: result.response?.response === 1 ? true : result.response?.response === 0 ? false : null,
+              });
+              callsDone++;
+              setLlmProgress({ current: callsDone, total: totalCalls, status: `${paradigm.name}: participant ${pi + 1}, trial ${ti + 1}/3` });
+            }
+
+            participants.push({
+              id: person.id, personaId: popType,
+              condition: null, trials, seed: 0,
+            });
+          }
+
+          const dataset: SimulatedDataset = { designId: design.id, participants, masterSeed: 0, generatedAt: Date.now() };
+          allDatasets.push(dataset);
+
+          const metrics = computePilotMetrics(design, dataset, personaNames);
+          dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: task.paradigmId, update: { status: 'done', design, dataset, metrics } } });
+        }
+
+        // Run analysis
+        const plan = defaultBatteryPlan(allDatasets.length);
+        const analysisResults = runAnalysisPipeline(plan, { datasets: allDatasets, designs: allDesigns, paradigms, personas });
+        dispatch({ type: 'SET_ANALYSIS_RESULTS', payload: analysisResults });
+
+        const synthesis = await synthesizePilotResults(session.brief, allDesigns, []);
+        dispatch({ type: 'SET_SYNTHESIS', payload: { synthesis, agreements: [], disagreements: [], openQuestions: [], nextMissions: [] } });
+
+        dispatch({ type: 'SET_STEP', payload: 'report' });
+        nav('/report');
+        return;
+      }
+
       if (isBattery) {
-        // === BATTERY MODE: INSTANT with SHARED latent profiles ===
+        // === PARAMETRIC BATTERY MODE ===
         // Same simulated participants take all tasks (realistic cross-task correlations)
         const allDesigns: ExperimentDesign[] = [];
         const paradigms: any[] = [];
@@ -188,8 +280,22 @@ Only include fields that the feedback asks to change. Return {} if no param chan
           <span className="text-sm font-mono font-light text-text-3">nightshift</span>
         </motion.div>
         <motion.h2 variants={staggerItem} className="text-xl font-heading mb-2 text-text">
-          {isBattery ? `simulating ${battery.length}-task battery...` : 'designing experiments...'}
+          {(session as any).simulationMode === 'llm'
+            ? `LLM agents running ${battery.length || 1} task(s)...`
+            : isBattery ? `simulating ${battery.length}-task battery...` : 'designing experiments...'}
         </motion.h2>
+
+        {/* LLM progress bar */}
+        {llmProgress.total > 0 && (
+          <motion.div variants={staggerItem} className="mb-4">
+            <div className="h-2 bg-orchid/10 rounded-full overflow-hidden mb-1">
+              <motion.div className="h-full rounded-full bg-orchid"
+                animate={{ width: `${(llmProgress.current / llmProgress.total) * 100}%` }}
+                transition={{ duration: 0.3 }} />
+            </div>
+            <p className="text-[10px] text-text-3">{llmProgress.status} ({llmProgress.current}/{llmProgress.total} calls)</p>
+          </motion.div>
+        )}
         <motion.p variants={staggerItem} className="text-sm text-text-3 mb-6">
           {session.brief.slice(0, 80)}{session.brief.length > 80 ? '...' : ''}
         </motion.p>

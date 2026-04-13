@@ -22,36 +22,21 @@ interface Props {
 }
 
 const SYSTEM_PROMPT = `You extract experimental designs from academic papers.
-Read the paper text carefully. Identify the SPECIFIC experimental paradigm(s) used.
+Read the paper carefully — especially the methods/procedure section.
 
 Return ONLY valid JSON:
 {
-  "paperTitle": "full title of the paper",
-  "brief": "one sentence describing the main experiment — be specific about the task",
-  "paradigmIds": ["task-id", ...] — ALL tasks used in the paper,
-  "personaIds": ["college-student"] by default — add others if the paper studies specific populations,
-  "keyDetails": "2-3 sentences about: number of participants, number of trials, conditions, key measures"
+  "paperTitle": "full title",
+  "brief": "one sentence: what was studied and how",
+  "paradigmIds": ["id", ...],
+  "personaIds": ["college-student"] default,
+  "keyDetails": "N participants, N trials, conditions, key DVs"
 }
 
-Available task IDs and what they match:
-- "maze-construal" — maze navigation, spatial planning, route planning, obstacle avoidance, mental map tasks
-- "tower-of-london" — disc rearrangement, Tower of Hanoi, sequential planning with fixed goals
-- "four-in-a-row" — board games, strategic games, adversarial planning, tic-tac-toe variants
-- "rush-hour" — sliding puzzles, constraint satisfaction, spatial reasoning puzzles
-- "corsi-block" — spatial span, visuospatial working memory, block tapping
-- "n-back" — working memory updating, change detection, sustained attention
-- "stroop" — cognitive control, inhibition, interference, WCST, go/no-go, flanker
-- "chess" — chess puzzles, chess tactics, expert decision-making
-- "two-step" — sequential decision-making, model-based vs model-free, reinforcement learning tasks
-- "likert-survey" — questionnaires, Likert scales, self-report measures
-- "forced-choice" — binary decisions, preference tasks, forced-choice paradigms
+Available IDs: maze-construal, tower-of-london, four-in-a-row, rush-hour, corsi-block, n-back, stroop, chess, two-step, likert-survey, forced-choice
 
-IMPORTANT:
-- Read the actual methods/procedure, not just the abstract
-- A paper about "maze navigation" should map to "maze-construal", NOT "tower-of-london"
-- A paper about "value-guided construal" in mazes should map to "maze-construal"
-- If the paper uses MULTIPLE tasks, list ALL of them
-- If uncertain, pick the task that most closely matches the PROCEDURE described
+Pick whichever task(s) best match what participants ACTUALLY DID in the experiments.
+If the paper uses multiple tasks, list all of them.
 Return ONLY JSON.`;
 
 /** Extract text from PDF using PDF.js (the real library, not a hack) */
