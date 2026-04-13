@@ -27,6 +27,7 @@ export function LandingPage() {
   const [exploringTask, setExploringTask] = useState<string | null>(null);
   const [chatLoading, setChatLoading] = useState(false);
   const [simMode, setSimMode] = useState<'parametric' | 'llm'>('parametric');
+  const [nParticipants, setNParticipants] = useState(20);
 
   const toggleTask = (id: string) => setSelectedTasks(prev => prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]);
   const togglePersona = (id: string) => setSelectedPersonas(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]);
@@ -39,7 +40,10 @@ export function LandingPage() {
     } else {
       dispatch({ type: 'START_BATTERY', payload: { brief: b, paradigmIds: selectedTasks, personaIds: selectedPersonas } });
     }
-    nav(simMode === 'llm' ? '/dispatch?mode=llm' : '/dispatch');
+    const params = new URLSearchParams();
+    if (simMode === 'llm') params.set('mode', 'llm');
+    params.set('n', String(nParticipants));
+    nav(`/dispatch?${params.toString()}`);
   };
 
   const sendToDesignAgent = async (text?: string) => {
@@ -251,17 +255,31 @@ Be conversational. Explain WHY. Suggest variants and point out design gaps.`,
                 </div>
               )}
 
-              {/* Simulation mode toggle */}
-              <div className="flex items-center gap-3">
-                <span className="text-[10px] text-text-3">simulation:</span>
-                <button onClick={() => setSimMode('parametric')}
-                  className={`px-2.5 py-1 rounded-lg text-[10px] cursor-pointer border ${simMode === 'parametric' ? 'bg-orchid/10 border-orchid/25 text-text' : 'border-orchid/8 text-text-3'}`}>
-                  parametric (instant)
-                </button>
-                <button onClick={() => setSimMode('llm')}
-                  className={`px-2.5 py-1 rounded-lg text-[10px] cursor-pointer border ${simMode === 'llm' ? 'bg-orchid/10 border-orchid/25 text-text' : 'border-orchid/8 text-text-3'}`}>
-                  LLM agents (slower, richer)
-                </button>
+              {/* Simulation settings */}
+              <div className="card p-3 space-y-2">
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] text-text-3">simulation:</span>
+                  <button onClick={() => setSimMode('parametric')}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] cursor-pointer border ${simMode === 'parametric' ? 'bg-orchid/10 border-orchid/25 text-text' : 'border-orchid/8 text-text-3'}`}>
+                    parametric (instant)
+                  </button>
+                  <button onClick={() => setSimMode('llm')}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] cursor-pointer border ${simMode === 'llm' ? 'bg-orchid/10 border-orchid/25 text-text' : 'border-orchid/8 text-text-3'}`}>
+                    LLM agents (slower, richer)
+                  </button>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] text-text-3">participants:</span>
+                  {(simMode === 'llm' ? [3, 5, 10] : [20, 50, 100, 500]).map(n => (
+                    <button key={n} onClick={() => setNParticipants(n)}
+                      className={`px-2 py-0.5 rounded text-[10px] cursor-pointer border ${nParticipants === n ? 'bg-orchid/10 border-orchid/25 text-text' : 'border-orchid/8 text-text-3'}`}>
+                      {n}
+                    </button>
+                  ))}
+                  <span className="text-[10px] text-text-4">
+                    {simMode === 'llm' ? `~${nParticipants * selectedTasks.length * 3 * 1.5}s` : 'instant'}
+                  </span>
+                </div>
               </div>
 
               {/* Dispatch */}

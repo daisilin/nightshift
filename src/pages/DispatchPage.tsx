@@ -26,6 +26,7 @@ export function DispatchPage() {
   // Check URL param for LLM mode
   const searchParams = new URLSearchParams(window.location.search);
   const isLLMFromUrl = searchParams.get('mode') === 'llm';
+  const nFromUrl = parseInt(searchParams.get('n') || '20', 10);
 
   useEffect(() => {
     if (!session || ran.current) return;
@@ -47,7 +48,7 @@ export function DispatchPage() {
           paradigmId: session.paradigmId,
           design: null, dataset: null, metrics: null, status: 'pending' as const,
         }];
-        const nParticipants = 5; // small N for LLM (each is an API call)
+        const nParticipants = isLLM ? Math.min(nFromUrl, 10) : nFromUrl; // cap LLM at 10
         const paradigmIds = llmBattery.map(t => t.paradigmId);
         const totalCalls = llmBattery.length * nParticipants * 3; // 3 trials per task per participant
         let callsDone = 0;
@@ -67,7 +68,9 @@ export function DispatchPage() {
           if (!paradigm) continue;
           paradigms.push(paradigm);
 
-          dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: task.paradigmId, update: { status: 'simulating' } } });
+          if (isBattery) {
+            dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: task.paradigmId, update: { status: 'simulating' } } });
+          }
 
           const design: ExperimentDesign = {
             id: `llm-${task.paradigmId}-${Date.now()}`, name: paradigm.name,
@@ -117,11 +120,16 @@ export function DispatchPage() {
           allDatasets.push(dataset);
 
           const metrics = computePilotMetrics(design, dataset, personaNames);
-          dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: task.paradigmId, update: { status: 'done', design, dataset, metrics } } });
+          if (isBattery) {
+            dispatch({ type: 'UPDATE_BATTERY_TASK', payload: { paradigmId: task.paradigmId, update: { status: 'done', design, dataset, metrics } } });
+          } else {
+            // Single task — store in designReports so report page can find it
+            dispatch({ type: 'UPDATE_DESIGN_REPORT', payload: { role: 'scout', report: { status: 'done', design, dataset, metrics } } });
+          }
         }
 
         // Run analysis
-        const plan = defaultBatteryPlan(allDatasets.length);
+        const plan = allDatasets.length > 1 ? defaultBatteryPlan(allDatasets.length) : defaultSingleTaskPlan();
         const analysisResults = runAnalysisPipeline(plan, { datasets: allDatasets, designs: allDesigns, paradigms, personas });
         dispatch({ type: 'SET_ANALYSIS_RESULTS', payload: analysisResults });
 
@@ -188,7 +196,7 @@ Only include fields that the feedback asks to change. Return {} if no param chan
             paradigmId: task.paradigmId,
             personaIds: session.personaIds,
             params,
-            nParticipantsPerPersona: paramOverrides?.nParticipantsPerPersona ?? 20,
+            nParticipantsPerPersona: paramOverrides?.nParticipantsPerPersona ?? nFromUrl,
             hypotheses: [`Effect of condition on ${paradigm.dependentVariables[0]?.name || 'performance'}`],
             rationale: feedback ? `Adjusted based on feedback: ${feedback}` : `Standard ${paradigm.name} design`,
             internRole: 'scout',
