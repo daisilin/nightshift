@@ -28,6 +28,7 @@ export function LandingPage() {
   const [chatLoading, setChatLoading] = useState(false);
   const [simMode, setSimMode] = useState<'parametric' | 'llm'>('parametric');
   const [nParticipants, setNParticipants] = useState(20);
+  const [paperContext, setPaperContext] = useState('');
 
   const toggleTask = (id: string) => setSelectedTasks(prev => prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]);
   const togglePersona = (id: string) => setSelectedPersonas(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]);
@@ -39,6 +40,10 @@ export function LandingPage() {
       dispatch({ type: 'START_EXPERIMENT', payload: { brief: b, paradigmId: selectedTasks[0], personaIds: selectedPersonas } });
     } else {
       dispatch({ type: 'START_BATTERY', payload: { brief: b, paradigmIds: selectedTasks, personaIds: selectedPersonas } });
+    }
+    // Set paper context on the newly created session
+    if (paperContext) {
+      dispatch({ type: 'SET_PAPER_CONTEXT', payload: paperContext });
     }
     const params = new URLSearchParams();
     if (simMode === 'llm') params.set('mode', 'llm');
@@ -122,6 +127,8 @@ Be conversational. Explain WHY. Suggest variants and point out design gaps.`,
                 if (valid.length > 0) setSelectedTasks(valid);
                 if (extracted.personaIds?.length > 0) setSelectedPersonas(extracted.personaIds);
                 setBrief(extracted.brief || '');
+                // Store paper context locally — will be set on session after dispatch
+                setPaperContext(`Paper: "${extracted.paperTitle}"\nBrief: ${extracted.brief}\nKey details: ${extracted.keyDetails}\nTasks: ${valid.join(', ')}`);
                 setDesignChat([{ role: 'assistant', content: `from "${extracted.paperTitle}": ${valid.length} task(s) detected. ${extracted.keyDetails || ''}\n\nadjust below or ask me to modify.` }]);
                 setMode('design');
               }} />

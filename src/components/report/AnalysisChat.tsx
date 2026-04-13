@@ -13,9 +13,11 @@ interface ChatMessage {
   results?: AnalysisResult[];
 }
 
-function buildSystemPrompt(taskNames: string[], personaNames: string[], nDatasets: number, existingResultsSummary: string) {
+function buildSystemPrompt(taskNames: string[], personaNames: string[], nDatasets: number, existingResultsSummary: string, paperContext: string) {
   const steps = getAllSteps();
   return `You are an analysis agent for a behavioral research platform. You have ${nDatasets} simulated datasets in memory for these tasks: ${taskNames.join(', ')}. Populations: ${personaNames.join(', ')}.
+
+${paperContext ? `ORIGINAL PAPER CONTEXT:\n${paperContext}\n\nWhen the user asks to compare results with the original paper, reference this context. Explain how the simulated results relate to the paper's findings.` : ''}
 
 ${existingResultsSummary ? `EXISTING ANALYSIS RESULTS (already computed):\n${existingResultsSummary}\n\nYou can reference these results when the user asks about conclusions or interpretations.` : ''}
 
@@ -108,7 +110,8 @@ export function AnalysisChat() {
           model: 'claude-sonnet-4-20250514',
           max_tokens: 500,
           system: buildSystemPrompt(taskNames, personaNames, datasets.length,
-            existingResults.map((r: any) => `${r.title}: ${r.type === 'text' ? r.data : `${r.type} with ${JSON.stringify(r.data).length} chars of data`}`).join('\n')
+            existingResults.map((r: any) => `${r.title}: ${r.type === 'text' ? r.data : `${r.type} with ${JSON.stringify(r.data).length} chars of data`}`).join('\n'),
+            session.paperContext || ''
           ),
           messages: [
             // Include conversation history so Claude has context

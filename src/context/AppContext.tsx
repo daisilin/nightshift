@@ -29,7 +29,7 @@ export function reducer(state: AppState, action: AppAction): AppState {
         crossTaskAnalysis: null,
         synthesis: null, agreements: [], disagreements: [], openQuestions: [], nextMissions: [],
         createdAt: Date.now(), completedAt: null,
-        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0, analysisResults: [], simulationMode: 'parametric' as const,
+        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0, analysisResults: [], simulationMode: 'parametric' as const, paperContext: null,
       };
       return { ...state, currentSession: session, step: 'dispatch' };
     }
@@ -49,7 +49,7 @@ export function reducer(state: AppState, action: AppAction): AppState {
         peerReview: null, crossTaskAnalysis: null,
         synthesis: null, agreements: [], disagreements: [], openQuestions: [], nextMissions: [],
         createdAt: Date.now(), completedAt: null,
-        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0, analysisResults: [], simulationMode: 'parametric' as const,
+        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0, analysisResults: [], simulationMode: 'parametric' as const, paperContext: null,
       };
       return { ...state, currentSession: session, step: 'dispatch' };
     }
@@ -66,13 +66,18 @@ export function reducer(state: AppState, action: AppAction): AppState {
         peerReview: null, crossTaskAnalysis: null,
         synthesis: null, agreements: [], disagreements: [], openQuestions: [], nextMissions: [],
         createdAt: Date.now(), completedAt: null,
-        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0, analysisResults: [], simulationMode: 'parametric' as const,
+        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0, analysisResults: [], simulationMode: 'parametric' as const, paperContext: null,
       };
       return { ...state, currentSession: session, step: 'dispatch' };
     }
 
     case 'SET_STEP':
       return { ...state, step: action.payload };
+
+    case 'SET_PAPER_CONTEXT': {
+      if (!state.currentSession) return state;
+      return { ...state, currentSession: { ...state.currentSession, paperContext: action.payload } };
+    }
 
     case 'UPDATE_REPORT': {
       if (!state.currentSession) return state;
@@ -145,7 +150,7 @@ export function reducer(state: AppState, action: AppAction): AppState {
         peerReview: null, crossTaskAnalysis: null,
         synthesis: null, agreements: [], disagreements: [], openQuestions: [], nextMissions: [],
         createdAt: Date.now(), completedAt: null,
-        round: archived.round + 1, previousSessionId: archived.id, selectedDesignIndex: 0, analysisResults: [], simulationMode: 'parametric' as const,
+        round: archived.round + 1, previousSessionId: archived.id, selectedDesignIndex: 0, analysisResults: [], simulationMode: 'parametric' as const, paperContext: null,
       };
       return { ...state, sessions: [...state.sessions, archived], currentSession: newSession, step: 'dispatch' };
     }
@@ -181,7 +186,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           crossTaskAnalysis: s.crossTaskAnalysis ?? null,
           designReports: s.designReports ?? [],
           selectedDesignIndex: s.selectedDesignIndex ?? 0,
-          paradigmId: s.paradigmId ?? '', analysisResults: s.analysisResults ?? [], simulationMode: s.simulationMode ?? 'parametric',
+          paradigmId: s.paradigmId ?? '', analysisResults: s.analysisResults ?? [], simulationMode: s.simulationMode ?? 'parametric', paperContext: s.paperContext ?? null,
           personaIds: s.personaIds ?? [],
         });
         return {

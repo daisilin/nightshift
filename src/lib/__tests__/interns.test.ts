@@ -99,7 +99,7 @@ describe('buildRefinedBrief', () => {
         feedback: f.feedback as any,
       })),
     }],
-    designReports: [], selectedDesignIndex: 0, paradigmIds: [], battery: [], peerReview: null, crossTaskAnalysis: null, analysisResults: [], simulationMode: 'parametric' as const,
+    designReports: [], selectedDesignIndex: 0, paradigmIds: [], battery: [], peerReview: null, crossTaskAnalysis: null, analysisResults: [], simulationMode: 'parametric' as const, paperContext: null,
     synthesis: null, agreements: [], disagreements: [],
     openQuestions: ['what about X?'], nextMissions: [],
     createdAt: 0, completedAt: null, round: 1, previousSessionId: null,

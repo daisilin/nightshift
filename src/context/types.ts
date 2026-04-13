@@ -90,6 +90,7 @@ export interface ResearchSession {
   selectedDesignIndex: number;
   analysisResults: any[];
   simulationMode: 'parametric' | 'llm';
+  paperContext: string | null; // extracted paper text for analysis agent context
 }
 
 export interface AppState {
@@ -103,6 +104,7 @@ export type AppAction =
   | { type: 'START_BATTERY'; payload: { brief: string; paradigmIds: string[]; personaIds: string[] } }
   | { type: 'START_SESSION'; payload: { brief: string; missions: Intern[] } }
   | { type: 'SET_STEP'; payload: AppState['step'] }
+  | { type: 'SET_PAPER_CONTEXT'; payload: string }
   | { type: 'UPDATE_REPORT'; payload: { role: InternRole; report: Partial<InternReport> } }
   | { type: 'UPDATE_DESIGN_REPORT'; payload: { role: InternRole; report: Partial<DesignReport> } }
   | { type: 'UPDATE_BATTERY_TASK'; payload: { paradigmId: string; update: Partial<BatteryTask> } }
