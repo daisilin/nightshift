@@ -22,6 +22,7 @@ export function LandingPage() {
   const [chatInput, setChatInput] = useState('');
   const [exploringTask, setExploringTask] = useState<string | null>(null);
   const [chatLoading, setChatLoading] = useState(false);
+  const [simMode, setSimMode] = useState<'parametric' | 'llm'>('parametric');
 
   const toggleTask = (id: string) => setSelectedTasks(prev => prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]);
   const togglePersona = (id: string) => setSelectedPersonas(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]);
@@ -245,6 +246,19 @@ Be conversational. Explain WHY. Suggest variants and point out design gaps.`,
                   </div>
                 </div>
               )}
+
+              {/* Simulation mode toggle */}
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] text-text-3">simulation:</span>
+                <button onClick={() => setSimMode('parametric')}
+                  className={`px-2.5 py-1 rounded-lg text-[10px] cursor-pointer border ${simMode === 'parametric' ? 'bg-orchid/10 border-orchid/25 text-text' : 'border-orchid/8 text-text-3'}`}>
+                  parametric (instant)
+                </button>
+                <button onClick={() => setSimMode('llm')}
+                  className={`px-2.5 py-1 rounded-lg text-[10px] cursor-pointer border ${simMode === 'llm' ? 'bg-orchid/10 border-orchid/25 text-text' : 'border-orchid/8 text-text-3'}`}>
+                  LLM agents (slower, richer)
+                </button>
+              </div>
 
               {/* Dispatch */}
               <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}

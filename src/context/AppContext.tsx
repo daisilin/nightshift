@@ -29,7 +29,7 @@ export function reducer(state: AppState, action: AppAction): AppState {
         crossTaskAnalysis: null,
         synthesis: null, agreements: [], disagreements: [], openQuestions: [], nextMissions: [],
         createdAt: Date.now(), completedAt: null,
-        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0, analysisResults: [],
+        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0, analysisResults: [], simulationMode: 'parametric' as const,
       };
       return { ...state, currentSession: session, step: 'dispatch' };
     }
@@ -49,7 +49,7 @@ export function reducer(state: AppState, action: AppAction): AppState {
         peerReview: null, crossTaskAnalysis: null,
         synthesis: null, agreements: [], disagreements: [], openQuestions: [], nextMissions: [],
         createdAt: Date.now(), completedAt: null,
-        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0, analysisResults: [],
+        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0, analysisResults: [], simulationMode: 'parametric' as const,
       };
       return { ...state, currentSession: session, step: 'dispatch' };
     }
@@ -66,7 +66,7 @@ export function reducer(state: AppState, action: AppAction): AppState {
         peerReview: null, crossTaskAnalysis: null,
         synthesis: null, agreements: [], disagreements: [], openQuestions: [], nextMissions: [],
         createdAt: Date.now(), completedAt: null,
-        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0, analysisResults: [],
+        round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0, analysisResults: [], simulationMode: 'parametric' as const,
       };
       return { ...state, currentSession: session, step: 'dispatch' };
     }
@@ -145,7 +145,7 @@ export function reducer(state: AppState, action: AppAction): AppState {
         peerReview: null, crossTaskAnalysis: null,
         synthesis: null, agreements: [], disagreements: [], openQuestions: [], nextMissions: [],
         createdAt: Date.now(), completedAt: null,
-        round: archived.round + 1, previousSessionId: archived.id, selectedDesignIndex: 0, analysisResults: [],
+        round: archived.round + 1, previousSessionId: archived.id, selectedDesignIndex: 0, analysisResults: [], simulationMode: 'parametric' as const,
       };
       return { ...state, sessions: [...state.sessions, archived], currentSession: newSession, step: 'dispatch' };
     }
@@ -181,7 +181,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           crossTaskAnalysis: s.crossTaskAnalysis ?? null,
           designReports: s.designReports ?? [],
           selectedDesignIndex: s.selectedDesignIndex ?? 0,
-          paradigmId: s.paradigmId ?? '', analysisResults: s.analysisResults ?? [],
+          paradigmId: s.paradigmId ?? '', analysisResults: s.analysisResults ?? [], simulationMode: s.simulationMode ?? 'parametric',
           personaIds: s.personaIds ?? [],
         });
         return {

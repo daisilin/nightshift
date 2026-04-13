@@ -88,7 +88,8 @@ export interface ResearchSession {
   round: number;
   previousSessionId: string | null;
   selectedDesignIndex: number;
-  analysisResults: any[]; // AnalysisResult[] — stored as any for localStorage compat
+  analysisResults: any[];
+  simulationMode: 'parametric' | 'llm';
 }
 
 export interface AppState {
