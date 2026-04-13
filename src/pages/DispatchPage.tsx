@@ -40,11 +40,16 @@ export function DispatchPage() {
     const isLLM = isLLMFromUrl || (session as any).simulationMode === 'llm';
 
     (async () => {
-      // === LLM SIMULATION MODE ===
-      if (isLLM && isBattery) {
+      // === LLM SIMULATION MODE (works for both battery and single task) ===
+      if (isLLM) {
+        // For single task, wrap it as a 1-task battery
+        const llmBattery = isBattery ? battery : [{
+          paradigmId: session.paradigmId,
+          design: null, dataset: null, metrics: null, status: 'pending' as const,
+        }];
         const nParticipants = 5; // small N for LLM (each is an API call)
-        const paradigmIds = battery.map(t => t.paradigmId);
-        const totalCalls = paradigmIds.length * nParticipants * 3; // 3 trials per task per participant
+        const paradigmIds = llmBattery.map(t => t.paradigmId);
+        const totalCalls = llmBattery.length * nParticipants * 3; // 3 trials per task per participant
         let callsDone = 0;
 
         setLlmProgress({ current: 0, total: totalCalls, status: 'generating participant pool...' });
@@ -57,7 +62,7 @@ export function DispatchPage() {
         const allDesigns: ExperimentDesign[] = [];
         const paradigms: any[] = [];
 
-        for (const task of battery) {
+        for (const task of llmBattery) {
           const paradigm = getParadigm(task.paradigmId);
           if (!paradigm) continue;
           paradigms.push(paradigm);
