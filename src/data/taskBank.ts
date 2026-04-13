@@ -129,6 +129,24 @@ export const taskBank: ParadigmDefinition[] = [
     ],
   },
   {
+    id: 'maze-construal',
+    name: 'Maze Construal',
+    emoji: '🗺',
+    category: 'planning',
+    paradigmType: 'behavioral',
+    description: 'Navigate mazes while tracking which obstacles you notice — measures value-guided construal (Ho et al., Nature)',
+    defaultParams: {
+      type: 'behavioral', difficulty: 0.5, nTrials: 20, nConditions: 2,
+      conditionLabels: ['simple-maze', 'complex-maze'],
+      withinSubject: true, rtRange: [2000, 20000], baseAccuracy: 0.85,
+    },
+    dependentVariables: [
+      { name: 'navigationTime', type: 'continuous', unit: 'ms', expectedRange: [1000, 30000], higherIsBetter: false },
+      { name: 'construalEffect', type: 'continuous', unit: 'difference', expectedRange: [-0.5, 0.5], higherIsBetter: true },
+      { name: 'obstacleMemory', type: 'continuous', unit: 'proportion', expectedRange: [0, 1], higherIsBetter: true },
+    ],
+  },
+  {
     id: 'two-step',
     name: 'Two-Step Task',
     emoji: '🎲',

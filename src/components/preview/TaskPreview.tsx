@@ -6,6 +6,7 @@ import { SurveyPreview } from './SurveyPreview';
 import { TowerOfLondonPreview } from './TowerOfLondonPreview';
 import { FourInARowPreview } from './FourInARowPreview';
 import { ChessPreview } from './ChessPreview';
+import { MazePreview } from './MazePreview';
 import { NBackPreview } from './NBackPreview';
 import { CorsiPreview } from './CorsiPreview';
 import { TwoStepPreview } from './TwoStepPreview';
@@ -99,11 +100,12 @@ export function TaskPreview({ design, onClose, onDesignChange }: Props) {
       {id === 'n-back' && <NBackPreview nLevel={nLevel ? parseInt(nLevel) : 2} />}
       {id === 'corsi-block' && <CorsiPreview />}
       {id === 'two-step' && <TwoStepPreview />}
+      {id === 'maze-construal' && <MazePreview />}
       {(id === 'likert-survey' || id === 'forced-choice') && sp && (
         <SurveyPreview params={sp} />
       )}
 
-      {!['stroop', 'tower-of-london', 'four-in-a-row', 'chess', 'n-back', 'corsi-block', 'two-step', 'likert-survey', 'forced-choice'].includes(id) && (
+      {!['stroop', 'tower-of-london', 'four-in-a-row', 'chess', 'n-back', 'corsi-block', 'two-step', 'maze-construal', 'likert-survey', 'forced-choice'].includes(id) && (
         <div className="card p-6 text-center">
           <p className="text-sm text-text-3 mb-2">interactive preview for <strong>{id}</strong> coming soon</p>
         </div>
