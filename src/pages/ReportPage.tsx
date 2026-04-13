@@ -22,7 +22,7 @@ export function ReportPage() {
   const [previewing, setPreviewing] = useState(false);
   const [iterationFeedback, setIterationFeedback] = useState('');
 
-  if (!session) return null;
+  if (!session) { nav('/'); return null; }
 
   const battery = session.battery ?? [];
   const selectedPersonas = session.personaIds

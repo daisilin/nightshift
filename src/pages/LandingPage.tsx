@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useApp } from '../context/AppContext';
@@ -14,6 +14,14 @@ type Mode = 'start' | 'design' | 'configure' | 'explore';
 export function LandingPage() {
   const nav = useNavigate();
   const { state, dispatch } = useApp();
+
+  // Clear any stale session when landing page loads — prevents auto-dispatch bug
+  useEffect(() => {
+    if (state.currentSession) {
+      dispatch({ type: 'COMPLETE_SESSION' });
+    }
+  }, []);
+
   const [mode, setMode] = useState<Mode>('start');
   const [brief, setBrief] = useState('');
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);

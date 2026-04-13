@@ -166,7 +166,11 @@ Only include fields that the feedback asks to change. Return {} if no param chan
     })();
   }, [session, dispatch, nav]);
 
-  if (!session) return null;
+  // No session = shouldn't be here, go back to landing
+  if (!session) {
+    nav('/');
+    return null;
+  }
 
   const battery = session.battery ?? [];
   const isBattery = battery.length > 0;
