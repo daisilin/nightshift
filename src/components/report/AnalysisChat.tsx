@@ -14,29 +14,29 @@ interface ChatMessage {
 }
 
 function buildSystemPrompt(taskNames: string[], personaNames: string[], nDatasets: number, existingResultsSummary: string, paperContext: string) {
-  const steps = getAllSteps();
-  return `You are an analysis agent. You EXECUTE analyses, you don't just talk about them.
+  // Only show steps that can actually run with this data
+  const singleSteps = ['descriptive-stats', 'split-half-reliability', 'ceiling-floor', 'outlier-detection', 'condition-effects', 'persona-differences'];
+  const multiSteps = ['correlation-matrix', 'exploratory-fa'];
+  const available = nDatasets >= 2 ? [...singleSteps, ...multiSteps] : singleSteps;
 
-Data: ${nDatasets} task(s): ${taskNames.join(', ')}. Populations: ${personaNames.join(', ')}.
-${paperContext ? `Paper: ${paperContext}` : ''}
-${existingResultsSummary ? `Already computed:\n${existingResultsSummary}` : ''}
+  return `You are an analysis agent. You EXECUTE analyses by returning step IDs in JSON.
 
-Available steps: ${steps.map(s => `"${s.id}"`).join(', ')}
-Params: correlation-matrix takes {permutations:N}, exploratory-fa takes {nFactors:N}
+DATA IN MEMORY: ${nDatasets} task(s): ${taskNames.join(', ')}. Populations: ${personaNames.join(', ')}.
+${paperContext ? `\nORIGINAL PAPER:\n${paperContext}` : ''}
+${existingResultsSummary ? `\nALREADY COMPUTED:\n${existingResultsSummary}` : ''}
+
+AVAILABLE ANALYSES (only these work with your current data):
+${available.map(id => `- "${id}"`).join('\n')}
+${nDatasets < 2 ? '\nNOTE: correlation-matrix and exploratory-fa require 2+ tasks. You only have ' + nDatasets + ' task. Do NOT include them.' : '\nParams: correlation-matrix takes {"permutations":N}, exploratory-fa takes {"nFactors":N}'}
+
+RESPONSE FORMAT — you MUST return this exact JSON structure:
+{"steps":[{"id":"step-id","params":{}}],"explanation":"brief interpretation of results"}
 
 RULES:
-1. ALWAYS include "steps" array with analysis IDs to execute. NEVER return empty steps unless purely answering a question about existing results.
-2. When user asks to "compare to paper" or "test hypotheses" — run descriptive-stats AND condition-effects AND correlation-matrix. Then explain in "explanation".
-3. When user asks "what analysis" — run ALL relevant steps, don't ask.
-4. Put your interpretation in "explanation" — reference computed numbers from existing results.
-
-Response format (STRICT):
-{"steps":[{"id":"step-id","params":{}}],"explanation":"your interpretation"}
-
-Examples:
-- "compare to paper" → {"steps":[{"id":"descriptive-stats"},{"id":"condition-effects"},{"id":"correlation-matrix","params":{"permutations":500}}],"explanation":"running key analyses to compare..."}
-- "what do you see" → {"steps":[],"explanation":"based on the computed results, the effect sizes suggest..."}
-- "run everything" → {"steps":[{"id":"descriptive-stats"},{"id":"split-half-reliability"},{"id":"ceiling-floor"},{"id":"condition-effects"},{"id":"persona-differences"}${nDatasets >= 2 ? ',{"id":"correlation-matrix"},{"id":"exploratory-fa","params":{"nFactors":3}}' : ''}],"explanation":"running full analysis suite"}`;
+- ALWAYS include steps to run. Do not return empty steps unless ONLY interpreting existing results.
+- Do NOT promise analyses you cannot run (e.g., correlation-matrix with 1 task).
+- Reference ACTUAL numbers from the "already computed" section when interpreting.
+- Be concise. 2-3 sentences max for explanation.`;
 }
 
 export function AnalysisChat() {
@@ -152,9 +152,12 @@ export function AnalysisChat() {
         dispatch({ type: 'SET_ANALYSIS_RESULTS', payload: [...existing, ...results] });
       }
 
+      const resultsSummary = results.length > 0
+        ? `\n\n📊 ${results.length} analysis result(s) generated below ↓`
+        : '';
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: parsed.explanation || 'Analysis complete.',
+        content: (parsed.explanation || 'Analysis complete.') + resultsSummary,
         results: results.length > 0 ? results : undefined,
       }]);
     } catch {
