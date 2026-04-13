@@ -22,26 +22,36 @@ interface Props {
 }
 
 const SYSTEM_PROMPT = `You extract experimental designs from academic papers.
-Given paper text, return ONLY valid JSON:
+Read the paper text carefully. Identify the SPECIFIC experimental paradigm(s) used.
+
+Return ONLY valid JSON:
 {
-  "paperTitle": "string",
-  "brief": "one sentence describing the main experiment to reproduce",
+  "paperTitle": "full title of the paper",
+  "brief": "one sentence describing the main experiment — be specific about the task",
   "paradigmIds": ["task-id", ...] — ALL tasks used in the paper,
-  "personaIds": ["college-student"] by default,
-  "keyDetails": "2-3 sentences about parameters"
+  "personaIds": ["college-student"] by default — add others if the paper studies specific populations,
+  "keyDetails": "2-3 sentences about: number of participants, number of trials, conditions, key measures"
 }
 
-Available task IDs: tower-of-london, four-in-a-row, rush-hour, corsi-block, n-back, stroop, chess, two-step, likert-survey, forced-choice
+Available task IDs and what they match:
+- "maze-construal" — maze navigation, spatial planning, route planning, obstacle avoidance, mental map tasks
+- "tower-of-london" — disc rearrangement, Tower of Hanoi, sequential planning with fixed goals
+- "four-in-a-row" — board games, strategic games, adversarial planning, tic-tac-toe variants
+- "rush-hour" — sliding puzzles, constraint satisfaction, spatial reasoning puzzles
+- "corsi-block" — spatial span, visuospatial working memory, block tapping
+- "n-back" — working memory updating, change detection, sustained attention
+- "stroop" — cognitive control, inhibition, interference, WCST, go/no-go, flanker
+- "chess" — chess puzzles, chess tactics, expert decision-making
+- "two-step" — sequential decision-making, model-based vs model-free, reinforcement learning tasks
+- "likert-survey" — questionnaires, Likert scales, self-report measures
+- "forced-choice" — binary decisions, preference tasks, forced-choice paradigms
 
-Map tasks to closest ID:
-- "Corsi span" → "corsi-block"
-- "change detection" or "working memory" → "n-back"
-- "WCST" or "Wisconsin Card Sort" → "stroop"
-- "Raven's" or "SPM" → "n-back"
-- "mental rotation" → "rush-hour"
-- "pattern detection" → "stroop"
-
-IMPORTANT: List ALL tasks in paradigmIds if the paper uses multiple.
+IMPORTANT:
+- Read the actual methods/procedure, not just the abstract
+- A paper about "maze navigation" should map to "maze-construal", NOT "tower-of-london"
+- A paper about "value-guided construal" in mazes should map to "maze-construal"
+- If the paper uses MULTIPLE tasks, list ALL of them
+- If uncertain, pick the task that most closely matches the PROCEDURE described
 Return ONLY JSON.`;
 
 /** Extract text from PDF using PDF.js (the real library, not a hack) */

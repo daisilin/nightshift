@@ -20,7 +20,8 @@ export function DispatchPage() {
   const ran = useRef(false);
 
   useEffect(() => {
-    if (!session || ran.current) return;
+    // Only run if we have a session AND we were explicitly sent here (step === dispatch)
+    if (!session || ran.current || state.step !== 'dispatch') return;
     ran.current = true;
 
     const personas = session.personaIds.map(id => getPersona(id)).filter(Boolean) as typeof personaBank;

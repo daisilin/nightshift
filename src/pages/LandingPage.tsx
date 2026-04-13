@@ -15,10 +15,11 @@ export function LandingPage() {
   const nav = useNavigate();
   const { state, dispatch } = useApp();
 
-  // Clear any stale session when landing page loads — prevents auto-dispatch bug
+  // Reset step to landing when this page mounts — but do NOT clear session data
+  // (session data is needed if user navigates back from report)
   useEffect(() => {
-    if (state.currentSession) {
-      dispatch({ type: 'COMPLETE_SESSION' });
+    if (state.step !== 'landing') {
+      dispatch({ type: 'SET_STEP', payload: 'landing' });
     }
   }, []);
 
