@@ -109,7 +109,12 @@ export function PaperUpload({ onExtracted }: Props) {
       setStatus(`✓ ${result.paperTitle} — ${paradigmIds.length} task(s)`);
       onExtracted(result);
     } catch (err) {
-      setStatus(`error: ${err instanceof Error ? err.message : 'unknown'}`);
+      const msg = err instanceof Error ? err.message : 'unknown';
+      if (msg.includes('429') || msg.includes('529')) {
+        setStatus('API rate limit — wait 30 seconds and try again');
+      } else {
+        setStatus(`error: ${msg}`);
+      }
     } finally {
       setLoading(false);
     }

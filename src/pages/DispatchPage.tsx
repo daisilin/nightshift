@@ -89,8 +89,10 @@ export function DispatchPage() {
             setLlmProgress({ current: callsDone, total: totalCalls, status: `${paradigm.name}: participant ${pi + 1}/${nParticipants} (${person.demographics.gender}, ${person.demographics.age})` });
 
             const trials: SimulatedTrial[] = [];
-            // Run 3 trials per task (enough for LLM, each is an API call)
+            // Run 3 trials per task — throttled to avoid rate limits
             for (let ti = 0; ti < 3; ti++) {
+              // Small delay between calls to avoid 429/529
+              if (ti > 0 || pi > 0) await new Promise(r => setTimeout(r, 200));
               const result = await runLLMTrial({
                 taskDescription: taskPrompt,
                 stimulus: `Trial ${ti + 1}: ${paradigm.description}. Respond as if you are actually doing this task.`,
