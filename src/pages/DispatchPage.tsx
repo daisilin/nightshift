@@ -37,20 +37,58 @@ export function DispatchPage() {
         const allDesigns: ExperimentDesign[] = [];
         const paradigms: any[] = [];
 
-        // Create designs from task bank defaults
+        // Check if brief contains iteration feedback
+        const feedbackMatch = session.brief.match(/\[round \d+ feedback: (.+?)\]/);
+        const feedback = feedbackMatch?.[1] || '';
+
+        // If there's feedback, ask Claude to adjust params; otherwise use defaults
+        let paramOverrides: Record<string, any> | null = null;
+        if (feedback) {
+          try {
+            const res = await fetch('/api/claude', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({
+                model: 'claude-sonnet-4-20250514',
+                max_tokens: 400,
+                system: `You adjust experiment parameters based on researcher feedback.
+Current default params for behavioral tasks: difficulty 0.5, nTrials 30, nConditions 2-3, nParticipantsPerPersona 20.
+Return ONLY JSON with fields to override: { "nTrials": 60, "difficulty": 0.7, "nParticipantsPerPersona": 30 }
+Only include fields that the feedback asks to change. Return {} if no param changes needed.`,
+                messages: [{ role: 'user', content: `Feedback: "${feedback}"` }],
+              }),
+            });
+            const data = await res.json();
+            const raw = data.content?.[0]?.text ?? '';
+            const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+            const first = cleaned.indexOf('{');
+            const last = cleaned.lastIndexOf('}');
+            if (first >= 0 && last > first) {
+              paramOverrides = JSON.parse(cleaned.slice(first, last + 1));
+            }
+          } catch { /* use defaults */ }
+        }
+
+        // Create designs — apply feedback-driven param overrides if any
         for (const task of battery) {
           const paradigm = getParadigm(task.paradigmId);
           if (!paradigm) continue;
           paradigms.push(paradigm);
+          const params = { ...paradigm.defaultParams };
+          if (paramOverrides && params.type === 'behavioral') {
+            if (paramOverrides.nTrials) (params as any).nTrials = paramOverrides.nTrials;
+            if (paramOverrides.difficulty !== undefined) (params as any).difficulty = paramOverrides.difficulty;
+            if (paramOverrides.nConditions) (params as any).nConditions = paramOverrides.nConditions;
+          }
           allDesigns.push({
             id: `design-${task.paradigmId}-${Date.now()}`,
             name: paradigm.name,
             paradigmId: task.paradigmId,
             personaIds: session.personaIds,
-            params: paradigm.defaultParams,
-            nParticipantsPerPersona: 20,
+            params,
+            nParticipantsPerPersona: paramOverrides?.nParticipantsPerPersona ?? 20,
             hypotheses: [`Effect of condition on ${paradigm.dependentVariables[0]?.name || 'performance'}`],
-            rationale: `Standard ${paradigm.name} design from task bank`,
+            rationale: feedback ? `Adjusted based on feedback: ${feedback}` : `Standard ${paradigm.name} design`,
             internRole: 'scout',
           });
         }

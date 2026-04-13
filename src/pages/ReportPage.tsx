@@ -211,8 +211,11 @@ export function ReportPage() {
             <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
               onClick={() => {
                 const feedback = iterationFeedback.trim();
-                const newBrief = feedback ? `${session.brief} [iteration feedback: ${feedback}]` : session.brief;
-                dispatch({ type: 'ITERATE_SESSION', payload: { refinedBrief: newBrief, missions: [] } });
+                const newBrief = feedback ? `${session.brief} [round ${session.round} feedback: ${feedback}]` : session.brief;
+                // Single dispatch — ITERATE_SESSION archives current + creates new
+                // Then we need to set the new session as a battery or single experiment
+                // The cleanest way: complete current, then start fresh with feedback in brief
+                dispatch({ type: 'COMPLETE_SESSION' });
                 if (isBatteryMode) {
                   dispatch({ type: 'START_BATTERY', payload: { brief: newBrief, paradigmIds: session.paradigmIds ?? [session.paradigmId], personaIds: session.personaIds } });
                 } else {
