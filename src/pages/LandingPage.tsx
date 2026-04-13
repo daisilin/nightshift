@@ -15,13 +15,8 @@ export function LandingPage() {
   const nav = useNavigate();
   const { state, dispatch } = useApp();
 
-  // Reset step to landing when this page mounts — but do NOT clear session data
-  // (session data is needed if user navigates back from report)
-  useEffect(() => {
-    if (state.step !== 'landing') {
-      dispatch({ type: 'SET_STEP', payload: 'landing' });
-    }
-  }, []);
+  // No useEffect on mount — was causing race condition that reset step to 'landing'
+  // right after START_BATTERY set it to 'dispatch', blocking the dispatch page.
 
   const [mode, setMode] = useState<Mode>('start');
   const [brief, setBrief] = useState('');

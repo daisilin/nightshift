@@ -28,7 +28,7 @@ export function DispatchPage() {
   const isLLMFromUrl = searchParams.get('mode') === 'llm';
 
   useEffect(() => {
-    if (!session || ran.current || state.step !== 'dispatch') return;
+    if (!session || ran.current) return;
     ran.current = true;
 
     const personas = session.personaIds.map(id => getPersona(id)).filter(Boolean) as typeof personaBank;
