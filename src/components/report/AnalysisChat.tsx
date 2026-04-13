@@ -15,31 +15,28 @@ interface ChatMessage {
 
 function buildSystemPrompt(taskNames: string[], personaNames: string[], nDatasets: number, existingResultsSummary: string, paperContext: string) {
   const steps = getAllSteps();
-  return `You are an analysis agent for a behavioral research platform. You have ${nDatasets} simulated datasets in memory for these tasks: ${taskNames.join(', ')}. Populations: ${personaNames.join(', ')}.
+  return `You are an analysis agent. You EXECUTE analyses, you don't just talk about them.
 
-${paperContext ? `ORIGINAL PAPER CONTEXT:\n${paperContext}\n\nWhen the user asks to compare results with the original paper, reference this context. Explain how the simulated results relate to the paper's findings.` : ''}
+Data: ${nDatasets} task(s): ${taskNames.join(', ')}. Populations: ${personaNames.join(', ')}.
+${paperContext ? `Paper: ${paperContext}` : ''}
+${existingResultsSummary ? `Already computed:\n${existingResultsSummary}` : ''}
 
-${existingResultsSummary ? `EXISTING ANALYSIS RESULTS (already computed):\n${existingResultsSummary}\n\nYou can reference these results when the user asks about conclusions or interpretations.` : ''}
+Available steps: ${steps.map(s => `"${s.id}"`).join(', ')}
+Params: correlation-matrix takes {permutations:N}, exploratory-fa takes {nFactors:N}
 
-You can run these analysis steps (return their IDs in a JSON plan):
-${steps.map(s => `- "${s.id}" — ${s.name} (${s.category}, requires: ${s.requires})`).join('\n')}
+RULES:
+1. ALWAYS include "steps" array with analysis IDs to execute. NEVER return empty steps unless purely answering a question about existing results.
+2. When user asks to "compare to paper" or "test hypotheses" — run descriptive-stats AND condition-effects AND correlation-matrix. Then explain in "explanation".
+3. When user asks "what analysis" — run ALL relevant steps, don't ask.
+4. Put your interpretation in "explanation" — reference computed numbers from existing results.
 
-Step-specific params:
-- correlation-matrix: { "permutations": number (default 500) }
-- exploratory-fa: { "nFactors": number (default 3) }
+Response format (STRICT):
+{"steps":[{"id":"step-id","params":{}}],"explanation":"your interpretation"}
 
-ALWAYS respond with JSON:
-{
-  "steps": [{ "id": "step-id", "params": {} }, ...],
-  "explanation": "what you're doing and why, 1-2 sentences"
-}
-
-If the user asks a question that doesn't need computation (like "what does this mean?"), return:
-{ "steps": [], "explanation": "your answer" }
-
-Be proactive: if the user says "analyze this" or "what should I look at", choose the RIGHT analyses for their data — don't ask them to be specific. For ${nDatasets} tasks, a good default is: descriptive-stats, split-half-reliability, ceiling-floor, condition-effects, persona-differences${nDatasets >= 2 ? ', correlation-matrix, exploratory-fa' : ''}.
-
-Return ONLY valid JSON. No markdown, no explanation outside the JSON.`;
+Examples:
+- "compare to paper" → {"steps":[{"id":"descriptive-stats"},{"id":"condition-effects"},{"id":"correlation-matrix","params":{"permutations":500}}],"explanation":"running key analyses to compare..."}
+- "what do you see" → {"steps":[],"explanation":"based on the computed results, the effect sizes suggest..."}
+- "run everything" → {"steps":[{"id":"descriptive-stats"},{"id":"split-half-reliability"},{"id":"ceiling-floor"},{"id":"condition-effects"},{"id":"persona-differences"}${nDatasets >= 2 ? ',{"id":"correlation-matrix"},{"id":"exploratory-fa","params":{"nFactors":3}}' : ''}],"explanation":"running full analysis suite"}`;
 }
 
 export function AnalysisChat() {
@@ -125,14 +122,26 @@ export function AnalysisChat() {
       const data = await res.json();
       const raw = data.content?.[0]?.text ?? '';
 
-      // Parse Claude's JSON response
+      // Parse Claude's JSON response — try multiple extraction methods
       let parsed: { steps: any[]; explanation: string };
       try {
+        // Method 1: direct parse
         const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
         parsed = JSON.parse(cleaned);
       } catch {
-        // If Claude returns plain text instead of JSON, show it as explanation
-        parsed = { steps: [], explanation: raw || 'No response from analysis agent.' };
+        try {
+          // Method 2: find first { and last }
+          const first = raw.indexOf('{');
+          const last = raw.lastIndexOf('}');
+          if (first >= 0 && last > first) {
+            parsed = JSON.parse(raw.slice(first, last + 1));
+          } else {
+            throw new Error('no JSON');
+          }
+        } catch {
+          // Method 3: Claude returned plain text — treat as explanation
+          parsed = { steps: [], explanation: raw || 'No response.' };
+        }
       }
 
       // Execute any analysis steps
