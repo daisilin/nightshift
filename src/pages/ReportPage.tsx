@@ -145,12 +145,19 @@ export function ReportPage() {
 
         {/* All analysis is from the pipeline — no hardcoded sections */}
 
-        {/* Dynamic Analysis Results */}
+        {/* Dynamic Analysis Results — live updates from pipeline + chat agent */}
         {(session.analysisResults ?? []).length > 0 && (
           <motion.div variants={staggerItem} className="mb-6">
-            <h2 className="text-xs font-mono text-text-3 uppercase tracking-wider mb-3">analysis pipeline</h2>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-xs font-mono text-text-3 uppercase tracking-wider">
+                analysis results ({(session.analysisResults ?? []).length})
+              </h2>
+              <span className="text-[9px] text-text-4">
+                auto-updated when analysis agent runs new steps
+              </span>
+            </div>
             {(session.analysisResults ?? []).map((result: any, i: number) => (
-              <ResultRenderer key={`${result.stepId}-${i}`} result={result} />
+              <ResultRenderer key={`${result.stepId}-${i}-${(session.analysisResults ?? []).length}`} result={result} />
             ))}
           </motion.div>
         )}
