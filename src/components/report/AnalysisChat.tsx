@@ -36,7 +36,9 @@ RULES:
 - ALWAYS include steps to run. Do not return empty steps unless ONLY interpreting existing results.
 - Do NOT promise analyses you cannot run (e.g., correlation-matrix with 1 task).
 - Reference ACTUAL numbers from the "already computed" section when interpreting.
-- Be concise. 2-3 sentences max for explanation.`;
+- If the user asks for Python code or custom analysis, include it in the explanation as a code block.
+- If asked to compare to the paper, reference specific numbers from both the paper and computed results.
+- Be concise but specific. Reference actual numbers.`;
 }
 
 export function AnalysisChat() {

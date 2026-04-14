@@ -9,6 +9,7 @@ import { PeerReviewCard } from '../components/report/PeerReviewCard';
 import { CrossTaskView } from '../components/report/CrossTaskView';
 import { ResultRenderer } from '../components/report/ResultRenderer';
 import { AnalysisChat } from '../components/report/AnalysisChat';
+import { DataExport } from '../components/report/DataExport';
 import { getParadigm } from '../data/taskBank';
 import { personaBank } from '../data/personaBank';
 import { stagger, staggerItem } from '../lib/animations';
@@ -197,6 +198,11 @@ export function ReportPage() {
             </div>
           </motion.div>
         )}
+
+        {/* Data Export */}
+        <motion.div variants={staggerItem} className="mb-4">
+          <DataExport />
+        </motion.div>
 
         {/* Analysis Chat — iterate on analyses conversationally */}
         <motion.div variants={staggerItem} className="mb-6">
