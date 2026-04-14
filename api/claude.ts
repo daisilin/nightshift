@@ -10,9 +10,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  // Server env var takes precedence; fall back to user-provided key (for self-hosted / bring-your-own-key use)
+  const apiKey = process.env.ANTHROPIC_API_KEY
+    || (req.headers['x-user-api-key'] as string | undefined);
   if (!apiKey) {
-    return res.status(500).json({ error: 'API key not configured' });
+    return res.status(500).json({ error: 'No API key configured. Add ANTHROPIC_API_KEY to your environment, or enter your key in the app settings.' });
   }
 
   // Try requested model, then fallback to Haiku if overloaded

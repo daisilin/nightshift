@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 import { taskBank } from '../data/taskBank';
 import { personaBank } from '../data/personaBank';
 import { PaperUpload } from '../components/PaperUpload';
 import { TaskPreview } from '../components/preview/TaskPreview';
+import { ApiKeyModal } from '../components/ApiKeyModal';
 import { stagger, staggerItem } from '../lib/animations';
+import { callClaudeApi, getStoredApiKey } from '../lib/apiKey';
 import type { ExperimentDesign } from '../lib/types';
 
 type Mode = 'start' | 'design' | 'configure' | 'explore';
@@ -29,6 +31,7 @@ export function LandingPage() {
   const [simMode, setSimMode] = useState<'parametric' | 'llm'>('parametric');
   const [nParticipants, setNParticipants] = useState(20);
   const [paperContext, setPaperContext] = useState('');
+  const [showKeyModal, setShowKeyModal] = useState(false);
 
   const toggleTask = (id: string) => setSelectedTasks(prev => prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]);
   const togglePersona = (id: string) => setSelectedPersonas(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]);
@@ -59,10 +62,7 @@ export function LandingPage() {
     setChatLoading(true);
 
     try {
-      const res = await fetch('/api/claude', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
+      const res = await callClaudeApi({
           model: 'claude-sonnet-4-6-20250514',
           max_tokens: 800,
           system: `You are a task design agent for nightshift, a behavioral research platform.
@@ -83,7 +83,6 @@ Be conversational. Explain WHY. Suggest variants and point out design gaps.`,
             ...designChat.slice(-8).map(m => ({ role: m.role, content: m.content })),
             { role: 'user', content: msg },
           ],
-        }),
       });
 
       const data = await res.json();
@@ -109,14 +108,30 @@ Be conversational. Explain WHY. Suggest variants and point out design gaps.`,
 
   return (
     <div className="min-h-screen" style={{ background: 'linear-gradient(160deg, #FFFAF7 0%, #FFEEE6 30%, #F5E6F0 60%, #E8EEF5 100%)' }}>
+      <AnimatePresence>
+        {showKeyModal && <ApiKeyModal onClose={() => setShowKeyModal(false)} />}
+      </AnimatePresence>
+
       <div className="max-w-2xl mx-auto px-6 pt-12 pb-16">
         <motion.div variants={stagger} initial="initial" animate="animate">
 
           <motion.div variants={staggerItem} className="mb-6">
-            <span className="text-sm font-mono font-light text-text-3">nightshift</span>
-            <h1 className="text-2xl sm:text-3xl font-heading leading-[1.1] mt-1">
-              <span className="bg-gradient-to-r from-orchid via-rose to-peach bg-clip-text text-transparent">experiment design studio</span>
-            </h1>
+            <div className="flex items-start justify-between">
+              <div>
+                <span className="text-sm font-mono font-light text-text-3">nightshift</span>
+                <h1 className="text-2xl sm:text-3xl font-heading leading-[1.1] mt-1">
+                  <span className="bg-gradient-to-r from-orchid via-rose to-peach bg-clip-text text-transparent">experiment design studio</span>
+                </h1>
+              </div>
+              <button
+                onClick={() => setShowKeyModal(true)}
+                title="API key settings"
+                className="mt-1 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[10px] text-text-3 border border-orchid/15 hover:bg-orchid/5 cursor-pointer transition-colors"
+              >
+                <span>{getStoredApiKey() ? '🔑' : '⚙'}</span>
+                <span>{getStoredApiKey() ? 'key set' : 'api key'}</span>
+              </button>
+            </div>
           </motion.div>
 
           {/* ===== START: paper drop + research question (ONE input) ===== */}

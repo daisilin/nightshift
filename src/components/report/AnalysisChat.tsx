@@ -4,6 +4,7 @@ import { useApp } from '../../context/AppContext';
 import { runAnalysisPipeline, getAllSteps } from '../../lib/analysis/registry';
 import { getParadigm } from '../../data/taskBank';
 import { personaBank } from '../../data/personaBank';
+import { callClaudeApi } from '../../lib/apiKey';
 import { ResultRenderer } from './ResultRenderer';
 import type { AnalysisResult } from '../../lib/analysis/types';
 
@@ -18,26 +19,35 @@ function buildSystemPrompt(taskNames: string[], personaNames: string[], nDataset
   const singleSteps = ['descriptive-stats', 'split-half-reliability', 'ceiling-floor', 'outlier-detection', 'condition-effects', 'persona-differences'];
   const mazeSteps = ['construal-effect', 'construal-by-maze'];
   const multiSteps = ['correlation-matrix', 'exploratory-fa'];
-  const hasMaze = taskNames.some(n => n.toLowerCase().includes('maze'));
+  const hasMaze = taskNames.some(n => n.toLowerCase().includes('maze') || n.toLowerCase().includes('construal'));
   const available = [
     ...singleSteps,
     ...(hasMaze ? mazeSteps : []),
     ...(nDatasets >= 2 ? multiSteps : []),
   ];
 
-  return `You are an expert analysis agent powered by Claude Opus. You EXECUTE analyses by returning step IDs in JSON, AND you can write Python code for advanced analyses.
-
-DATA IN MEMORY: ${nDatasets} task(s): ${taskNames.join(', ')}. Populations: ${personaNames.join(', ')}.
-
-${paperContext ? `ORIGINAL PAPER (full text available):\n${paperContext}` : ''}
-
-REAL HUMAN DATA FROM THE PAPER (for comparison):
+  // Paper-specific benchmark data — only include when relevant
+  const mazeReferenceData = hasMaze ? `REAL HUMAN DATA — Ho et al. (Nature), maze-construal:
 - N=161 participants, 13342 attention trials
 - High construal obstacles: mean awareness = 0.787
 - Low construal obstacles: mean awareness = 0.173
 - Construal effect (difference): 0.614
-- Paper's HGLM result: β=0.133, SE=0.003, χ²(1)=2297.21, p<10⁻¹⁶
-- Chi-squared independence test: χ²(1,N=84)=23.03, p=1.6×10⁻⁶, w=0.52
+- HGLM: β=0.133, SE=0.003, χ²(1)=2297.21, p<10⁻¹⁶` : '';
+
+  const planningReferenceData = !hasMaze && nDatasets >= 2 ? `REAL HUMAN DATA — Kösester et al. (2021), planning battery:
+- Tower of London and Four-in-a-Row each correlate with planning ability r≈0.4-0.6
+- Working memory (N-back, Corsi) correlates with planning r≈0.3-0.5
+- Inhibition (Stroop) correlates more weakly r≈0.2-0.35
+- 3-factor EFA solution: planning, working memory, inhibition` : '';
+
+  return `You are an expert analysis agent powered by Claude Opus. You EXECUTE analyses by returning step IDs in JSON, AND you can write Python code for advanced analyses.
+
+DATA IN MEMORY: ${nDatasets} task(s): ${taskNames.join(', ')}. Populations: ${personaNames.join(', ')}.
+
+${paperContext ? `ORIGINAL PAPER (full text available):\n${paperContext.slice(0, 3000)}` : ''}
+
+${mazeReferenceData}
+${planningReferenceData}
 
 ${existingResultsSummary ? `ALREADY COMPUTED FROM SIMULATED DATA:\n${existingResultsSummary}` : ''}
 
@@ -96,7 +106,8 @@ export function AnalysisChat() {
     autoRan.current = true;
 
     import('../../lib/analysis/registry').then(({ runAnalysisPipeline, defaultBatteryPlan, defaultSingleTaskPlan }) => {
-      const plan = datasets.length > 1 ? defaultBatteryPlan(datasets.length) : defaultSingleTaskPlan();
+      const singleParadigmId = paradigms[0]?.id;
+      const plan = datasets.length > 1 ? defaultBatteryPlan(datasets.length) : defaultSingleTaskPlan(singleParadigmId);
       const results = runAnalysisPipeline(plan, { datasets, designs, paradigms, personas });
 
       if (results.length > 0) {
@@ -118,10 +129,7 @@ export function AnalysisChat() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/claude', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
+      const res = await callClaudeApi({
           model: 'claude-opus-4-6-20250514',
           max_tokens: 2000,
           system: buildSystemPrompt(taskNames, personaNames, datasets.length,
@@ -155,7 +163,6 @@ export function AnalysisChat() {
             ...messages.slice(-6).map(m => ({ role: m.role, content: m.content })),
             { role: 'user', content: query },
           ],
-        }),
       });
 
       if (!res.ok) {

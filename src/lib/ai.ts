@@ -2,6 +2,7 @@ import type { ExperimentDesign, PilotMetrics } from './types';
 import type { ParadigmDefinition, PersonaDefinition } from './types';
 import { INTERN_PROFILES } from './interns';
 import type { InternRole } from '../context/types';
+import { callClaudeApi } from './apiKey';
 
 // ============================================================
 // LOW-LEVEL CLAUDE CALL
@@ -9,15 +10,11 @@ import type { InternRole } from '../context/types';
 
 async function callClaude(system: string, user: string, maxTokens = 1200): Promise<string> {
   try {
-    const res = await fetch('/api/claude', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6-20250514',
-        max_tokens: maxTokens,
-        system,
-        messages: [{ role: 'user', content: user }],
-      }),
+    const res = await callClaudeApi({
+      model: 'claude-sonnet-4-6-20250514',
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content: user }],
     });
     if (!res.ok) throw new Error(`${res.status}`);
     const data = await res.json();
@@ -48,6 +45,10 @@ export async function proposeDesign(
 ): Promise<ExperimentDesign> {
   const intern = INTERN_PROFILES[role];
 
+  // Extract iteration feedback from brief if present
+  const feedbackMatch = brief.match(/\[round \d+ feedback: (.+?)\]/);
+  const iterationFeedback = feedbackMatch?.[1] || '';
+
   const system = `You are ${intern.name}, a research intern designing behavioral experiments.
 Your approach: ${intern.description}
 
@@ -57,7 +58,7 @@ You must return ONLY valid JSON matching this schema:
   "params": ${paradigm.paradigmType === 'behavioral'
     ? '{ "type": "behavioral", "difficulty": 0-1, "nTrials": 20-100, "nConditions": 2-4, "conditionLabels": ["string"...], "withinSubject": true/false, "rtRange": [min_ms, max_ms], "baseAccuracy": 0.5-0.95 }'
     : '{ "type": "survey", "nItems": 10-40, "scalePoints": 2|5|7, "nSubscales": 1-5, "subscaleNames": ["string"...], "reverseCodedIndices": [int...] }'},
-  "nParticipantsPerPersona": 15-30,
+  "nParticipantsPerPersona": integer (default 20; if researcher feedback asks for more participants, use that number exactly),
   "hypotheses": ["string", "string"],
   "rationale": "1-2 sentences explaining your design choice"
 }
@@ -65,6 +66,8 @@ You must return ONLY valid JSON matching this schema:
 Paradigm: ${paradigm.name} — ${paradigm.description}
 Populations to simulate: ${personas.map(p => `${p.name} (${p.description})`).join(', ')}
 
+${iterationFeedback ? `RESEARCHER FEEDBACK FROM PREVIOUS ROUND: "${iterationFeedback}"
+Incorporate this feedback directly into your design. If the feedback requests a specific sample size, use it exactly.` : ''}
 ${role === 'scout' ? 'Design a standard, well-established version of this paradigm. Prioritize proven approaches.' : ''}
 ${role === 'analyst' ? 'Design a targeted version that maximizes the effect for the specific research question. Be creative with parameters.' : ''}
 ${role === 'reviewer' ? 'Design a version that tests an alternative hypothesis or unexpected angle. Challenge the obvious approach.' : ''}

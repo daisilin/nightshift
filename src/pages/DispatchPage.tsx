@@ -12,6 +12,7 @@ import { runMazeLLMTrial, computeConstrualProbabilities, type PaperMaze } from '
 import { generatePool, type SimulatedPerson } from '../lib/participantPool';
 import { buildTaskPrompt } from '../lib/personaPrompts';
 import { getParadigm } from '../data/taskBank';
+import { callClaudeApi } from '../lib/apiKey';
 import paperMazesRaw from '../data/paperMazes.json';
 // JSON imports infer number[] instead of [number, number] tuples
 import { personaBank, getPersona } from '../data/personaBank';
@@ -192,10 +193,7 @@ export function DispatchPage() {
         let paramOverrides: Record<string, any> | null = null;
         if (feedback) {
           try {
-            const res = await fetch('/api/claude', {
-              method: 'POST',
-              headers: { 'content-type': 'application/json' },
-              body: JSON.stringify({
+            const res = await callClaudeApi({
                 model: 'claude-sonnet-4-6-20250514',
                 max_tokens: 400,
                 system: `You adjust experiment parameters based on researcher feedback.
@@ -203,7 +201,6 @@ Current default params for behavioral tasks: difficulty 0.5, nTrials 30, nCondit
 Return ONLY JSON with fields to override: { "nTrials": 60, "difficulty": 0.7, "nParticipantsPerPersona": 30 }
 Only include fields that the feedback asks to change. Return {} if no param changes needed.`,
                 messages: [{ role: 'user', content: `Feedback: "${feedback}"` }],
-              }),
             });
             const data = await res.json();
             const raw = data.content?.[0]?.text ?? '';
@@ -277,10 +274,55 @@ Only include fields that the feedback asks to change. Return {} if no param chan
         const paradigm = getParadigm(session.paradigmId);
         if (!paradigm) return;
 
+        // Extract iteration feedback from brief (same logic as battery mode)
+        const feedbackMatch = session.brief.match(/\[round \d+ feedback: (.+?)\]/);
+        const feedback = feedbackMatch?.[1] || '';
+
+        // Parse param overrides from feedback via Claude
+        let paramOverrides: Record<string, any> | null = null;
+        if (feedback) {
+          try {
+            const res = await fetch('/api/claude', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify({
+                model: 'claude-sonnet-4-6-20250514',
+                max_tokens: 400,
+                system: `You adjust experiment parameters based on researcher feedback.
+Current defaults: difficulty 0.5, nTrials 30, nConditions 2, nParticipantsPerPersona 20.
+Return ONLY JSON with fields to override. Examples:
+- "increase sample size to 100" → { "nParticipantsPerPersona": 100 }
+- "make it harder, 60 trials" → { "difficulty": 0.75, "nTrials": 60 }
+- "add a third condition" → { "nConditions": 3 }
+Only include fields the feedback asks to change. Return {} if no param changes needed.`,
+                messages: [{ role: 'user', content: `Feedback: "${feedback}"` }],
+              }),
+            });
+            const data = await res.json();
+            const raw = data.content?.[0]?.text ?? '';
+            const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+            const first = cleaned.indexOf('{');
+            const last = cleaned.lastIndexOf('}');
+            if (first >= 0 && last > first) {
+              paramOverrides = JSON.parse(cleaned.slice(first, last + 1));
+            }
+          } catch { /* use design agent's proposal */ }
+        }
+
         const roles: InternRole[] = ['scout', 'analyst', 'reviewer'];
         const results = await Promise.all(roles.map(async (role) => {
           dispatch({ type: 'UPDATE_DESIGN_REPORT', payload: { role, report: { status: 'proposing' } } });
           const design = await proposeDesign(role, session.brief, paradigm, personas);
+
+          // Apply explicit param overrides on top of what the design agent proposed
+          if (paramOverrides) {
+            if (paramOverrides.nParticipantsPerPersona) design.nParticipantsPerPersona = paramOverrides.nParticipantsPerPersona;
+            if (design.params.type === 'behavioral') {
+              if (paramOverrides.nTrials) (design.params as any).nTrials = paramOverrides.nTrials;
+              if (paramOverrides.difficulty !== undefined) (design.params as any).difficulty = paramOverrides.difficulty;
+              if (paramOverrides.nConditions) (design.params as any).nConditions = paramOverrides.nConditions;
+            }
+          }
 
           dispatch({ type: 'UPDATE_DESIGN_REPORT', payload: { role, report: { status: 'simulating', design } } });
           const dataset = simulatePilot(design, personas);
