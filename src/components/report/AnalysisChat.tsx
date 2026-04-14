@@ -19,11 +19,21 @@ function buildSystemPrompt(taskNames: string[], personaNames: string[], nDataset
   const multiSteps = ['correlation-matrix', 'exploratory-fa'];
   const available = nDatasets >= 2 ? [...singleSteps, ...multiSteps] : singleSteps;
 
-  return `You are an analysis agent. You EXECUTE analyses by returning step IDs in JSON.
+  return `You are an expert analysis agent powered by Claude Opus. You EXECUTE analyses by returning step IDs in JSON, AND you can write Python code for advanced analyses.
 
 DATA IN MEMORY: ${nDatasets} task(s): ${taskNames.join(', ')}. Populations: ${personaNames.join(', ')}.
-${paperContext ? `\nORIGINAL PAPER:\n${paperContext}` : ''}
-${existingResultsSummary ? `\nALREADY COMPUTED:\n${existingResultsSummary}` : ''}
+
+${paperContext ? `ORIGINAL PAPER (full text available):\n${paperContext}` : ''}
+
+REAL HUMAN DATA FROM THE PAPER (for comparison):
+- N=161 participants, 13342 attention trials
+- High construal obstacles: mean awareness = 0.787
+- Low construal obstacles: mean awareness = 0.173
+- Construal effect (difference): 0.614
+- Paper's HGLM result: β=0.133, SE=0.003, χ²(1)=2297.21, p<10⁻¹⁶
+- Chi-squared independence test: χ²(1,N=84)=23.03, p=1.6×10⁻⁶, w=0.52
+
+${existingResultsSummary ? `ALREADY COMPUTED FROM SIMULATED DATA:\n${existingResultsSummary}` : ''}
 
 AVAILABLE ANALYSES (only these work with your current data):
 ${available.map(id => `- "${id}"`).join('\n')}
@@ -106,15 +116,16 @@ export function AnalysisChat() {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 800,
+          model: 'claude-opus-4-20250514',
+          max_tokens: 2000,
           system: buildSystemPrompt(taskNames, personaNames, datasets.length,
             // Include ACTUAL data from results, not just type summaries
             existingResults.map((r: any) => {
               if (r.type === 'text') return `${r.title}: ${r.data}`;
               if (r.type === 'table' && r.data?.rows) {
-                const preview = r.data.rows.slice(0, 5).map((row: any[]) => row.join(' | ')).join('\n');
-                return `${r.title} (${r.data.rows.length} rows):\n${r.data.headers?.join(' | ') || ''}\n${preview}`;
+                // Include all rows (Opus can handle the context)
+                const allRows = r.data.rows.map((row: any[]) => row.join(' | ')).join('\n');
+                return `${r.title} (${r.data.rows.length} rows):\n${r.data.headers?.join(' | ') || ''}\n${allRows}`;
               }
               if (r.type === 'matrix' && r.data?.values) {
                 const labels = r.data.labels || [];

@@ -106,7 +106,7 @@ export function PaperUpload({ onExtracted }: Props) {
         paradigmId: paradigmIds[0] || 'tower-of-london',
         personaIds: parsed.personaIds ?? ['college-student'],
         keyDetails: parsed.keyDetails || '',
-        rawText: text.slice(0, 6000), // first 6000 chars of paper for analysis agent
+        rawText: text.slice(0, 15000), // first 6000 chars of paper for analysis agent
       };
       setStatus(`✓ ${result.paperTitle} — ${paradigmIds.length} task(s)`);
       onExtracted(result);
