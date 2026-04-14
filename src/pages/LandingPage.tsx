@@ -63,7 +63,7 @@ export function LandingPage() {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6-20250514',
           max_tokens: 800,
           system: `You are a task design agent for nightshift, a behavioral research platform.
 

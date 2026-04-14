@@ -43,11 +43,9 @@ export async function runLLMTrial(input: LLMTrialInput): Promise<LLMTrialOutput>
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6-20250514',
         max_tokens: 300,
         system: `${input.personaPrompt}
-
-You are participating in a cognitive science experiment. Respond naturally as this person would — including realistic mistakes, uncertainty, and limitations.
 
 Task: ${input.taskDescription}
 

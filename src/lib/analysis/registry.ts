@@ -3,6 +3,7 @@ import { descriptiveStats, splitHalfReliability } from './descriptive';
 import { ceilingFloorCheck, outlierCheck } from './quality';
 import { conditionEffects, personaDifferences } from './effects';
 import { correlationMatrix, exploratoryFA } from './multivariate';
+import { construalAnalysis, construalByMaze } from './construal';
 
 // === Step Registry ===
 
@@ -15,6 +16,8 @@ const ALL_STEPS: AnalysisStepDef[] = [
   personaDifferences,
   correlationMatrix,
   exploratoryFA,
+  construalAnalysis,
+  construalByMaze,
 ];
 
 const REGISTRY = new Map<string, AnalysisStepDef>(ALL_STEPS.map(s => [s.id, s]));
@@ -60,17 +63,23 @@ export function runAnalysisPipeline(plan: AnalysisPlan, input: AnalysisInput): A
 // === Default Plans ===
 
 /** Default plan for single-task pilot */
-export function defaultSingleTaskPlan(): AnalysisPlan {
-  return {
-    steps: [
-      { id: 'descriptive-stats' },
-      { id: 'split-half-reliability' },
-      { id: 'ceiling-floor' },
-      { id: 'outlier-detection' },
-      { id: 'condition-effects' },
-      { id: 'persona-differences' },
-    ],
-  };
+export function defaultSingleTaskPlan(paradigmId?: string): AnalysisPlan {
+  const steps: AnalysisPlanStep[] = [
+    { id: 'descriptive-stats' },
+    { id: 'split-half-reliability' },
+    { id: 'ceiling-floor' },
+    { id: 'outlier-detection' },
+    { id: 'condition-effects' },
+    { id: 'persona-differences' },
+  ];
+
+  // Auto-include maze-construal analysis when relevant
+  if (paradigmId === 'maze-construal') {
+    steps.unshift({ id: 'construal-effect' });
+    steps.push({ id: 'construal-by-maze' });
+  }
+
+  return { steps };
 }
 
 /** Default plan for multi-task battery */

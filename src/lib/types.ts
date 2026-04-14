@@ -92,6 +92,21 @@ export interface SimulatedTrial {
   rt: number | null;         // null for surveys
   response: number;          // 0/1 for accuracy, 1-7 for Likert, etc.
   correct: boolean | null;   // null for surveys
+  // Rich metadata for LLM simulation and task-specific measures
+  metadata?: {
+    cot?: string;            // chain of thought (raw LLM text)
+    // Maze-construal specific
+    mazeId?: string;
+    awarenessScores?: Record<string, number>;  // obstacle label → awareness (0-1)
+    construalProb?: Record<string, number>;    // obstacle label → construal probability
+    obstaclesNoticed?: string[];
+    navigationPath?: string;
+    construalEffect?: number;  // high - low awareness difference
+    // Generic
+    confidence?: number;       // 0-1 self-rated confidence
+    strategy?: string;         // strategy description
+    [key: string]: any;
+  };
 }
 
 export interface SimulatedParticipant {

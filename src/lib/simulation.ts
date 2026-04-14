@@ -3,6 +3,19 @@ import type {
   SimulatedTrial, SimulatedParticipant, SimulatedDataset,
 } from './types';
 import { generateCohort, getTaskLoadings, computeTaskAbility, type LatentProfile } from './latentModel';
+import { simulateMazeTrial, computeConstrualProbabilities, type PaperMaze } from './mazeSimulation';
+import paperMazesRaw from '../data/paperMazes.json';
+
+const _paperMazes: PaperMaze[] = paperMazesRaw as PaperMaze[];
+
+// Cache construal probabilities per maze
+const _construalCache = new Map<string, ReturnType<typeof computeConstrualProbabilities>>();
+function getCachedConstrualProbs(maze: PaperMaze) {
+  if (!_construalCache.has(maze.id)) {
+    _construalCache.set(maze.id, computeConstrualProbabilities(maze));
+  }
+  return _construalCache.get(maze.id)!;
+}
 
 // ============================================================
 // SEEDED PRNG — Mulberry32
@@ -178,7 +191,24 @@ export function simulateParticipant(
   const loadings = getTaskLoadings(design.paradigmId);
   const taskAbility = latentProfile ? computeTaskAbility(latentProfile, loadings) : 0;
 
-  if (params.type === 'behavioral') {
+  if (params.type === 'behavioral' && design.paradigmId === 'maze-construal') {
+    // MAZE-CONSTRUAL: Use paper mazes with awareness simulation
+    const paperMazes = _paperMazes;
+    if (paperMazes.length > 0) {
+      const nTrials = Math.min(params.nTrials, paperMazes.length);
+      for (let t = 0; t < nTrials; t++) {
+        const mazeIdx = (participantIndex * 7 + t) % paperMazes.length; // deterministic maze assignment
+        const maze = paperMazes[mazeIdx];
+        const obstaclesWithConstrual = getCachedConstrualProbs(maze);
+        trials.push(simulateMazeTrial(rng, maze, obstaclesWithConstrual, persona, t, taskAbility));
+      }
+    } else {
+      // Fallback to generic behavioral trials if no paper mazes
+      for (let t = 0; t < params.nTrials; t++) {
+        trials.push(simulateBehavioralTrial(rng, params, persona, t % params.nConditions, t, taskAbility));
+      }
+    }
+  } else if (params.type === 'behavioral') {
     const trialsPerCondition = Math.floor(params.nTrials / params.nConditions);
 
     if (params.withinSubject) {

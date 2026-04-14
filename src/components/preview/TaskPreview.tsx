@@ -57,7 +57,7 @@ export function TaskPreview({ design, onClose, onDesignChange }: Props) {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6-20250514',
           max_tokens: 500,
           system: `You are a task design agent helping a researcher iterate on an experiment.
 

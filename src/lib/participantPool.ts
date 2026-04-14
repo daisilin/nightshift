@@ -172,6 +172,99 @@ const TEMPLATES: Record<string, PopulationTemplate> = {
 };
 
 // ============================================================
+// PSYCHOLOGICAL TRAIT DISTRIBUTIONS BY POPULATION
+// ============================================================
+// Each array is [P(low), P(medium), P(high)] — must sum to 1.0.
+// Based on population-level literature, NOT calibrated to any single paper.
+//
+// Sources:
+// - Big Five norms: Costa & McCrae (1992), Soto et al. (2011)
+// - Cognitive tempo: Kagan (1966), Salthouse (1996) aging effects
+// - Attentional control: Kane & Engle (2003), Diamond (2013) development
+// - Response styles: Paulhus (1991), Greenleaf (1992), Harzing (2006) cross-cultural
+
+interface TraitDistribution {
+  openness: [number, number, number];
+  conscientiousness: [number, number, number];
+  extraversion: [number, number, number];
+  agreeableness: [number, number, number];
+  neuroticism: [number, number, number];
+  cognitiveTempo: [number, number, number]; // impulsive, moderate, reflective
+  attentionalControl: [number, number, number];
+  acquiescence: [number, number, number];
+  extremeResponding: [number, number, number];
+  socialDesirability: [number, number, number];
+}
+
+const TRAIT_DISTRIBUTIONS: Record<string, TraitDistribution> = {
+  'college-student': {
+    // Young adults: moderate on most traits, slightly higher openness/neuroticism
+    openness:             [0.2, 0.5, 0.3],
+    conscientiousness:    [0.3, 0.4, 0.3],
+    extraversion:         [0.25, 0.45, 0.3],
+    agreeableness:        [0.2, 0.5, 0.3],
+    neuroticism:          [0.25, 0.4, 0.35],
+    cognitiveTempo:       [0.35, 0.4, 0.25],  // skew impulsive (young)
+    attentionalControl:   [0.25, 0.5, 0.25],
+    acquiescence:         [0.3, 0.5, 0.2],
+    extremeResponding:    [0.4, 0.45, 0.15],
+    socialDesirability:   [0.3, 0.4, 0.3],
+  },
+  'mturk-worker': {
+    // Experienced survey-takers: lower conscientiousness, higher acquiescence
+    openness:             [0.3, 0.5, 0.2],
+    conscientiousness:    [0.35, 0.4, 0.25],
+    extraversion:         [0.3, 0.5, 0.2],
+    agreeableness:        [0.25, 0.45, 0.3],
+    neuroticism:          [0.3, 0.4, 0.3],
+    cognitiveTempo:       [0.4, 0.35, 0.25],  // skew impulsive (efficiency pressure)
+    attentionalControl:   [0.3, 0.45, 0.25],
+    acquiescence:         [0.2, 0.4, 0.4],    // high acquiescence (satisficing)
+    extremeResponding:    [0.35, 0.45, 0.2],
+    socialDesirability:   [0.4, 0.4, 0.2],
+  },
+  'older-adult': {
+    // Higher conscientiousness/agreeableness, lower openness, reflective tempo
+    openness:             [0.3, 0.5, 0.2],
+    conscientiousness:    [0.1, 0.4, 0.5],    // higher with age (Roberts et al., 2006)
+    extraversion:         [0.3, 0.45, 0.25],
+    agreeableness:        [0.1, 0.4, 0.5],    // higher with age
+    neuroticism:          [0.35, 0.4, 0.25],   // lower with age (emotional regulation)
+    cognitiveTempo:       [0.1, 0.35, 0.55],   // strongly reflective (processing speed decline)
+    attentionalControl:   [0.25, 0.45, 0.3],
+    acquiescence:         [0.15, 0.35, 0.5],   // high (generational, Harzing 2006)
+    extremeResponding:    [0.4, 0.45, 0.15],
+    socialDesirability:   [0.15, 0.35, 0.5],   // high (generational norms)
+  },
+  'child': {
+    // Low conscientiousness, impulsive tempo, low attentional control, extreme responding
+    openness:             [0.15, 0.35, 0.5],   // high (curious, explorative)
+    conscientiousness:    [0.5, 0.35, 0.15],   // low (executive function still developing)
+    extraversion:         [0.2, 0.35, 0.45],   // high (energetic)
+    agreeableness:        [0.25, 0.45, 0.3],
+    neuroticism:          [0.3, 0.4, 0.3],
+    cognitiveTempo:       [0.55, 0.3, 0.15],   // strongly impulsive (Diamond, 2013)
+    attentionalControl:   [0.5, 0.35, 0.15],   // low (prefrontal cortex still maturing)
+    acquiescence:         [0.25, 0.4, 0.35],
+    extremeResponding:    [0.1, 0.3, 0.6],     // very high (lack of scale differentiation)
+    socialDesirability:   [0.4, 0.4, 0.2],     // lower (less social awareness)
+  },
+  'clinical-adhd': {
+    // Low conscientiousness, impulsive, low attentional control
+    openness:             [0.15, 0.4, 0.45],   // high (creative, divergent thinking)
+    conscientiousness:    [0.5, 0.35, 0.15],   // low (executive dysfunction)
+    extraversion:         [0.2, 0.45, 0.35],
+    agreeableness:        [0.25, 0.5, 0.25],
+    neuroticism:          [0.2, 0.35, 0.45],   // high (emotional dysregulation)
+    cognitiveTempo:       [0.6, 0.25, 0.15],   // strongly impulsive
+    attentionalControl:   [0.55, 0.3, 0.15],   // low (core deficit)
+    acquiescence:         [0.3, 0.45, 0.25],
+    extremeResponding:    [0.25, 0.4, 0.35],
+    socialDesirability:   [0.4, 0.4, 0.2],
+  },
+};
+
+// ============================================================
 // POOL GENERATION
 // ============================================================
 
@@ -225,12 +318,43 @@ export function generatePool(
     const fatigue = Math.round(sampleRange(template.fatigueRange, rng) * 100) / 100;
     const lapse = Math.round(sampleRange(template.lapseRange, rng) * 1000) / 1000;
 
+    // Generate psychologically grounded trait profile
+    const traitLevels: ('low' | 'medium' | 'high')[] = ['low', 'medium', 'high'];
+    const tempoLevels: ('impulsive' | 'moderate' | 'reflective')[] = ['impulsive', 'moderate', 'reflective'];
+
+    // Population-specific trait distributions
+    // These are based on literature, not calibrated to any specific paper
+    const traitWeights = TRAIT_DISTRIBUTIONS[populationType] ?? TRAIT_DISTRIBUTIONS['college-student'];
+    const sampleTrait = (weights: number[]) => {
+      const r = rng();
+      return r < weights[0] ? 'low' : r < weights[0] + weights[1] ? 'medium' : 'high';
+    };
+    const sampleTempo = (weights: number[]) => {
+      const r = rng();
+      return r < weights[0] ? 'impulsive' : r < weights[0] + weights[1] ? 'moderate' : 'reflective';
+    };
+
     const spec: PersonaSpec = {
       age, gender, education, occupation, location,
       techFamiliarity, taskMotivation: motivation, attentionSpan,
       relevantExperience: backstory,
       currentMood: sampleFrom(['focused', 'slightly tired', 'engaged', 'distracted', 'neutral', 'anxious'], rng),
       timeOfDay: sampleFrom(['morning', 'early afternoon', 'late afternoon', 'evening'], rng),
+      // Psychological trait dimensions
+      personality: {
+        openness: sampleTrait(traitWeights.openness) as 'low' | 'medium' | 'high',
+        conscientiousness: sampleTrait(traitWeights.conscientiousness) as 'low' | 'medium' | 'high',
+        extraversion: sampleTrait(traitWeights.extraversion) as 'low' | 'medium' | 'high',
+        agreeableness: sampleTrait(traitWeights.agreeableness) as 'low' | 'medium' | 'high',
+        neuroticism: sampleTrait(traitWeights.neuroticism) as 'low' | 'medium' | 'high',
+      },
+      cognitiveTempo: sampleTempo(traitWeights.cognitiveTempo) as 'impulsive' | 'moderate' | 'reflective',
+      attentionalControl: sampleTrait(traitWeights.attentionalControl) as 'low' | 'medium' | 'high',
+      responseStyle: {
+        acquiescence: sampleTrait(traitWeights.acquiescence) as 'low' | 'medium' | 'high',
+        extremeResponding: sampleTrait(traitWeights.extremeResponding) as 'low' | 'medium' | 'high',
+        socialDesirability: sampleTrait(traitWeights.socialDesirability) as 'low' | 'medium' | 'high',
+      },
     };
 
     pool.push({
@@ -276,7 +400,7 @@ export async function generatePoolFromDescription(
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6-20250514',
         max_tokens: 200,
         system: `Given a population description, identify the closest type and any adjustments needed.
 Available types: college-student, mturk-worker, older-adult, child, clinical-adhd

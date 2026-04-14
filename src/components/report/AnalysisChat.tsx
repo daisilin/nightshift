@@ -16,8 +16,14 @@ interface ChatMessage {
 function buildSystemPrompt(taskNames: string[], personaNames: string[], nDatasets: number, existingResultsSummary: string, paperContext: string) {
   // Only show steps that can actually run with this data
   const singleSteps = ['descriptive-stats', 'split-half-reliability', 'ceiling-floor', 'outlier-detection', 'condition-effects', 'persona-differences'];
+  const mazeSteps = ['construal-effect', 'construal-by-maze'];
   const multiSteps = ['correlation-matrix', 'exploratory-fa'];
-  const available = nDatasets >= 2 ? [...singleSteps, ...multiSteps] : singleSteps;
+  const hasMaze = taskNames.some(n => n.toLowerCase().includes('maze'));
+  const available = [
+    ...singleSteps,
+    ...(hasMaze ? mazeSteps : []),
+    ...(nDatasets >= 2 ? multiSteps : []),
+  ];
 
   return `You are an expert analysis agent powered by Claude Opus. You EXECUTE analyses by returning step IDs in JSON, AND you can write Python code for advanced analyses.
 
@@ -116,7 +122,7 @@ export function AnalysisChat() {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-opus-4-20250514',
+          model: 'claude-opus-4-6-20250514',
           max_tokens: 2000,
           system: buildSystemPrompt(taskNames, personaNames, datasets.length,
             // Include ACTUAL data from results, not just type summaries
@@ -152,9 +158,15 @@ export function AnalysisChat() {
         }),
       });
 
-      if (!res.ok) throw new Error(`${res.status}`);
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error?.message || `API returned ${res.status}`);
+      }
       const data = await res.json();
       const raw = data.content?.[0]?.text ?? '';
+      if (!raw) {
+        throw new Error('Empty response from analysis agent');
+      }
 
       // Parse Claude's JSON response — try multiple extraction methods
       let parsed: { steps: any[]; explanation: string };
@@ -194,10 +206,10 @@ export function AnalysisChat() {
         content: (parsed.explanation || 'Analysis complete.') + resultsSummary,
         results: results.length > 0 ? results : undefined,
       }]);
-    } catch {
+    } catch (err: any) {
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: 'Could not reach the analysis agent. Check your connection and try again.',
+        content: `Analysis agent error: ${err?.message || 'unknown'}. Check your connection and try again.`,
       }]);
     } finally {
       setLoading(false);

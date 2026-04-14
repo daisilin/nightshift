@@ -79,7 +79,7 @@ export function PaperUpload({ onExtracted }: Props) {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-6-20250514',
           max_tokens: 800,
           system: SYSTEM_PROMPT,
           messages: [{ role: 'user', content: `Extract the experimental design:\n\n${text.slice(0, 10000)}` }],

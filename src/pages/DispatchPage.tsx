@@ -8,9 +8,11 @@ import { simulatePilot, simulateBattery } from '../lib/simulation';
 import { computePilotMetrics } from '../lib/metrics';
 import { runAnalysisPipeline, defaultBatteryPlan, defaultSingleTaskPlan } from '../lib/analysis/registry';
 import { runLLMTrial } from '../lib/llmParticipant';
+import { runMazeLLMTrial, computeConstrualProbabilities, type PaperMaze } from '../lib/mazeSimulation';
 import { generatePool, type SimulatedPerson } from '../lib/participantPool';
 import { buildTaskPrompt } from '../lib/personaPrompts';
 import { getParadigm } from '../data/taskBank';
+import paperMazesRaw from '../data/paperMazes.json';
 import { personaBank, getPersona } from '../data/personaBank';
 import type { ExperimentDesign, SimulatedDataset, SimulatedParticipant, SimulatedTrial } from '../lib/types';
 import type { InternRole } from '../context/types';
@@ -40,7 +42,7 @@ export function DispatchPage() {
     const isBattery = battery.length > 0;
     const isLLM = isLLMFromUrl || (session as any).simulationMode === 'llm';
 
-    (async () => {
+    (async () => { try {
       // === LLM SIMULATION MODE (works for both battery and single task) ===
       if (isLLM) {
         // For single task, wrap it as a 1-task battery
@@ -50,7 +52,11 @@ export function DispatchPage() {
         }];
         const nParticipants = isLLM ? Math.min(nFromUrl, 10) : nFromUrl; // cap LLM at 10
         const paradigmIds = llmBattery.map(t => t.paradigmId);
-        const totalCalls = llmBattery.length * nParticipants * 3; // 3 trials per task per participant
+        // Maze-construal: 2 API calls per trial (navigate + probe) × 6 trials; others: 1 call × 3 trials
+        const totalCalls = llmBattery.reduce((sum, t) => {
+          if (t.paradigmId === 'maze-construal') return sum + nParticipants * 6 * 2;
+          return sum + nParticipants * 3;
+        }, 0);
         let callsDone = 0;
 
         setLlmProgress({ current: 0, total: totalCalls, status: 'generating participant pool...' });
@@ -84,33 +90,57 @@ export function DispatchPage() {
           // Run LLM trials for each participant
           const participants: SimulatedParticipant[] = [];
           const taskPrompt = buildTaskPrompt(task.paradigmId, paradigm.description);
+          const isMaze = task.paradigmId === 'maze-construal';
+          const paperMazes = isMaze ? (paperMazesRaw as PaperMaze[]) : [];
+          const mazeConstrualData = isMaze
+            ? paperMazes.map(m => ({ maze: m, obstacles: computeConstrualProbabilities(m) }))
+            : [];
+          const trialsPerParticipant = isMaze ? Math.min(6, paperMazes.length) : 3;
 
           for (let pi = 0; pi < nParticipants; pi++) {
             const person = pool[pi];
             setLlmProgress({ current: callsDone, total: totalCalls, status: `${paradigm.name}: participant ${pi + 1}/${nParticipants} (${person.demographics.gender}, ${person.demographics.age})` });
 
             const trials: SimulatedTrial[] = [];
-            // Run 3 trials per task — throttled to avoid rate limits
-            for (let ti = 0; ti < 3; ti++) {
-              // Small delay between calls to avoid 429/529
-              if (ti > 0 || pi > 0) await new Promise(r => setTimeout(r, 200));
-              const result = await runLLMTrial({
-                taskDescription: taskPrompt,
-                stimulus: `Trial ${ti + 1}: ${paradigm.description}. Respond as if you are actually doing this task.`,
-                personaPrompt: person.llmPrompt,
-                responseFormat: '{ "response": number (1-5 for survey, 0 or 1 for accuracy), "confidence": number (0-1), "reaction_time_estimate": "fast/medium/slow" }',
-              });
 
-              const rtEstimate = result.response?.reaction_time_estimate === 'fast' ? 500 : result.response?.reaction_time_estimate === 'slow' ? 2000 : 1000;
-              trials.push({
-                trialIndex: ti,
-                condition: paradigm.defaultParams.type === 'behavioral' ? (paradigm.defaultParams as any).conditionLabels?.[ti % 2] || 'default' : 'survey',
-                rt: rtEstimate + result.latencyMs * 0.1, // API latency as proxy
-                response: result.response?.response ?? Math.round(Math.random()),
-                correct: result.response?.response === 1 ? true : result.response?.response === 0 ? false : null,
-              });
-              callsDone++;
-              setLlmProgress({ current: callsDone, total: totalCalls, status: `${paradigm.name}: participant ${pi + 1}, trial ${ti + 1}/3` });
+            if (isMaze) {
+              // === MAZE-CONSTRUAL: Two-phase trials (navigate + awareness probe) ===
+              for (let ti = 0; ti < trialsPerParticipant; ti++) {
+                if (ti > 0 || pi > 0) await new Promise(r => setTimeout(r, 200));
+                const mazeIdx = (pi * 7 + ti) % mazeConstrualData.length;
+                const { maze, obstacles } = mazeConstrualData[mazeIdx];
+                const trial = await runMazeLLMTrial(person.llmPrompt, maze, obstacles, ti);
+                trials.push(trial);
+                callsDone += 2; // navigation + probe = 2 API calls
+                setLlmProgress({ current: callsDone, total: totalCalls, status: `${paradigm.name}: P${pi + 1}, maze ${ti + 1}/${trialsPerParticipant}` });
+              }
+            } else {
+              // === GENERIC TASK: standard trial format ===
+              for (let ti = 0; ti < trialsPerParticipant; ti++) {
+                if (ti > 0 || pi > 0) await new Promise(r => setTimeout(r, 200));
+                const result = await runLLMTrial({
+                  taskDescription: taskPrompt,
+                  stimulus: `Trial ${ti + 1}: ${paradigm.description}. Respond as if you are actually doing this task.`,
+                  personaPrompt: person.llmPrompt,
+                  responseFormat: '{ "response": number (0 or 1 for accuracy, 1-5 for survey), "confidence": number (0-1), "reaction_time_estimate": "fast/medium/slow" }',
+                });
+
+                const rtEstimate = result.response?.reaction_time_estimate === 'fast' ? 500 : result.response?.reaction_time_estimate === 'slow' ? 2000 : 1000;
+                const resp = typeof result.response?.response === 'number' ? result.response.response : Math.round(Math.random());
+                trials.push({
+                  trialIndex: ti,
+                  condition: paradigm.defaultParams.type === 'behavioral' ? (paradigm.defaultParams as any).conditionLabels?.[ti % 2] || 'default' : 'survey',
+                  rt: rtEstimate + result.latencyMs * 0.1,
+                  response: resp,
+                  correct: resp === 1 ? true : resp === 0 ? false : null,
+                  metadata: {
+                    cot: result.rawText,
+                    confidence: result.response?.confidence,
+                  },
+                });
+                callsDone++;
+                setLlmProgress({ current: callsDone, total: totalCalls, status: `${paradigm.name}: P${pi + 1}, trial ${ti + 1}/${trialsPerParticipant}` });
+              }
             }
 
             participants.push({
@@ -132,7 +162,7 @@ export function DispatchPage() {
         }
 
         // Run analysis
-        const plan = allDatasets.length > 1 ? defaultBatteryPlan(allDatasets.length) : defaultSingleTaskPlan();
+        const plan = allDatasets.length > 1 ? defaultBatteryPlan(allDatasets.length) : defaultSingleTaskPlan(paradigmIds[0]);
         const analysisResults = runAnalysisPipeline(plan, { datasets: allDatasets, designs: allDesigns, paradigms, personas });
         dispatch({ type: 'SET_ANALYSIS_RESULTS', payload: analysisResults });
 
@@ -165,7 +195,7 @@ export function DispatchPage() {
               method: 'POST',
               headers: { 'content-type': 'application/json' },
               body: JSON.stringify({
-                model: 'claude-sonnet-4-20250514',
+                model: 'claude-sonnet-4-6-20250514',
                 max_tokens: 400,
                 system: `You adjust experiment parameters based on researcher feedback.
 Current default params for behavioral tasks: difficulty 0.5, nTrials 30, nConditions 2-3, nParticipantsPerPersona 20.
@@ -263,7 +293,7 @@ Only include fields that the feedback asks to change. Return {} if no param chan
 
         // Analysis on best design
         const bestIdx = results.reduce((bi, r, i) => r.metrics.overallScore > results[bi].metrics.overallScore ? i : bi, 0);
-        const singleResults = runAnalysisPipeline(defaultSingleTaskPlan(), {
+        const singleResults = runAnalysisPipeline(defaultSingleTaskPlan(session.paradigmId), {
           datasets: [results[bestIdx].dataset], designs: [results[bestIdx].design], paradigms: [paradigm], personas,
         });
         dispatch({ type: 'SET_ANALYSIS_RESULTS', payload: singleResults });
@@ -279,7 +309,12 @@ Only include fields that the feedback asks to change. Return {} if no param chan
 
       dispatch({ type: 'SET_STEP', payload: 'report' });
       nav('/report');
-    })();
+    } catch (err) {
+      console.error('Dispatch error:', err);
+      // Still navigate to report even on partial failure
+      dispatch({ type: 'SET_STEP', payload: 'report' });
+      nav('/report');
+    } })();
   }, [session, dispatch, nav]);
 
   if (!session) return <div className="min-h-screen flex items-center justify-center text-text-3">loading...</div>;
