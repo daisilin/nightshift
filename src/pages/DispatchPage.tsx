@@ -13,6 +13,7 @@ import { generatePool, type SimulatedPerson } from '../lib/participantPool';
 import { buildTaskPrompt } from '../lib/personaPrompts';
 import { getParadigm } from '../data/taskBank';
 import paperMazesRaw from '../data/paperMazes.json';
+// JSON imports infer number[] instead of [number, number] tuples
 import { personaBank, getPersona } from '../data/personaBank';
 import type { ExperimentDesign, SimulatedDataset, SimulatedParticipant, SimulatedTrial } from '../lib/types';
 import type { InternRole } from '../context/types';
@@ -91,7 +92,7 @@ export function DispatchPage() {
           const participants: SimulatedParticipant[] = [];
           const taskPrompt = buildTaskPrompt(task.paradigmId, paradigm.description);
           const isMaze = task.paradigmId === 'maze-construal';
-          const paperMazes = isMaze ? (paperMazesRaw as PaperMaze[]) : [];
+          const paperMazes = isMaze ? (paperMazesRaw as unknown as PaperMaze[]) : [];
           const mazeConstrualData = isMaze
             ? paperMazes.map(m => ({ maze: m, obstacles: computeConstrualProbabilities(m) }))
             : [];

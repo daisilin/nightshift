@@ -6,7 +6,7 @@ import { generateCohort, getTaskLoadings, computeTaskAbility, type LatentProfile
 import { simulateMazeTrial, computeConstrualProbabilities, type PaperMaze } from './mazeSimulation';
 import paperMazesRaw from '../data/paperMazes.json';
 
-const _paperMazes: PaperMaze[] = paperMazesRaw as PaperMaze[];
+const _paperMazes: PaperMaze[] = paperMazesRaw as unknown as PaperMaze[];
 
 // Cache construal probabilities per maze
 const _construalCache = new Map<string, ReturnType<typeof computeConstrualProbabilities>>();

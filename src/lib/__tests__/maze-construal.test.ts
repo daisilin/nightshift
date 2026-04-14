@@ -22,7 +22,7 @@ import { mean } from '../metrics';
 import paperMazesRaw from '../../data/paperMazes.json';
 import type { ExperimentDesign } from '../types';
 
-const paperMazes = paperMazesRaw as PaperMaze[];
+const paperMazes = paperMazesRaw as unknown as PaperMaze[];
 const college = personaBank.find(p => p.id === 'college-student')!;
 
 function makeDesign(n = 50): ExperimentDesign {
