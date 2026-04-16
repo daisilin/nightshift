@@ -17,11 +17,38 @@ export function hasApiKey(): boolean {
 }
 
 /**
- * Drop-in replacement for fetch('/api/claude', ...).
- * Automatically attaches the stored user API key as a header when present.
+ * Call Claude API.
+ *
+ * Strategy:
+ * 1. If user has a stored API key (BYOK), call Anthropic directly from the browser
+ * 2. Otherwise, try the server proxy at /api/claude
+ *
+ * Direct browser calls avoid the Vercel serverless function routing issues.
+ * CORS is handled by Anthropic's API for browser requests with the right headers.
  */
 export async function callClaudeApi(body: object): Promise<Response> {
   const storedKey = getStoredApiKey();
+
+  if (storedKey) {
+    // Direct call to Anthropic API (bypasses server proxy entirely)
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-api-key': storedKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
+        body: JSON.stringify(body),
+      });
+      return res;
+    } catch {
+      // If direct call fails (e.g., CORS), fall through to proxy
+    }
+  }
+
+  // Fallback: server proxy
   return fetch('/api/claude', {
     method: 'POST',
     headers: {
