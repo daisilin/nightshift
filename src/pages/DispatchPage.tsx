@@ -191,7 +191,7 @@ export function DispatchPage() {
                 trials.push({
                   trialIndex: bi, condition: `${b.nBack}-back`,
                   rt: 0, response: b.dPrime, correct: b.accuracy > 0.6,
-                  metadata: { nBack: b.nBack, hitRate: b.hitRate, falseAlarmRate: b.falseAlarmRate, dPrime: b.dPrime, ...nbScore },
+                  metadata: { nBack: b.nBack, blockHitRate: b.hitRate, blockFalseAlarmRate: b.falseAlarmRate, blockDPrime: b.dPrime, overallDPrime: nbScore.dPrime, overallHitRate: nbScore.hitRate },
                 });
               }
             } else if (task.paradigmId === 'corsi-block') {
