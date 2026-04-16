@@ -30,6 +30,8 @@ export function LandingPage() {
   const [chatLoading, setChatLoading] = useState(false);
   const [simMode, setSimMode] = useState<'parametric' | 'llm'>('parametric');
   const [nParticipants, setNParticipants] = useState(20);
+  const [modelPool, setModelPool] = useState<'sonnet' | 'diverse' | 'capability-spread'>('sonnet');
+  const [calibrationEnabled, setCalibrationEnabled] = useState(true);
   const [paperContext, setPaperContext] = useState('');
   const [showKeyModal, setShowKeyModal] = useState(false);
 
@@ -51,6 +53,10 @@ export function LandingPage() {
     const params = new URLSearchParams();
     if (simMode === 'llm') params.set('mode', 'llm');
     params.set('n', String(nParticipants));
+    if (simMode === 'llm') {
+      params.set('pool', modelPool);
+      params.set('calibrated', calibrationEnabled ? '1' : '0');
+    }
     nav(`/dispatch?${params.toString()}`);
   };
 
@@ -297,16 +303,37 @@ Be conversational. Explain WHY. Suggest variants and point out design gaps.`,
                     LLM agents (slower, richer)
                   </button>
                 </div>
+                {simMode === 'llm' && (<>
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] text-text-3">model pool:</span>
+                  {([['sonnet', 'Sonnet (standard)'], ['diverse', 'Multi-model diverse'], ['capability-spread', 'Capability spread']] as const).map(([key, label]) => (
+                    <button key={key} onClick={() => setModelPool(key)}
+                      className={`px-2.5 py-1 rounded-lg text-[10px] cursor-pointer border ${modelPool === key ? 'bg-orchid/10 border-orchid/25 text-text' : 'border-orchid/8 text-text-3'}`}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-[10px] text-text-3">calibration:</span>
+                  <button onClick={() => setCalibrationEnabled(!calibrationEnabled)}
+                    className={`px-2.5 py-1 rounded-lg text-[10px] cursor-pointer border ${calibrationEnabled ? 'bg-sage/15 border-sage/30 text-text' : 'border-orchid/8 text-text-3'}`}>
+                    {calibrationEnabled ? 'cognitive calibration ON' : 'calibration OFF'}
+                  </button>
+                  <span className="text-[9px] text-text-4">
+                    {calibrationEnabled ? 'ctx+temp mapped from persona traits (research-validated)' : 'all participants use same defaults'}
+                  </span>
+                </div>
+                </>)}
                 <div className="flex items-center gap-3">
                   <span className="text-[10px] text-text-3">participants:</span>
-                  {(simMode === 'llm' ? [3, 5, 10] : [20, 50, 100, 500]).map(n => (
+                  {(simMode === 'llm' ? [3, 5, 10, 20, 30] : [20, 50, 100, 500]).map(n => (
                     <button key={n} onClick={() => setNParticipants(n)}
                       className={`px-2 py-0.5 rounded text-[10px] cursor-pointer border ${nParticipants === n ? 'bg-orchid/10 border-orchid/25 text-text' : 'border-orchid/8 text-text-3'}`}>
                       {n}
                     </button>
                   ))}
                   <span className="text-[10px] text-text-4">
-                    {simMode === 'llm' ? `~${nParticipants * selectedTasks.length * 3 * 1.5}s` : 'instant'}
+                    {simMode === 'llm' ? `~${Math.round(nParticipants * selectedTasks.length * 2)}min` : 'instant'}
                   </span>
                 </div>
               </div>
