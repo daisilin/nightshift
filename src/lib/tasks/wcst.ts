@@ -56,25 +56,27 @@ const RULE_ORDER: SortingRule[] = ['color', 'shape', 'number', 'color', 'shape',
 // STIMULUS GENERATION
 // ============================================================
 
-/** Generate a stimulus card that is unambiguous (matches different key cards on different dimensions).
- *  In real WCST, each stimulus should match DIFFERENT key cards under different sorting rules,
- *  so the feedback clearly distinguishes which rule is correct. */
-function generateStimulusCard(rng: () => number): WCSTCard {
-  for (let attempt = 0; attempt < 100; attempt++) {
-    const card: WCSTCard = {
-      color: COLORS[Math.floor(rng() * COLORS.length)],
-      shape: SHAPES[Math.floor(rng() * SHAPES.length)],
-      number: NUMBERS[Math.floor(rng() * NUMBERS.length)],
-    };
-    // Check: does it match different key cards under different rules?
-    const colorMatch = KEY_CARDS.findIndex(kc => kc.color === card.color);
-    const shapeMatch = KEY_CARDS.findIndex(kc => kc.shape === card.shape);
-    const numberMatch = KEY_CARDS.findIndex(kc => kc.number === card.number);
-    const unique = new Set([colorMatch, shapeMatch, numberMatch]);
-    if (unique.size >= 2) return card; // at least 2 different key cards matched
+/**
+ * Standard WCST 64-card stimulus deck (Grant & Berg, 1948).
+ * All 4×4×4 combinations of color × shape × number.
+ * Each card matches one key card by color, a potentially different one by shape,
+ * and a potentially different one by number.
+ */
+const STIMULUS_DECK: WCSTCard[] = (() => {
+  const deck: WCSTCard[] = [];
+  for (const color of COLORS) {
+    for (const shape of SHAPES) {
+      for (const number of NUMBERS) {
+        deck.push({ color, shape, number });
+      }
+    }
   }
-  // Fallback (shouldn't happen often)
-  return { color: COLORS[Math.floor(rng() * COLORS.length)], shape: SHAPES[Math.floor(rng() * SHAPES.length)], number: NUMBERS[Math.floor(rng() * NUMBERS.length)] };
+  return deck;
+})();
+
+/** Draw a stimulus card from the shuffled standard deck. */
+function generateStimulusCard(rng: () => number): WCSTCard {
+  return STIMULUS_DECK[Math.floor(rng() * STIMULUS_DECK.length)];
 }
 
 /** Which key card does a stimulus match under a given rule? Returns 1-4. */
