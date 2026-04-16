@@ -1,0 +1,231 @@
+{
+  "wcst": {
+    "emma": {
+      "perseverative_errors": 9,
+      "total_errors": 18,
+      "categories_completed": 4,
+      "accuracy": 0.71875
+    },
+    "james": {
+      "perseverative_errors": 7,
+      "total_errors": 9,
+      "categories_completed": 5,
+      "accuracy": 0.859375
+    },
+    "dorothy": {
+      "perseverative_errors": 5,
+      "total_errors": 11,
+      "categories_completed": 4,
+      "accuracy": 0.828125
+    },
+    "tyler": {
+      "perseverative_errors": 7,
+      "total_errors": 17,
+      "categories_completed": 4,
+      "accuracy": 0.734375
+    },
+    "priya": {
+      "perseverative_errors": 7,
+      "total_errors": 8,
+      "categories_completed": 5,
+      "accuracy": 0.875
+    }
+  },
+  "two_step": {
+    "emma": {
+      "model_based_index": 0.17647058823529416,
+      "stay_cr": 1.0,
+      "stay_cn": 0.8235294117647058,
+      "stay_rr": 1.0,
+      "stay_rn": 1.0,
+      "reward_rate": 0.6375
+    },
+    "james": {
+      "model_based_index": -0.02941176470588236,
+      "stay_cr": 0.9705882352941176,
+      "stay_cn": 1.0,
+      "stay_rr": 1.0,
+      "stay_rn": 1.0,
+      "reward_rate": 0.625
+    },
+    "dorothy": {
+      "model_based_index": 0.01764705882352946,
+      "stay_cr": 1.0,
+      "stay_cn": 0.8823529411764706,
+      "stay_rr": 1.0,
+      "stay_rn": 0.9,
+      "reward_rate": 0.6625
+    },
+    "tyler": {
+      "mb_index": -0.006493506493506551,
+      "stay_cr": 1.0,
+      "stay_cn": 0.8636363636363636,
+      "stay_rr": 1.0,
+      "stay_rn": 0.8571428571428571,
+      "reward_rate": 0.5375
+    },
+    "priya": {
+      "mb_index": 0.08333333333333337,
+      "stay_cr": 1.0,
+      "stay_cn": 0.9166666666666666,
+      "stay_rr": 1.0,
+      "stay_rn": 1.0,
+      "reward_rate": 0.625
+    }
+  },
+  "maze": {
+    "emma": {
+      "construal_effect": 0.06870026525198941,
+      "mean_high": 0.4379310344827586,
+      "mean_low": 0.3692307692307692,
+      "n_high": 29,
+      "n_low": 13
+    },
+    "james": {
+      "construal_effect": -0.052519893899204306,
+      "mean_high": 0.8551724137931035,
+      "mean_low": 0.9076923076923078,
+      "n_high": 29,
+      "n_low": 13
+    },
+    "dorothy": {
+      "construal_effect": -0.09734748010610084,
+      "mean_high": 0.5103448275862069,
+      "mean_low": 0.6076923076923078,
+      "n_high": 29,
+      "n_low": 13
+    },
+    "tyler": {
+      "construal_effect": 0.05437665782493367,
+      "mean_high": 0.3620689655172414,
+      "mean_low": 0.3076923076923077,
+      "n_high": 29,
+      "n_low": 13
+    },
+    "priya": {
+      "construal_effect": -0.08408488063660469,
+      "mean_high": 0.7620689655172415,
+      "mean_low": 0.8461538461538461,
+      "n_high": 29,
+      "n_low": 13
+    }
+  },
+  "tol": {
+    "emma": {
+      "weighted_score": 0,
+      "proportion_optimal": 0.0,
+      "proportion_solved": 0.0
+    },
+    "james": {
+      "weighted_score": 0,
+      "proportion_optimal": 0.0,
+      "proportion_solved": 0.08333333333333333
+    },
+    "dorothy": {
+      "weighted_score": 0,
+      "proportion_optimal": 0.0,
+      "proportion_solved": 0.0
+    },
+    "tyler": {
+      "weighted_score": 0,
+      "proportion_optimal": 0.0,
+      "proportion_solved": 0.0
+    },
+    "priya": {
+      "weighted_score": 0,
+      "proportion_optimal": 0.0,
+      "proportion_solved": 0.0
+    }
+  },
+  "nback": {
+    "emma": {
+      "dprime": 1.9964349100993792,
+      "hit_rate": 0.8421052631578947,
+      "fa_rate": 0.13725490196078433
+    },
+    "james": {
+      "dprime": 2.606370681017774,
+      "hit_rate": 0.625,
+      "fa_rate": 0.0
+    },
+    "dorothy": {
+      "dprime": 2.3106303627553078,
+      "hit_rate": 0.8,
+      "fa_rate": 0.05454545454545454
+    },
+    "tyler": {
+      "dprime": 2.4610196109822953,
+      "hit_rate": 0.9130434782608695,
+      "fa_rate": 0.10638297872340426
+    },
+    "priya": {
+      "dprime": 2.7352805850584643,
+      "hit_rate": 0.6896551724137931,
+      "fa_rate": 0.0
+    }
+  },
+  "corsi": {
+    "emma": {
+      "corsi_score": 126,
+      "max_span": 9,
+      "total_correct": 14
+    },
+    "james": {
+      "corsi_score": 126,
+      "max_span": 9,
+      "total_correct": 14
+    },
+    "dorothy": {
+      "corsi_score": 126,
+      "max_span": 9,
+      "total_correct": 14
+    },
+    "tyler": {
+      "corsi_score": 126,
+      "max_span": 9,
+      "total_correct": 14
+    },
+    "priya": {
+      "corsi_score": 126,
+      "max_span": 9,
+      "total_correct": 14
+    }
+  },
+  "fiar": {
+    "emma": {
+      "win_rate": 0.5,
+      "perf_score": 10.625,
+      "wins": 4,
+      "losses": 4,
+      "draws": 0
+    },
+    "james": {
+      "win_rate": 0.75,
+      "perf_score": 26.5625,
+      "wins": 6,
+      "losses": 2,
+      "draws": 0
+    },
+    "dorothy": {
+      "win_rate": 0.75,
+      "perf_score": 31.25,
+      "wins": 6,
+      "losses": 2,
+      "draws": 0
+    },
+    "tyler": {
+      "win_rate": 0.625,
+      "perf_score": 26.984375,
+      "wins": 5,
+      "losses": 2,
+      "draws": 1
+    },
+    "priya": {
+      "win_rate": 0.375,
+      "perf_score": 1.2031249999999991,
+      "wins": 3,
+      "losses": 4,
+      "draws": 1
+    }
+  }
+}

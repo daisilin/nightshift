@@ -1,0 +1,321 @@
+{
+  "wcst": {
+    "haiku-4.5_low": {
+      "pers": 0,
+      "errs": 17,
+      "cats": 0,
+      "acc": 0.46875,
+      "model": "haiku-4.5",
+      "persona": "low"
+    },
+    "haiku-4.5_med": {
+      "pers": 0,
+      "errs": 20,
+      "cats": 0,
+      "acc": 0.375,
+      "model": "haiku-4.5",
+      "persona": "med"
+    },
+    "haiku-4.5_high": {
+      "pers": 0,
+      "errs": 21,
+      "cats": 0,
+      "acc": 0.34375,
+      "model": "haiku-4.5",
+      "persona": "high"
+    },
+    "sonnet-4.6_low": {
+      "pers": 0,
+      "errs": 18,
+      "cats": 0,
+      "acc": 0.4375,
+      "model": "sonnet-4.6",
+      "persona": "low"
+    },
+    "sonnet-4.6_med": {
+      "pers": 2,
+      "errs": 12,
+      "cats": 1,
+      "acc": 0.625,
+      "model": "sonnet-4.6",
+      "persona": "med"
+    },
+    "sonnet-4.6_high": {
+      "pers": 4,
+      "errs": 17,
+      "cats": 1,
+      "acc": 0.46875,
+      "model": "sonnet-4.6",
+      "persona": "high"
+    },
+    "opus-4.6_low": {
+      "pers": 2,
+      "errs": 2,
+      "cats": 2,
+      "acc": 0.9375,
+      "model": "opus-4.6",
+      "persona": "low"
+    },
+    "opus-4.6_med": {
+      "pers": 2,
+      "errs": 3,
+      "cats": 2,
+      "acc": 0.90625,
+      "model": "opus-4.6",
+      "persona": "med"
+    },
+    "opus-4.6_high": {
+      "pers": 2,
+      "errs": 13,
+      "cats": 1,
+      "acc": 0.59375,
+      "model": "opus-4.6",
+      "persona": "high"
+    },
+    "qwen3-32b_low": {
+      "pers": 0,
+      "errs": 17,
+      "cats": 0,
+      "acc": 0.46875,
+      "model": "qwen3-32b",
+      "persona": "low"
+    },
+    "qwen3-32b_med": {
+      "pers": 0,
+      "errs": 16,
+      "cats": 0,
+      "acc": 0.5,
+      "model": "qwen3-32b",
+      "persona": "med"
+    },
+    "qwen3-32b_high": {
+      "pers": 0,
+      "errs": 21,
+      "cats": 0,
+      "acc": 0.34375,
+      "model": "qwen3-32b",
+      "persona": "high"
+    },
+    "qwen3-235b_low": {
+      "pers": 0,
+      "errs": 10,
+      "cats": 0,
+      "acc": 0.6875,
+      "model": "qwen3-235b",
+      "persona": "low"
+    },
+    "qwen3-235b_med": {
+      "pers": 0,
+      "errs": 18,
+      "cats": 0,
+      "acc": 0.4375,
+      "model": "qwen3-235b",
+      "persona": "med"
+    },
+    "qwen3-235b_high": {
+      "pers": 0,
+      "errs": 12,
+      "cats": 0,
+      "acc": 0.625,
+      "model": "qwen3-235b",
+      "persona": "high"
+    },
+    "gemma-27b_low": {
+      "pers": 0,
+      "errs": 21,
+      "cats": 0,
+      "acc": 0.34375,
+      "model": "gemma-27b",
+      "persona": "low"
+    },
+    "gemma-27b_med": {
+      "pers": 6,
+      "errs": 9,
+      "cats": 2,
+      "acc": 0.71875,
+      "model": "gemma-27b",
+      "persona": "med"
+    },
+    "gemma-27b_high": {
+      "pers": 0,
+      "errs": 22,
+      "cats": 0,
+      "acc": 0.3125,
+      "model": "gemma-27b",
+      "persona": "high"
+    },
+    "mistral-lg_low": {
+      "pers": 0,
+      "errs": 14,
+      "cats": 0,
+      "acc": 0.5625,
+      "model": "mistral-lg",
+      "persona": "low"
+    },
+    "mistral-lg_med": {
+      "pers": 0,
+      "errs": 17,
+      "cats": 0,
+      "acc": 0.46875,
+      "model": "mistral-lg",
+      "persona": "med"
+    },
+    "mistral-lg_high": {
+      "pers": 0,
+      "errs": 18,
+      "cats": 0,
+      "acc": 0.4375,
+      "model": "mistral-lg",
+      "persona": "high"
+    }
+  },
+  "corsi": {
+    "haiku-4.5_low": {
+      "corsi_score": 6,
+      "max_span": 6,
+      "total_correct": 6,
+      "model": "haiku-4.5",
+      "persona": "low"
+    },
+    "haiku-4.5_med": {
+      "corsi_score": 10,
+      "max_span": 8,
+      "total_correct": 10,
+      "model": "haiku-4.5",
+      "persona": "med"
+    },
+    "haiku-4.5_high": {
+      "corsi_score": 14,
+      "max_span": 9,
+      "total_correct": 14,
+      "model": "haiku-4.5",
+      "persona": "high"
+    },
+    "sonnet-4.6_low": {
+      "corsi_score": 6,
+      "max_span": 6,
+      "total_correct": 6,
+      "model": "sonnet-4.6",
+      "persona": "low"
+    },
+    "sonnet-4.6_med": {
+      "corsi_score": 10,
+      "max_span": 8,
+      "total_correct": 10,
+      "model": "sonnet-4.6",
+      "persona": "med"
+    },
+    "sonnet-4.6_high": {
+      "corsi_score": 14,
+      "max_span": 9,
+      "total_correct": 14,
+      "model": "sonnet-4.6",
+      "persona": "high"
+    },
+    "opus-4.6_low": {
+      "corsi_score": 6,
+      "max_span": 6,
+      "total_correct": 6,
+      "model": "opus-4.6",
+      "persona": "low"
+    },
+    "opus-4.6_med": {
+      "corsi_score": 10,
+      "max_span": 8,
+      "total_correct": 10,
+      "model": "opus-4.6",
+      "persona": "med"
+    },
+    "opus-4.6_high": {
+      "corsi_score": 14,
+      "max_span": 9,
+      "total_correct": 14,
+      "model": "opus-4.6",
+      "persona": "high"
+    },
+    "qwen3-32b_low": {
+      "corsi_score": 6,
+      "max_span": 6,
+      "total_correct": 6,
+      "model": "qwen3-32b",
+      "persona": "low"
+    },
+    "qwen3-32b_med": {
+      "corsi_score": 8,
+      "max_span": 8,
+      "total_correct": 8,
+      "model": "qwen3-32b",
+      "persona": "med"
+    },
+    "qwen3-32b_high": {
+      "corsi_score": 13,
+      "max_span": 9,
+      "total_correct": 13,
+      "model": "qwen3-32b",
+      "persona": "high"
+    },
+    "qwen3-235b_low": {
+      "corsi_score": 6,
+      "max_span": 6,
+      "total_correct": 6,
+      "model": "qwen3-235b",
+      "persona": "low"
+    },
+    "qwen3-235b_med": {
+      "corsi_score": 9,
+      "max_span": 8,
+      "total_correct": 9,
+      "model": "qwen3-235b",
+      "persona": "med"
+    },
+    "qwen3-235b_high": {
+      "corsi_score": 11,
+      "max_span": 9,
+      "total_correct": 11,
+      "model": "qwen3-235b",
+      "persona": "high"
+    },
+    "gemma-27b_low": {
+      "corsi_score": 6,
+      "max_span": 6,
+      "total_correct": 6,
+      "model": "gemma-27b",
+      "persona": "low"
+    },
+    "gemma-27b_med": {
+      "corsi_score": 8,
+      "max_span": 8,
+      "total_correct": 8,
+      "model": "gemma-27b",
+      "persona": "med"
+    },
+    "gemma-27b_high": {
+      "corsi_score": 14,
+      "max_span": 9,
+      "total_correct": 14,
+      "model": "gemma-27b",
+      "persona": "high"
+    },
+    "mistral-lg_low": {
+      "corsi_score": 6,
+      "max_span": 6,
+      "total_correct": 6,
+      "model": "mistral-lg",
+      "persona": "low"
+    },
+    "mistral-lg_med": {
+      "corsi_score": 9,
+      "max_span": 8,
+      "total_correct": 9,
+      "model": "mistral-lg",
+      "persona": "med"
+    },
+    "mistral-lg_high": {
+      "corsi_score": 13,
+      "max_span": 9,
+      "total_correct": 13,
+      "model": "mistral-lg",
+      "persona": "high"
+    }
+  }
+}

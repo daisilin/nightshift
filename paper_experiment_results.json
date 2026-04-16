@@ -1,0 +1,805 @@
+{
+  "paper1": {
+    "trials": [
+      {
+        "cot_snippet": "Let me think through this carefully.\n\nFirst, let me map out the grid. It's 11 columns wide and 11 rows tall. Let me index rows 0-10 (top to bottom) and columns 0-10 (left to right).\n\n**S** is at row 1",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 1.0,
+          "3": 0.5,
+          "4": 1.0,
+          "5": 0.5,
+          "6": 0.0
+        },
+        "participant": "p1",
+        "maze_id": "grid-0-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "high",
+          "2": "high",
+          "3": "low",
+          "4": "high",
+          "5": "high",
+          "6": "low"
+        }
+      },
+      {
+        "cot_snippet": "Let me think through this carefully.\n\nFirst, let me map out the maze dimensions - it's 11 columns wide and 11 rows tall.\n\nLet me label rows 0-10 from top, columns 0-10 from left:\n- S is at row 10, col",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.7,
+          "3": 0.5,
+          "4": 0.9,
+          "5": 0.7,
+          "6": 1.0
+        },
+        "participant": "p1",
+        "maze_id": "grid-1-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "high",
+          "2": "low",
+          "3": "high",
+          "4": "low",
+          "5": "high",
+          "6": "low"
+        }
+      },
+      {
+        "cot_snippet": "Let me think through this carefully.\n\nFirst, let me map out the grid. It's 11 columns wide and 11 rows tall. Let me index rows 0-10 (top to bottom) and columns 0-10 (left to right).\n\n**Reading the maz",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "participant": "p1",
+        "maze_id": "grid-2-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "high",
+          "2": "high",
+          "3": "high",
+          "4": "high",
+          "5": "low",
+          "6": "low"
+        }
+      },
+      {
+        "cot_snippet": "Let me think through this carefully.\n\nFirst, let me map out the maze. It's 11 columns wide and 11 rows tall. Let me index rows 0-10 (top to bottom) and columns 0-10 (left to right).\n\n**Key landmarks:*",
+        "awareness": {
+          "0": 0.5,
+          "1": 1.0,
+          "2": 0.5,
+          "3": 1.0,
+          "4": 1.0,
+          "5": 0.5,
+          "6": 0.0
+        },
+        "participant": "p1",
+        "maze_id": "grid-3-0",
+        "construal_labels": {
+          "0": "low",
+          "1": "low",
+          "2": "low",
+          "3": "high",
+          "4": "high",
+          "5": "high",
+          "6": "high"
+        }
+      },
+      {
+        "cot_snippet": "Let me map this out carefully.\n\nThe maze is 11 columns (0-10) and 11 rows (0-10), where row 0 is the top and row 10 is the bottom.\n\n**Identifying key elements:**\n- S is at row 10, col 0\n- G is at row ",
+        "awareness": {
+          "0": 0.9,
+          "1": 0.3,
+          "2": 0.5,
+          "3": 0.4,
+          "4": 1.0,
+          "5": 0.9,
+          "6": 0.8
+        },
+        "participant": "p1",
+        "maze_id": "grid-4-0",
+        "construal_labels": {
+          "0": "low",
+          "1": "high",
+          "2": "high",
+          "3": "high",
+          "4": "high",
+          "5": "high",
+          "6": "high"
+        }
+      },
+      {
+        "cot_snippet": "Let me think through this carefully.\n\nFirst, let me map out the grid. It's 11 columns (0-10) and 11 rows (0-10), with S at bottom-left (row 10, col 0) and G at top-right (row 0, col 10).\n\nLet me trace",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "participant": "p1",
+        "maze_id": "grid-5-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "low",
+          "2": "high",
+          "3": "high",
+          "4": "high",
+          "5": "high",
+          "6": "low"
+        }
+      },
+      {
+        "cot_snippet": "Let me think through this carefully. I'm a visual person so let me map this out mentally...\n\nOkay, so I can see the grid. Let me orient myself. S is at the bottom-left area, G is at the top-right. So ",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.3,
+          "3": 0.4,
+          "4": 0.5,
+          "5": 0.3,
+          "6": 0.2
+        },
+        "participant": "p2",
+        "maze_id": "grid-0-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "high",
+          "2": "high",
+          "3": "low",
+          "4": "high",
+          "5": "high",
+          "6": "low"
+        }
+      },
+      {
+        "cot_snippet": "*leans forward and studies the grid carefully*\n\nOkay, let me get my bearings first. So I'm at S which is bottom-left area, and G is top-right... no wait, top-middle-right. Let me map this out.\n\nThe gr",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.0,
+          "2": 0.0,
+          "3": 0.5,
+          "4": 0.0,
+          "5": 0.0,
+          "6": 0.0
+        },
+        "participant": "p2",
+        "maze_id": "grid-1-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "high",
+          "2": "low",
+          "3": "high",
+          "4": "low",
+          "5": "high",
+          "6": "low"
+        }
+      },
+      {
+        "cot_snippet": "Let me think through this visually - I do better when I map things out carefully.\n\nOkay, so the maze is 11 columns wide and 11 rows tall. Let me label rows 0-10 from top, columns 0-10 from left.\n\n**S*",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "participant": "p2",
+        "maze_id": "grid-2-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "high",
+          "2": "high",
+          "3": "high",
+          "4": "high",
+          "5": "low",
+          "6": "low"
+        }
+      },
+      {
+        "cot_snippet": "*leans forward and studies the grid carefully*\n\nOkay, let me map this out. So I'm at S which is bottom-left area, and G is top-right... wait, G is actually top-right-ish. Let me count the columns.\n\nTh",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.7,
+          "2": 0.8,
+          "3": 1.0,
+          "4": 0.5,
+          "5": 0.3,
+          "6": 0.0
+        },
+        "participant": "p2",
+        "maze_id": "grid-3-0",
+        "construal_labels": {
+          "0": "low",
+          "1": "low",
+          "2": "low",
+          "3": "high",
+          "4": "high",
+          "5": "high",
+          "6": "high"
+        }
+      },
+      {
+        "cot_snippet": "Let me think through this visually - I'm a designer so I naturally want to map this out in my head.\n\nOkay, so S is at the bottom-left, G is at the top-left. So generally I need to move **up and slight",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "participant": "p2",
+        "maze_id": "grid-4-0",
+        "construal_labels": {
+          "0": "low",
+          "1": "high",
+          "2": "high",
+          "3": "high",
+          "4": "high",
+          "5": "high",
+          "6": "high"
+        }
+      },
+      {
+        "cot_snippet": "Let me think through this carefully as a visual puzzle - right up my alley as a designer!\n\nOkay, let me map out what I'm seeing. The grid is 11 columns wide and 11 rows tall.\n\nLet me label rows 0-10 f",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.3,
+          "3": 0.3,
+          "4": 0.2,
+          "5": 0.2,
+          "6": 0.0
+        },
+        "participant": "p2",
+        "maze_id": "grid-5-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "low",
+          "2": "high",
+          "3": "high",
+          "4": "high",
+          "5": "high",
+          "6": "low"
+        }
+      },
+      {
+        "cot_snippet": "Let me study this maze carefully. I'll map out the grid with coordinates - I'll use (row, col) where row 0 is the top and row 10 is the bottom where S is.\n\nLet me read each row:\n- Row 0: ...3.0....G\n-",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "participant": "p3",
+        "maze_id": "grid-0-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "high",
+          "2": "high",
+          "3": "low",
+          "4": "high",
+          "5": "high",
+          "6": "low"
+        }
+      },
+      {
+        "cot_snippet": "Let me study this maze carefully. I like to understand the full layout before I start moving.\n\nThe grid appears to be 11 columns wide and 11 rows tall. Let me label rows 0-10 from top, columns 0-10 fr",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "participant": "p3",
+        "maze_id": "grid-1-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "high",
+          "2": "low",
+          "3": "high",
+          "4": "low",
+          "5": "high",
+          "6": "low"
+        }
+      },
+      {
+        "cot_snippet": "Let me study this maze carefully. I'll map out what I see.\n\nThe grid appears to be 11 columns wide and 11 rows tall. Let me label rows 0-10 from top, columns 0-10 from left.\n\n**Identifying key positio",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "participant": "p3",
+        "maze_id": "grid-2-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "high",
+          "2": "high",
+          "3": "high",
+          "4": "high",
+          "5": "low",
+          "6": "low"
+        }
+      },
+      {
+        "cot_snippet": "Let me study this maze carefully. I need to go from S (bottom left area) to G (top right area).\n\nLet me map out the grid with coordinates. I'll use (row, col) with row 0 at top, row 10 at bottom.\n\n```",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "participant": "p3",
+        "maze_id": "grid-3-0",
+        "construal_labels": {
+          "0": "low",
+          "1": "low",
+          "2": "low",
+          "3": "high",
+          "4": "high",
+          "5": "high",
+          "6": "high"
+        }
+      },
+      {
+        "cot_snippet": "Let me study this maze carefully. I'll map out the grid with coordinates - row 0 at top (G's row), row 10 at bottom (S's row).\n\nLet me write out the maze:\n```\nRow 0:  G.......666\nRow 1:  ...44.....6\nR",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "participant": "p3",
+        "maze_id": "grid-4-0",
+        "construal_labels": {
+          "0": "low",
+          "1": "high",
+          "2": "high",
+          "3": "high",
+          "4": "high",
+          "5": "high",
+          "6": "high"
+        }
+      },
+      {
+        "cot_snippet": "Let me study this maze carefully. I'm going to map out what I see.\n\nThe grid appears to be 11 columns wide and 11 rows tall. Let me label rows 0-10 from top, columns 0-10 from left.\n\n**Starting positi",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "participant": "p3",
+        "maze_id": "grid-5-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "low",
+          "2": "high",
+          "3": "high",
+          "4": "high",
+          "5": "high",
+          "6": "low"
+        }
+      },
+      {
+        "cot_snippet": "Let me analyze this maze systematically.\n\nFirst, let me map out the grid with coordinates (row, col) where row 0 is the top, row 10 is the bottom where S is.\n\n```\nRow 0:  ...3.0....G\nRow 1:  .333.0...",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "participant": "p4",
+        "maze_id": "grid-0-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "high",
+          "2": "high",
+          "3": "low",
+          "4": "high",
+          "5": "high",
+          "6": "low"
+        }
+      },
+      {
+        "cot_snippet": "Let me analyze this maze systematically.\n\n**First, let me map out the grid** (11 columns \u00d7 11 rows, 0-indexed):\n\n```\nRow 0:  6 6 . . 4 4 4 4 . . G\nRow 1:  6 . . . . . . . . . .\nRow 2:  6 . . . . . . .",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 1.0,
+          "3": 1.0,
+          "4": 0.5,
+          "5": 0.8,
+          "6": 0.8
+        },
+        "participant": "p4",
+        "maze_id": "grid-1-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "high",
+          "2": "low",
+          "3": "high",
+          "4": "low",
+          "5": "high",
+          "6": "low"
+        }
+      },
+      {
+        "cot_snippet": "Let me analyze this maze systematically.\n\nFirst, let me map out the grid (rows 0-10, columns 0-9):\n\n```\nRow 0:  G.44.333...\nRow 1:  ..4....3..5\nRow 2:  ..4.......5\nRow 3:  .....#....5\nRow 4:  ..0..#..",
+        "awareness": {
+          "0": 0.9,
+          "1": 0.9,
+          "2": 0.8,
+          "3": 0.8,
+          "4": 1.0,
+          "5": 0.8,
+          "6": 0.7
+        },
+        "participant": "p4",
+        "maze_id": "grid-2-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "high",
+          "2": "high",
+          "3": "high",
+          "4": "high",
+          "5": "low",
+          "6": "low"
+        }
+      },
+      {
+        "cot_snippet": "Let me analyze this maze systematically.\n\nFirst, let me map out the grid with coordinates (row, col) where (0,0) is top-left:\n\n```\nRow 0:  ..11..0...G\nRow 1:  ...1..0....\nRow 2:  ...1..0..4.\nRow 3:  .",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "participant": "p4",
+        "maze_id": "grid-3-0",
+        "construal_labels": {
+          "0": "low",
+          "1": "low",
+          "2": "low",
+          "3": "high",
+          "4": "high",
+          "5": "high",
+          "6": "high"
+        }
+      },
+      {
+        "cot_snippet": "Let me analyze this maze systematically.\n\nFirst, let me map out the grid (rows 0-10 from top, columns 0-10 from left):\n\n```\nRow 0:  G.......666\nRow 1:  ...44.....6\nRow 2:  ...4.....55\nRow 3:  ...4.#..",
+        "awareness": {
+          "0": 1.0,
+          "1": 1.0,
+          "2": 1.0,
+          "3": 1.0,
+          "4": 1.0,
+          "5": 1.0,
+          "6": 1.0
+        },
+        "participant": "p4",
+        "maze_id": "grid-4-0",
+        "construal_labels": {
+          "0": "low",
+          "1": "high",
+          "2": "high",
+          "3": "high",
+          "4": "high",
+          "5": "high",
+          "6": "high"
+        }
+      },
+      {
+        "cot_snippet": "Let me analyze this maze systematically.\n\nFirst, let me map out the grid with coordinates (row, col) where (0,0) is top-left:\n\n```\nRow 0:  .6666.0...G\nRow 1:  ......0.555\nRow 2:  .....00.5..\nRow 3:  .",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "participant": "p4",
+        "maze_id": "grid-5-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "low",
+          "2": "high",
+          "3": "high",
+          "4": "high",
+          "5": "high",
+          "6": "low"
+        }
+      },
+      {
+        "cot_snippet": "Let me look at this maze and think it through...\n\nOkay so S is at the bottom left, G is at the top right. I need to get from bottom-left to top-right basically.\n\nLet me map this out... the grid is 11 ",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.3,
+          "3": 0.4,
+          "4": 0.3,
+          "5": 0.5,
+          "6": 0.3
+        },
+        "participant": "p5",
+        "maze_id": "grid-0-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "high",
+          "2": "high",
+          "3": "low",
+          "4": "high",
+          "5": "high",
+          "6": "low"
+        }
+      },
+      {
+        "cot_snippet": "Let me look at this maze and think out loud...\n\nOkay so S is at the bottom left, G is at the top right. I need to get from bottom-left to top-right. Let me see what's in the way...\n\nThere's that cross",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "participant": "p5",
+        "maze_id": "grid-1-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "high",
+          "2": "low",
+          "3": "high",
+          "4": "low",
+          "5": "high",
+          "6": "low"
+        }
+      },
+      {
+        "cot_snippet": "Let me look at this maze and think out loud...\n\nOkay so S is at the bottom left area, G is top left. Let me map this out in my head.\n\nThe maze is like 11 columns wide, 11 rows tall. S is bottom row, G",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.3,
+          "3": 1.0,
+          "4": 0.5,
+          "5": 0.3,
+          "6": 0.0
+        },
+        "participant": "p5",
+        "maze_id": "grid-2-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "high",
+          "2": "high",
+          "3": "high",
+          "4": "high",
+          "5": "low",
+          "6": "low"
+        }
+      },
+      {
+        "cot_snippet": "Let me look at this maze and think out loud...\n\nOkay so S is at the bottom left, G is at the top right. I need to get from bottom-left to top-right. Let me trace this out...\n\nSo the walls are that # c",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.3,
+          "2": 0.5,
+          "3": 0.7,
+          "4": 0.5,
+          "5": 0.3,
+          "6": 0.3
+        },
+        "participant": "p5",
+        "maze_id": "grid-3-0",
+        "construal_labels": {
+          "0": "low",
+          "1": "low",
+          "2": "low",
+          "3": "high",
+          "4": "high",
+          "5": "high",
+          "6": "high"
+        }
+      },
+      {
+        "cot_snippet": "Let me look at this maze and think out loud...\n\nOkay so I'm at the bottom left (S) and I need to get to the top left (G). Let me map this out...\n\nThe maze is like 11 columns wide and 11 rows tall. Let",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.0,
+          "3": 0.5,
+          "4": 0.0,
+          "5": 0.0,
+          "6": 0.0
+        },
+        "participant": "p5",
+        "maze_id": "grid-4-0",
+        "construal_labels": {
+          "0": "low",
+          "1": "high",
+          "2": "high",
+          "3": "high",
+          "4": "high",
+          "5": "high",
+          "6": "high"
+        }
+      },
+      {
+        "cot_snippet": "Let me look at this maze and think out loud...\n\nOkay so I'm at S which is bottom left, and G is top right. Let me map this out...\n\nThe grid is 11 columns wide and 11 rows tall. Let me label rows 0-10 ",
+        "awareness": {
+          "0": 0.5,
+          "1": 0.5,
+          "2": 0.5,
+          "3": 0.5,
+          "4": 0.5,
+          "5": 0.5,
+          "6": 0.5
+        },
+        "participant": "p5",
+        "maze_id": "grid-5-0",
+        "construal_labels": {
+          "0": "high",
+          "1": "low",
+          "2": "high",
+          "3": "high",
+          "4": "high",
+          "5": "high",
+          "6": "low"
+        }
+      }
+    ],
+    "analysis": {
+      "mean_high": 0.523448275862069,
+      "mean_low": 0.5030769230769231,
+      "effect": 0.020371352785145902,
+      "n_high": 145,
+      "n_low": 65
+    }
+  },
+  "paper2": {
+    "score_matrix": [
+      [
+        0.0,
+        0.595,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        0.0,
+        0.6950000000000001,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        0.0,
+        0.5,
+        0.75,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        0.0,
+        0.5,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      [
+        0.0,
+        0.585,
+        0.0,
+        1.0,
+        0.865,
+        1.0
+      ]
+    ],
+    "correlations": [
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        0.9999999999999999,
+        0.06248007968076915,
+        0.0,
+        -0.06913837373523697,
+        0.0
+      ],
+      [
+        0.0,
+        0.06248007968076915,
+        1.0000000000000002,
+        0.0,
+        0.9682458365518541,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        -0.06913837373523697,
+        0.9682458365518541,
+        0.0,
+        0.9999999999999999,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    ],
+    "task_names": [
+      "Tower of London",
+      "Four-in-a-Row",
+      "Two-Step Task",
+      "Corsi Block-Tapping",
+      "N-back",
+      "Stroop"
+    ]
+  }
+}

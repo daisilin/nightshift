@@ -1,0 +1,314 @@
+{
+  "wcst": {
+    "emma_haiku": {
+      "pers": 0,
+      "errs": 23,
+      "cats": 0,
+      "acc": 0.28125,
+      "model": "haiku",
+      "persona": "emma"
+    },
+    "james_haiku": {
+      "pers": 3,
+      "errs": 4,
+      "cats": 2,
+      "acc": 0.875,
+      "model": "haiku",
+      "persona": "james"
+    },
+    "dorothy_haiku": {
+      "pers": 3,
+      "errs": 5,
+      "cats": 2,
+      "acc": 0.84375,
+      "model": "haiku",
+      "persona": "dorothy"
+    },
+    "emma_sonnet": {
+      "pers": 2,
+      "errs": 8,
+      "cats": 1,
+      "acc": 0.75,
+      "model": "sonnet",
+      "persona": "emma"
+    },
+    "james_sonnet": {
+      "pers": 3,
+      "errs": 6,
+      "cats": 2,
+      "acc": 0.8125,
+      "model": "sonnet",
+      "persona": "james"
+    },
+    "dorothy_sonnet": {
+      "pers": 0,
+      "errs": 15,
+      "cats": 0,
+      "acc": 0.53125,
+      "model": "sonnet",
+      "persona": "dorothy"
+    },
+    "emma_opus": {
+      "pers": 3,
+      "errs": 5,
+      "cats": 2,
+      "acc": 0.84375,
+      "model": "opus",
+      "persona": "emma"
+    },
+    "james_opus": {
+      "pers": 2,
+      "errs": 4,
+      "cats": 2,
+      "acc": 0.875,
+      "model": "opus",
+      "persona": "james"
+    },
+    "dorothy_opus": {
+      "pers": 2,
+      "errs": 3,
+      "cats": 2,
+      "acc": 0.90625,
+      "model": "opus",
+      "persona": "dorothy"
+    }
+  },
+  "nback": {
+    "emma_haiku": {
+      "hr": 0.875,
+      "far": 0.11805555555555555,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 1.0,
+          "far": 0.1111111111111111
+        },
+        {
+          "nback": 3,
+          "hr": 0.75,
+          "far": 0.125
+        }
+      ],
+      "model": "haiku",
+      "persona": "emma"
+    },
+    "james_haiku": {
+      "hr": 0.8,
+      "far": 0.0,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 1.0,
+          "far": 0.0
+        },
+        {
+          "nback": 3,
+          "hr": 0.6,
+          "far": 0.0
+        }
+      ],
+      "model": "haiku",
+      "persona": "james"
+    },
+    "dorothy_haiku": {
+      "hr": 0.75,
+      "far": 0.14545454545454545,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 1.0,
+          "far": 0.09090909090909091
+        },
+        {
+          "nback": 3,
+          "hr": 0.5,
+          "far": 0.2
+        }
+      ],
+      "model": "haiku",
+      "persona": "dorothy"
+    },
+    "emma_sonnet": {
+      "hr": 0.875,
+      "far": 0.18055555555555555,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 1.0,
+          "far": 0.1111111111111111
+        },
+        {
+          "nback": 3,
+          "hr": 0.75,
+          "far": 0.25
+        }
+      ],
+      "model": "sonnet",
+      "persona": "emma"
+    },
+    "james_sonnet": {
+      "hr": 0.5333333333333333,
+      "far": 0.0,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 0.6666666666666666,
+          "far": 0.0
+        },
+        {
+          "nback": 3,
+          "hr": 0.4,
+          "far": 0.0
+        }
+      ],
+      "model": "sonnet",
+      "persona": "james"
+    },
+    "dorothy_sonnet": {
+      "hr": 1.0,
+      "far": 0.05,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 1.0,
+          "far": 0.0
+        },
+        {
+          "nback": 3,
+          "hr": 1.0,
+          "far": 0.1
+        }
+      ],
+      "model": "sonnet",
+      "persona": "dorothy"
+    },
+    "emma_opus": {
+      "hr": 0.875,
+      "far": 0.0,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 1.0,
+          "far": 0.0
+        },
+        {
+          "nback": 3,
+          "hr": 0.75,
+          "far": 0.0
+        }
+      ],
+      "model": "opus",
+      "persona": "emma"
+    },
+    "james_opus": {
+      "hr": 0.7,
+      "far": 0.0,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 1.0,
+          "far": 0.0
+        },
+        {
+          "nback": 3,
+          "hr": 0.4,
+          "far": 0.0
+        }
+      ],
+      "model": "opus",
+      "persona": "james"
+    },
+    "dorothy_opus": {
+      "hr": 1.0,
+      "far": 0.0,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 1.0,
+          "far": 0.0
+        },
+        {
+          "nback": 3,
+          "hr": 1.0,
+          "far": 0.0
+        }
+      ],
+      "model": "opus",
+      "persona": "dorothy"
+    }
+  },
+  "fiar": {
+    "emma_haiku": {
+      "wins": 2,
+      "losses": 4,
+      "draws": 0,
+      "win_rate": 0.3333333333333333,
+      "model": "haiku",
+      "persona": "emma"
+    },
+    "james_haiku": {
+      "wins": 3,
+      "losses": 2,
+      "draws": 1,
+      "win_rate": 0.5,
+      "model": "haiku",
+      "persona": "james"
+    },
+    "dorothy_haiku": {
+      "wins": 2,
+      "losses": 3,
+      "draws": 1,
+      "win_rate": 0.3333333333333333,
+      "model": "haiku",
+      "persona": "dorothy"
+    },
+    "emma_sonnet": {
+      "wins": 5,
+      "losses": 1,
+      "draws": 0,
+      "win_rate": 0.8333333333333334,
+      "model": "sonnet",
+      "persona": "emma"
+    },
+    "james_sonnet": {
+      "wins": 3,
+      "losses": 3,
+      "draws": 0,
+      "win_rate": 0.5,
+      "model": "sonnet",
+      "persona": "james"
+    },
+    "dorothy_sonnet": {
+      "wins": 4,
+      "losses": 2,
+      "draws": 0,
+      "win_rate": 0.6666666666666666,
+      "model": "sonnet",
+      "persona": "dorothy"
+    },
+    "emma_opus": {
+      "wins": 2,
+      "losses": 3,
+      "draws": 1,
+      "win_rate": 0.3333333333333333,
+      "model": "opus",
+      "persona": "emma"
+    },
+    "james_opus": {
+      "wins": 1,
+      "losses": 2,
+      "draws": 3,
+      "win_rate": 0.16666666666666666,
+      "model": "opus",
+      "persona": "james"
+    },
+    "dorothy_opus": {
+      "wins": 0,
+      "losses": 2,
+      "draws": 4,
+      "win_rate": 0.0,
+      "model": "opus",
+      "persona": "dorothy"
+    }
+  }
+}

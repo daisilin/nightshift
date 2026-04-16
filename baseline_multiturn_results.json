@@ -1,0 +1,3520 @@
+{
+  "wcst": {
+    "emma": {
+      "perseverative_errors": 9,
+      "total_errors": 18,
+      "categories_completed": 4,
+      "accuracy": 0.71875
+    },
+    "james": {
+      "perseverative_errors": 7,
+      "total_errors": 9,
+      "categories_completed": 5,
+      "accuracy": 0.859375
+    },
+    "dorothy": {
+      "perseverative_errors": 5,
+      "total_errors": 11,
+      "categories_completed": 4,
+      "accuracy": 0.828125
+    }
+  },
+  "two_step": {
+    "emma": {
+      "model_based_index": 0.17647058823529416,
+      "stay_cr": 1.0,
+      "stay_cn": 0.8235294117647058,
+      "stay_rr": 1.0,
+      "stay_rn": 1.0,
+      "reward_rate": 0.6375
+    },
+    "james": {
+      "model_based_index": -0.02941176470588236,
+      "stay_cr": 0.9705882352941176,
+      "stay_cn": 1.0,
+      "stay_rr": 1.0,
+      "stay_rn": 1.0,
+      "reward_rate": 0.625
+    },
+    "dorothy": {
+      "model_based_index": 0.01764705882352946,
+      "stay_cr": 1.0,
+      "stay_cn": 0.8823529411764706,
+      "stay_rr": 1.0,
+      "stay_rn": 0.9,
+      "reward_rate": 0.6625
+    }
+  },
+  "wcst_details": {
+    "emma": [
+      {
+        "trial": 0,
+        "rule": "color",
+        "correct_answer": 1,
+        "choice": 3,
+        "correct": false,
+        "perseverative": false
+      },
+      {
+        "trial": 1,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 2,
+        "correct": false,
+        "perseverative": false
+      },
+      {
+        "trial": 2,
+        "rule": "color",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 3,
+        "rule": "color",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 4,
+        "rule": "color",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 5,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 6,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 7,
+        "rule": "color",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 8,
+        "rule": "color",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 9,
+        "rule": "color",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 10,
+        "rule": "color",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 11,
+        "rule": "color",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 12,
+        "rule": "shape",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 13,
+        "rule": "shape",
+        "correct_answer": 4,
+        "choice": 2,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 14,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 3,
+        "correct": false,
+        "perseverative": false
+      },
+      {
+        "trial": 15,
+        "rule": "shape",
+        "correct_answer": 3,
+        "choice": 4,
+        "correct": false,
+        "perseverative": false
+      },
+      {
+        "trial": 16,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 1,
+        "correct": false,
+        "perseverative": false
+      },
+      {
+        "trial": 17,
+        "rule": "shape",
+        "correct_answer": 3,
+        "choice": 2,
+        "correct": false,
+        "perseverative": false
+      },
+      {
+        "trial": 18,
+        "rule": "shape",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 19,
+        "rule": "shape",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 20,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 21,
+        "rule": "shape",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 22,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 23,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 24,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 25,
+        "rule": "shape",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 26,
+        "rule": "shape",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 27,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 28,
+        "rule": "number",
+        "correct_answer": 4,
+        "choice": 3,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 29,
+        "rule": "number",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 30,
+        "rule": "number",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 31,
+        "rule": "number",
+        "correct_answer": 1,
+        "choice": 2,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 32,
+        "rule": "number",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 33,
+        "rule": "number",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 34,
+        "rule": "number",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 35,
+        "rule": "number",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 36,
+        "rule": "number",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 37,
+        "rule": "number",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 38,
+        "rule": "number",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 39,
+        "rule": "number",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 40,
+        "rule": "number",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 41,
+        "rule": "number",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 42,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 2,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 43,
+        "rule": "color",
+        "correct_answer": 3,
+        "choice": 4,
+        "correct": false,
+        "perseverative": false
+      },
+      {
+        "trial": 44,
+        "rule": "color",
+        "correct_answer": 3,
+        "choice": 2,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 45,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 1,
+        "correct": false,
+        "perseverative": false
+      },
+      {
+        "trial": 46,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 47,
+        "rule": "color",
+        "correct_answer": 3,
+        "choice": 4,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 48,
+        "rule": "color",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 49,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 50,
+        "rule": "color",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 51,
+        "rule": "color",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 52,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 53,
+        "rule": "color",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 54,
+        "rule": "color",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 55,
+        "rule": "color",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 56,
+        "rule": "color",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 57,
+        "rule": "color",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 58,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 3,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 59,
+        "rule": "shape",
+        "correct_answer": 3,
+        "choice": 2,
+        "correct": false,
+        "perseverative": false
+      },
+      {
+        "trial": 60,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 61,
+        "rule": "shape",
+        "correct_answer": 4,
+        "choice": 2,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 62,
+        "rule": "shape",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 63,
+        "rule": "shape",
+        "correct_answer": 3,
+        "choice": 4,
+        "correct": false,
+        "perseverative": true
+      }
+    ],
+    "james": [
+      {
+        "trial": 0,
+        "rule": "color",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 1,
+        "rule": "color",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 2,
+        "rule": "color",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 3,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 4,
+        "rule": "color",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 5,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 6,
+        "rule": "color",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 7,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 8,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 9,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 10,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 2,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 11,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 3,
+        "correct": false,
+        "perseverative": false
+      },
+      {
+        "trial": 12,
+        "rule": "shape",
+        "correct_answer": 3,
+        "choice": 2,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 13,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 3,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 14,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 15,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 16,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 17,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 18,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 19,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 20,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 21,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 22,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 23,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 24,
+        "rule": "number",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 25,
+        "rule": "number",
+        "correct_answer": 4,
+        "choice": 1,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 26,
+        "rule": "number",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 27,
+        "rule": "number",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 28,
+        "rule": "number",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 29,
+        "rule": "number",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 30,
+        "rule": "number",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 31,
+        "rule": "number",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 32,
+        "rule": "number",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 33,
+        "rule": "number",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 34,
+        "rule": "number",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 35,
+        "rule": "number",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 36,
+        "rule": "color",
+        "correct_answer": 2,
+        "choice": 4,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 37,
+        "rule": "color",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 38,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 39,
+        "rule": "color",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 40,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 41,
+        "rule": "color",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 42,
+        "rule": "color",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 43,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 44,
+        "rule": "color",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 45,
+        "rule": "color",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 46,
+        "rule": "color",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 47,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 3,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 48,
+        "rule": "shape",
+        "correct_answer": 3,
+        "choice": 2,
+        "correct": false,
+        "perseverative": false
+      },
+      {
+        "trial": 49,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 50,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 51,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 52,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 53,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 54,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 55,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 56,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 57,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 58,
+        "rule": "shape",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 59,
+        "rule": "number",
+        "correct_answer": 2,
+        "choice": 4,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 60,
+        "rule": "number",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 61,
+        "rule": "number",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 62,
+        "rule": "number",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 63,
+        "rule": "number",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      }
+    ],
+    "dorothy": [
+      {
+        "trial": 0,
+        "rule": "color",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 1,
+        "rule": "color",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 2,
+        "rule": "color",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 3,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 3,
+        "correct": false,
+        "perseverative": false
+      },
+      {
+        "trial": 4,
+        "rule": "color",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 5,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 6,
+        "rule": "color",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 7,
+        "rule": "color",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 8,
+        "rule": "color",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 9,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 10,
+        "rule": "color",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 11,
+        "rule": "color",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 12,
+        "rule": "color",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 13,
+        "rule": "color",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 14,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 15,
+        "rule": "shape",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 16,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 17,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 18,
+        "rule": "shape",
+        "correct_answer": 4,
+        "choice": 2,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 19,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 3,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 20,
+        "rule": "shape",
+        "correct_answer": 3,
+        "choice": 4,
+        "correct": false,
+        "perseverative": false
+      },
+      {
+        "trial": 21,
+        "rule": "shape",
+        "correct_answer": 4,
+        "choice": 3,
+        "correct": false,
+        "perseverative": false
+      },
+      {
+        "trial": 22,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 23,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 24,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 25,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 26,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 27,
+        "rule": "shape",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 28,
+        "rule": "shape",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 29,
+        "rule": "shape",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 30,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 31,
+        "rule": "shape",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 32,
+        "rule": "number",
+        "correct_answer": 2,
+        "choice": 4,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 33,
+        "rule": "number",
+        "correct_answer": 1,
+        "choice": 2,
+        "correct": false,
+        "perseverative": false
+      },
+      {
+        "trial": 34,
+        "rule": "number",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 35,
+        "rule": "number",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 36,
+        "rule": "number",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 37,
+        "rule": "number",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 38,
+        "rule": "number",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 39,
+        "rule": "number",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 40,
+        "rule": "number",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 41,
+        "rule": "number",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 42,
+        "rule": "number",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 43,
+        "rule": "number",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 44,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 1,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 45,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 46,
+        "rule": "color",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 47,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 48,
+        "rule": "color",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 49,
+        "rule": "color",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 50,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 51,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 52,
+        "rule": "color",
+        "correct_answer": 4,
+        "choice": 4,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 53,
+        "rule": "color",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 54,
+        "rule": "color",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 55,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 56,
+        "rule": "shape",
+        "correct_answer": 4,
+        "choice": 3,
+        "correct": false,
+        "perseverative": true
+      },
+      {
+        "trial": 57,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 4,
+        "correct": false,
+        "perseverative": false
+      },
+      {
+        "trial": 58,
+        "rule": "shape",
+        "correct_answer": 2,
+        "choice": 2,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 59,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 2,
+        "correct": false,
+        "perseverative": false
+      },
+      {
+        "trial": 60,
+        "rule": "shape",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 61,
+        "rule": "shape",
+        "correct_answer": 3,
+        "choice": 3,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 62,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      },
+      {
+        "trial": 63,
+        "rule": "shape",
+        "correct_answer": 1,
+        "choice": 1,
+        "correct": true,
+        "perseverative": false
+      }
+    ]
+  },
+  "two_step_details": {
+    "emma": [
+      {
+        "trial": 0,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 1,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 2,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 3,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 4,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 5,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 6,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 7,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 8,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 9,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 10,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 11,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 12,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 13,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 14,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 15,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 16,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 17,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 18,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 19,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 20,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 21,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 22,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 23,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 24,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 25,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 26,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 27,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 28,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 29,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 30,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 31,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 32,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 33,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 34,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 35,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 36,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 37,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 38,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 39,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 40,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 41,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 42,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 43,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 44,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 45,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 46,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 47,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 48,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 49,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 50,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 51,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 52,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 53,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 54,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 55,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 56,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 57,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 58,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 59,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 60,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 61,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 62,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 63,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 64,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 65,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 66,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 67,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 68,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 69,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 70,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 71,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 72,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 73,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 74,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 75,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 76,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 77,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 78,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 79,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      }
+    ],
+    "james": [
+      {
+        "trial": 0,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 1,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 2,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 3,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 4,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 5,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 6,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 7,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 8,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 9,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 10,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 11,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 12,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 13,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 14,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 15,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 16,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 17,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 18,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 19,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 20,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 21,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 22,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 23,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 24,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 25,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 26,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 27,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 28,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 29,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 30,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 31,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 32,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 33,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 34,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 35,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 36,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 37,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 38,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 39,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 40,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 41,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 42,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 43,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 44,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 45,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 46,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 47,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 48,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 49,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 50,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 51,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 52,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 53,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 54,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 55,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 56,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 57,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 58,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 59,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 60,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 61,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 62,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 63,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 64,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 65,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 66,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 67,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 68,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 69,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 70,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 71,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 72,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 73,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 74,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 75,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 76,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 77,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 78,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 79,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      }
+    ],
+    "dorothy": [
+      {
+        "trial": 0,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 1,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 2,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 3,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 4,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 5,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 6,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 7,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 8,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 9,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 10,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 11,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 12,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 13,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 14,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 15,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 16,
+        "s1_choice": 0,
+        "transition": "rare",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 17,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 18,
+        "s1_choice": 0,
+        "transition": "common",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 19,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 20,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 21,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 22,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 23,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 24,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 25,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 26,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 27,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 28,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 29,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 30,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 31,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 32,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 33,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 34,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 35,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 36,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 37,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 38,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 39,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 40,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 41,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 42,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 43,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 44,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 45,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 46,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 47,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 48,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 49,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 50,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 51,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 52,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 53,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 54,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 55,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 56,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 57,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 58,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 59,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 60,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 61,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 62,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 63,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 64,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 65,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 66,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 1,
+        "rewarded": true
+      },
+      {
+        "trial": 67,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 68,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 69,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 70,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 71,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 1,
+        "rewarded": false
+      },
+      {
+        "trial": 72,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 73,
+        "s1_choice": 1,
+        "transition": "rare",
+        "planet": 0,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 74,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 75,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 76,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 77,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": false
+      },
+      {
+        "trial": 78,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      },
+      {
+        "trial": 79,
+        "s1_choice": 1,
+        "transition": "common",
+        "planet": 1,
+        "s2_choice": 0,
+        "rewarded": true
+      }
+    ]
+  }
+}

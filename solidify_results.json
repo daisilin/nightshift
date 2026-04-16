@@ -1,0 +1,605 @@
+{
+  "tol": {
+    "direct (no persona)": {
+      "weighted_score": 13,
+      "solved": 5,
+      "optimal": 5,
+      "total": 20,
+      "details": [
+        {
+          "puzzle": 0,
+          "min": 2,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 1,
+          "min": 2,
+          "actual": 2,
+          "solved": true,
+          "optimal": true,
+          "score": 2
+        },
+        {
+          "puzzle": 2,
+          "min": 2,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 3,
+          "min": 2,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 4,
+          "min": 2,
+          "actual": 2,
+          "solved": true,
+          "optimal": true,
+          "score": 2
+        },
+        {
+          "puzzle": 5,
+          "min": 3,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 6,
+          "min": 3,
+          "actual": 3,
+          "solved": true,
+          "optimal": true,
+          "score": 3
+        },
+        {
+          "puzzle": 7,
+          "min": 3,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 8,
+          "min": 3,
+          "actual": 3,
+          "solved": true,
+          "optimal": true,
+          "score": 3
+        },
+        {
+          "puzzle": 9,
+          "min": 3,
+          "actual": 3,
+          "solved": true,
+          "optimal": true,
+          "score": 3
+        },
+        {
+          "puzzle": 10,
+          "min": 4,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 11,
+          "min": 4,
+          "actual": 1,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 12,
+          "min": 4,
+          "actual": 2,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 13,
+          "min": 4,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 14,
+          "min": 4,
+          "actual": 1,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 15,
+          "min": 5,
+          "actual": 1,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 16,
+          "min": 5,
+          "actual": 1,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 17,
+          "min": 5,
+          "actual": 5,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 18,
+          "min": 5,
+          "actual": 4,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 19,
+          "min": 5,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        }
+      ]
+    },
+    "james (analytical)": {
+      "weighted_score": 8,
+      "solved": 4,
+      "optimal": 4,
+      "total": 20,
+      "details": [
+        {
+          "puzzle": 0,
+          "min": 2,
+          "actual": 2,
+          "solved": true,
+          "optimal": true,
+          "score": 2
+        },
+        {
+          "puzzle": 1,
+          "min": 2,
+          "actual": 2,
+          "solved": true,
+          "optimal": true,
+          "score": 2
+        },
+        {
+          "puzzle": 2,
+          "min": 2,
+          "actual": 2,
+          "solved": true,
+          "optimal": true,
+          "score": 2
+        },
+        {
+          "puzzle": 3,
+          "min": 2,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 4,
+          "min": 2,
+          "actual": 2,
+          "solved": true,
+          "optimal": true,
+          "score": 2
+        },
+        {
+          "puzzle": 5,
+          "min": 3,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 6,
+          "min": 3,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 7,
+          "min": 3,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 8,
+          "min": 3,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 9,
+          "min": 3,
+          "actual": 2,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 10,
+          "min": 4,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 11,
+          "min": 4,
+          "actual": 3,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 12,
+          "min": 4,
+          "actual": 3,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 13,
+          "min": 4,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 14,
+          "min": 4,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 15,
+          "min": 5,
+          "actual": 3,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 16,
+          "min": 5,
+          "actual": 2,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 17,
+          "min": 5,
+          "actual": 4,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 18,
+          "min": 5,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 19,
+          "min": 5,
+          "actual": 4,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        }
+      ]
+    },
+    "emma (impulsive)": {
+      "weighted_score": 9,
+      "solved": 4,
+      "optimal": 3,
+      "total": 20,
+      "details": [
+        {
+          "puzzle": 0,
+          "min": 2,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 1,
+          "min": 2,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 2,
+          "min": 2,
+          "actual": 2,
+          "solved": true,
+          "optimal": true,
+          "score": 2
+        },
+        {
+          "puzzle": 3,
+          "min": 2,
+          "actual": 1,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 4,
+          "min": 2,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 5,
+          "min": 3,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 6,
+          "min": 3,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 7,
+          "min": 3,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 8,
+          "min": 3,
+          "actual": 2,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 9,
+          "min": 3,
+          "actual": 3,
+          "solved": true,
+          "optimal": true,
+          "score": 3
+        },
+        {
+          "puzzle": 10,
+          "min": 4,
+          "actual": 2,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 11,
+          "min": 4,
+          "actual": 4,
+          "solved": true,
+          "optimal": true,
+          "score": 4
+        },
+        {
+          "puzzle": 12,
+          "min": 4,
+          "actual": 2,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 13,
+          "min": 4,
+          "actual": 2,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 14,
+          "min": 4,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 15,
+          "min": 5,
+          "actual": 2,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 16,
+          "min": 5,
+          "actual": 0,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 17,
+          "min": 5,
+          "actual": 6,
+          "solved": true,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 18,
+          "min": 5,
+          "actual": 4,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        },
+        {
+          "puzzle": 19,
+          "min": 5,
+          "actual": 4,
+          "solved": false,
+          "optimal": false,
+          "score": 0
+        }
+      ]
+    }
+  },
+  "maze": {
+    "baseline (500tok)": {
+      "effect": 0.0013262599469496261,
+      "high": 0.25517241379310346,
+      "low": 0.25384615384615383
+    },
+    "token_80": {
+      "effect": -0.009549071618037142,
+      "high": 0.18275862068965518,
+      "low": 0.19230769230769232
+    },
+    "token_50": {
+      "effect": 0.013527851458885937,
+      "high": 0.18275862068965518,
+      "low": 0.16923076923076924
+    },
+    "token_80+ctx8": {
+      "effect": -0.020424403183023854,
+      "high": 0.21034482758620693,
+      "low": 0.23076923076923078
+    },
+    "token_80+ctx8+temp0.5": {
+      "effect": -0.01326259946949604,
+      "high": 0.2482758620689655,
+      "low": 0.26153846153846155
+    },
+    "token_50+ctx6+temp0.5": {
+      "effect": 0.012997347480106114,
+      "high": 0.1206896551724138,
+      "low": 0.10769230769230768
+    }
+  },
+  "twostep": {
+    "ctx6_temp0.7": {
+      "cr": 1.0,
+      "cn": 0.2,
+      "rr": 1.0,
+      "rn": 0.2857142857142857,
+      "mb": 0.08571428571428574
+    },
+    "ctx6_temp0.85": {
+      "cr": 1.0,
+      "cn": 0.16666666666666666,
+      "rr": 1.0,
+      "rn": 0.14285714285714285,
+      "mb": -0.023809523809523836
+    },
+    "ctx6_temp1.0": {
+      "cr": 1.0,
+      "cn": 0.2,
+      "rr": 1.0,
+      "rn": 0.2857142857142857,
+      "mb": 0.08571428571428574
+    },
+    "ctx8_temp0.7": {
+      "cr": 1.0,
+      "cn": 0.75,
+      "rr": 1.0,
+      "rn": 0.42857142857142855,
+      "mb": -0.3214285714285714
+    },
+    "ctx8_temp0.85": {
+      "cr": 1.0,
+      "cn": 0.75,
+      "rr": 1.0,
+      "rn": 0.42857142857142855,
+      "mb": -0.3214285714285714
+    },
+    "ctx8_temp1.0": {
+      "cr": 1.0,
+      "cn": 0.75,
+      "rr": 1.0,
+      "rn": 0.42857142857142855,
+      "mb": -0.3214285714285714
+    },
+    "ctx10_temp0.7": {
+      "cr": 1.0,
+      "cn": 0.6,
+      "rr": 1.0,
+      "rn": 0.42857142857142855,
+      "mb": -0.17142857142857137
+    },
+    "ctx10_temp0.85": {
+      "cr": 1.0,
+      "cn": 1.0,
+      "rr": 1.0,
+      "rn": 0.5714285714285714,
+      "mb": -0.4285714285714286
+    },
+    "ctx10_temp1.0": {
+      "cr": 1.0,
+      "cn": 0.5714285714285714,
+      "rr": 1.0,
+      "rn": 0.5,
+      "mb": -0.0714285714285714
+    }
+  }
+}

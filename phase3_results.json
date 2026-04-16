@@ -1,0 +1,42 @@
+{
+  "maze_text": {
+    "emma": {
+      "construal_effect": 0.029973474801060995,
+      "mean_high": 0.506896551724138,
+      "mean_low": 0.47692307692307695,
+      "mode": "text"
+    },
+    "james": {
+      "construal_effect": -0.012466843501326319,
+      "mean_high": 0.9413793103448276,
+      "mean_low": 0.9538461538461539,
+      "mode": "text"
+    },
+    "dorothy": {
+      "construal_effect": 0.0,
+      "mean_high": 0.5,
+      "mean_low": 0.5,
+      "mode": "text"
+    }
+  },
+  "maze_multimodal": {
+    "emma": {
+      "construal_effect": 0.04774535809018565,
+      "mean_high": 0.38620689655172413,
+      "mean_low": 0.3384615384615385,
+      "mode": "multimodal"
+    },
+    "james": {
+      "construal_effect": -0.011405835543766618,
+      "mean_high": 0.6655172413793103,
+      "mean_low": 0.676923076923077,
+      "mode": "multimodal"
+    },
+    "dorothy": {
+      "construal_effect": -0.09018567639257297,
+      "mean_high": 0.3482758620689655,
+      "mean_low": 0.43846153846153846,
+      "mode": "multimodal"
+    }
+  }
+}

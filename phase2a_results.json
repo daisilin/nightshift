@@ -1,0 +1,488 @@
+{
+  "wcst": {
+    "emma_ctx10": {
+      "pers": 2,
+      "errs": 11,
+      "cats": 1,
+      "acc": 0.65625,
+      "persona": "emma",
+      "ctx": 10
+    },
+    "james_ctx10": {
+      "pers": 6,
+      "errs": 8,
+      "cats": 1,
+      "acc": 0.75,
+      "persona": "james",
+      "ctx": 10
+    },
+    "dorothy_ctx10": {
+      "pers": 0,
+      "errs": 13,
+      "cats": 0,
+      "acc": 0.59375,
+      "persona": "dorothy",
+      "ctx": 10
+    },
+    "emma_ctx20": {
+      "pers": 3,
+      "errs": 8,
+      "cats": 2,
+      "acc": 0.75,
+      "persona": "emma",
+      "ctx": 20
+    },
+    "james_ctx20": {
+      "pers": 4,
+      "errs": 9,
+      "cats": 2,
+      "acc": 0.71875,
+      "persona": "james",
+      "ctx": 20
+    },
+    "dorothy_ctx20": {
+      "pers": 4,
+      "errs": 15,
+      "cats": 1,
+      "acc": 0.53125,
+      "persona": "dorothy",
+      "ctx": 20
+    },
+    "emma_ctx40": {
+      "pers": 0,
+      "errs": 11,
+      "cats": 0,
+      "acc": 0.65625,
+      "persona": "emma",
+      "ctx": 40
+    },
+    "james_ctx40": {
+      "pers": 4,
+      "errs": 10,
+      "cats": 2,
+      "acc": 0.6875,
+      "persona": "james",
+      "ctx": 40
+    },
+    "dorothy_ctx40": {
+      "pers": 3,
+      "errs": 8,
+      "cats": 2,
+      "acc": 0.75,
+      "persona": "dorothy",
+      "ctx": 40
+    }
+  },
+  "nback": {
+    "emma_ctx6": {
+      "dprime_approx": 2.625,
+      "hr": 0.875,
+      "far": 0.0,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 1.0,
+          "far": 0.0,
+          "hits": 3,
+          "misses": 0,
+          "fas": 0,
+          "crs": 10
+        },
+        {
+          "nback": 3,
+          "hr": 0.8,
+          "far": 0.0,
+          "hits": 4,
+          "misses": 1,
+          "fas": 0,
+          "crs": 7
+        }
+      ],
+      "persona": "emma",
+      "ctx": 6
+    },
+    "james_ctx6": {
+      "dprime_approx": 2.625,
+      "hr": 0.875,
+      "far": 0.0,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 1.0,
+          "far": 0.0,
+          "hits": 4,
+          "misses": 0,
+          "fas": 0,
+          "crs": 9
+        },
+        {
+          "nback": 3,
+          "hr": 0.75,
+          "far": 0.0,
+          "hits": 3,
+          "misses": 1,
+          "fas": 0,
+          "crs": 8
+        }
+      ],
+      "persona": "james",
+      "ctx": 6
+    },
+    "dorothy_ctx6": {
+      "dprime_approx": 2.1842105263157894,
+      "hr": 0.8333333333333334,
+      "far": 0.10526315789473684,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 1.0,
+          "far": 0.18181818181818182,
+          "hits": 2,
+          "misses": 0,
+          "fas": 2,
+          "crs": 9
+        },
+        {
+          "nback": 3,
+          "hr": 0.75,
+          "far": 0.0,
+          "hits": 3,
+          "misses": 1,
+          "fas": 0,
+          "crs": 8
+        }
+      ],
+      "persona": "dorothy",
+      "ctx": 6
+    },
+    "emma_ctx8": {
+      "dprime_approx": 3.0,
+      "hr": 1.0,
+      "far": 0.0,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 1.0,
+          "far": 0.0,
+          "hits": 3,
+          "misses": 0,
+          "fas": 0,
+          "crs": 10
+        },
+        {
+          "nback": 3,
+          "hr": 1.0,
+          "far": 0.0,
+          "hits": 5,
+          "misses": 0,
+          "fas": 0,
+          "crs": 7
+        }
+      ],
+      "persona": "emma",
+      "ctx": 8
+    },
+    "james_ctx8": {
+      "dprime_approx": 2.25,
+      "hr": 0.75,
+      "far": 0.0,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 0.75,
+          "far": 0.0,
+          "hits": 3,
+          "misses": 1,
+          "fas": 0,
+          "crs": 9
+        },
+        {
+          "nback": 3,
+          "hr": 0.75,
+          "far": 0.0,
+          "hits": 3,
+          "misses": 1,
+          "fas": 0,
+          "crs": 8
+        }
+      ],
+      "persona": "james",
+      "ctx": 8
+    },
+    "dorothy_ctx8": {
+      "dprime_approx": 2.3421052631578947,
+      "hr": 0.8333333333333334,
+      "far": 0.05263157894736842,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 1.0,
+          "far": 0.09090909090909091,
+          "hits": 2,
+          "misses": 0,
+          "fas": 1,
+          "crs": 10
+        },
+        {
+          "nback": 3,
+          "hr": 0.75,
+          "far": 0.0,
+          "hits": 3,
+          "misses": 1,
+          "fas": 0,
+          "crs": 8
+        }
+      ],
+      "persona": "dorothy",
+      "ctx": 8
+    },
+    "emma_ctx12": {
+      "dprime_approx": 2.625,
+      "hr": 0.875,
+      "far": 0.0,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 0.6666666666666666,
+          "far": 0.0,
+          "hits": 2,
+          "misses": 1,
+          "fas": 0,
+          "crs": 10
+        },
+        {
+          "nback": 3,
+          "hr": 1.0,
+          "far": 0.0,
+          "hits": 5,
+          "misses": 0,
+          "fas": 0,
+          "crs": 7
+        }
+      ],
+      "persona": "emma",
+      "ctx": 12
+    },
+    "james_ctx12": {
+      "dprime_approx": 1.6985294117647058,
+      "hr": 0.625,
+      "far": 0.058823529411764705,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 0.25,
+          "far": 0.1111111111111111,
+          "hits": 1,
+          "misses": 3,
+          "fas": 1,
+          "crs": 8
+        },
+        {
+          "nback": 3,
+          "hr": 1.0,
+          "far": 0.0,
+          "hits": 4,
+          "misses": 0,
+          "fas": 0,
+          "crs": 8
+        }
+      ],
+      "persona": "james",
+      "ctx": 12
+    },
+    "dorothy_ctx12": {
+      "dprime_approx": 2.6842105263157894,
+      "hr": 1.0,
+      "far": 0.10526315789473684,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 1.0,
+          "far": 0.18181818181818182,
+          "hits": 2,
+          "misses": 0,
+          "fas": 2,
+          "crs": 9
+        },
+        {
+          "nback": 3,
+          "hr": 1.0,
+          "far": 0.0,
+          "hits": 4,
+          "misses": 0,
+          "fas": 0,
+          "crs": 8
+        }
+      ],
+      "persona": "dorothy",
+      "ctx": 12
+    },
+    "emma_ctx20": {
+      "dprime_approx": 2.625,
+      "hr": 0.875,
+      "far": 0.0,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 0.6666666666666666,
+          "far": 0.0,
+          "hits": 2,
+          "misses": 1,
+          "fas": 0,
+          "crs": 10
+        },
+        {
+          "nback": 3,
+          "hr": 1.0,
+          "far": 0.0,
+          "hits": 5,
+          "misses": 0,
+          "fas": 0,
+          "crs": 7
+        }
+      ],
+      "persona": "emma",
+      "ctx": 20
+    },
+    "james_ctx20": {
+      "dprime_approx": 1.6985294117647058,
+      "hr": 0.625,
+      "far": 0.058823529411764705,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 0.5,
+          "far": 0.1111111111111111,
+          "hits": 2,
+          "misses": 2,
+          "fas": 1,
+          "crs": 8
+        },
+        {
+          "nback": 3,
+          "hr": 0.75,
+          "far": 0.0,
+          "hits": 3,
+          "misses": 1,
+          "fas": 0,
+          "crs": 8
+        }
+      ],
+      "persona": "james",
+      "ctx": 20
+    },
+    "dorothy_ctx20": {
+      "dprime_approx": 2.3421052631578947,
+      "hr": 0.8333333333333334,
+      "far": 0.05263157894736842,
+      "blocks": [
+        {
+          "nback": 2,
+          "hr": 1.0,
+          "far": 0.09090909090909091,
+          "hits": 2,
+          "misses": 0,
+          "fas": 1,
+          "crs": 10
+        },
+        {
+          "nback": 3,
+          "hr": 0.75,
+          "far": 0.0,
+          "hits": 3,
+          "misses": 1,
+          "fas": 0,
+          "crs": 8
+        }
+      ],
+      "persona": "dorothy",
+      "ctx": 20
+    }
+  },
+  "corsi": {
+    "emma_ctx4": {
+      "corsi_score": 6,
+      "max_span": 3,
+      "total_correct": 2,
+      "persona": "emma",
+      "ctx": 4
+    },
+    "james_ctx4": {
+      "corsi_score": 6,
+      "max_span": 3,
+      "total_correct": 2,
+      "persona": "james",
+      "ctx": 4
+    },
+    "dorothy_ctx4": {
+      "corsi_score": 6,
+      "max_span": 3,
+      "total_correct": 2,
+      "persona": "dorothy",
+      "ctx": 4
+    },
+    "emma_ctx6": {
+      "corsi_score": 16,
+      "max_span": 4,
+      "total_correct": 4,
+      "persona": "emma",
+      "ctx": 6
+    },
+    "james_ctx6": {
+      "corsi_score": 16,
+      "max_span": 4,
+      "total_correct": 4,
+      "persona": "james",
+      "ctx": 6
+    },
+    "dorothy_ctx6": {
+      "corsi_score": 16,
+      "max_span": 4,
+      "total_correct": 4,
+      "persona": "dorothy",
+      "ctx": 6
+    },
+    "emma_ctx8": {
+      "corsi_score": 30,
+      "max_span": 5,
+      "total_correct": 6,
+      "persona": "emma",
+      "ctx": 8
+    },
+    "james_ctx8": {
+      "corsi_score": 30,
+      "max_span": 5,
+      "total_correct": 6,
+      "persona": "james",
+      "ctx": 8
+    },
+    "dorothy_ctx8": {
+      "corsi_score": 30,
+      "max_span": 5,
+      "total_correct": 6,
+      "persona": "dorothy",
+      "ctx": 8
+    },
+    "emma_ctx12": {
+      "corsi_score": 70,
+      "max_span": 7,
+      "total_correct": 10,
+      "persona": "emma",
+      "ctx": 12
+    },
+    "james_ctx12": {
+      "corsi_score": 70,
+      "max_span": 7,
+      "total_correct": 10,
+      "persona": "james",
+      "ctx": 12
+    },
+    "dorothy_ctx12": {
+      "corsi_score": 70,
+      "max_span": 7,
+      "total_correct": 10,
+      "persona": "dorothy",
+      "ctx": 12
+    }
+  }
+}
