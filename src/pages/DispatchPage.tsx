@@ -9,6 +9,12 @@ import { computePilotMetrics } from '../lib/metrics';
 import { runAnalysisPipeline, defaultBatteryPlan, defaultSingleTaskPlan } from '../lib/analysis/registry';
 import { runLLMTrial } from '../lib/llmParticipant';
 import { runMazeLLMTrial, computeConstrualProbabilities, type PaperMaze } from '../lib/mazeSimulation';
+import { runWCST, scoreWCST } from '../lib/tasks/wcst';
+import { runTwoStep, scoreTwoStep } from '../lib/tasks/twoStep';
+import { runTOL, scoreTOL } from '../lib/tasks/tol';
+import { runNBack, scoreNBack } from '../lib/tasks/nback';
+import { runCorsi, scoreCorsi } from '../lib/tasks/corsi';
+import { runFIAR, scoreFIAR } from '../lib/tasks/fiar';
 import { generatePool, type SimulatedPerson } from '../lib/participantPool';
 import { buildTaskPrompt } from '../lib/personaPrompts';
 import { getParadigm } from '../data/taskBank';
@@ -54,9 +60,15 @@ export function DispatchPage() {
         }];
         const nParticipants = isLLM ? Math.min(nFromUrl, 10) : nFromUrl; // cap LLM at 10
         const paradigmIds = llmBattery.map(t => t.paradigmId);
-        // Maze-construal: 2 API calls per trial (navigate + probe) × 6 trials; others: 1 call × 3 trials
+        // Estimate total API calls per task type
         const totalCalls = llmBattery.reduce((sum, t) => {
           if (t.paradigmId === 'maze-construal') return sum + nParticipants * 6 * 2;
+          if (t.paradigmId === 'wcst') return sum + nParticipants * 64;
+          if (t.paradigmId === 'two-step') return sum + nParticipants * 80 * 2;
+          if (t.paradigmId === 'tower-of-london') return sum + nParticipants * 25 * 6; // ~6 moves per puzzle avg
+          if (t.paradigmId === 'n-back') return sum + nParticipants * 100; // 4 blocks × 25 letters
+          if (t.paradigmId === 'corsi-block') return sum + nParticipants * 50; // ~14 spans × ~3 messages each
+          if (t.paradigmId === 'four-in-a-row') return sum + nParticipants * 100; // 10 games × ~10 moves
           return sum + nParticipants * 3;
         }, 0);
         let callsDone = 0;
@@ -105,6 +117,9 @@ export function DispatchPage() {
 
             const trials: SimulatedTrial[] = [];
 
+            const isWCST = task.paradigmId === 'wcst';
+            const isTwoStep = task.paradigmId === 'two-step';
+
             if (isMaze) {
               // === MAZE-CONSTRUAL: Two-phase trials (navigate + awareness probe) ===
               for (let ti = 0; ti < trialsPerParticipant; ti++) {
@@ -115,6 +130,98 @@ export function DispatchPage() {
                 trials.push(trial);
                 callsDone += 2; // navigation + probe = 2 API calls
                 setLlmProgress({ current: callsDone, total: totalCalls, status: `${paradigm.name}: P${pi + 1}, maze ${ti + 1}/${trialsPerParticipant}` });
+              }
+            } else if (isWCST) {
+              // === WCST: 64 multi-turn trials with feedback + rule switches ===
+              const wcstResult = await runWCST(person.llmPrompt, 64, pi * 100, (t, total) => {
+                callsDone++;
+                setLlmProgress({ current: callsDone, total: totalCalls, status: `WCST: P${pi + 1}, trial ${t + 1}/${total}` });
+              });
+              const wcstScore = scoreWCST(wcstResult);
+              // Convert to SimulatedTrial format
+              for (const td of wcstResult.trialDetails) {
+                trials.push({
+                  trialIndex: td.trial,
+                  condition: td.rule,
+                  rt: wcstResult.outcomes[td.trial]?.latencyMs ?? 1000,
+                  response: td.participantChoice,
+                  correct: td.correct,
+                  metadata: { perseverative: td.perseverative, rule: td.rule, ...wcstScore },
+                });
+              }
+            } else if (isTwoStep) {
+              // === TWO-STEP: 80 multi-turn trials with drifting rewards ===
+              const tsResult = await runTwoStep(person.llmPrompt, 80, pi * 100, (t, total) => {
+                callsDone += 2;
+                setLlmProgress({ current: callsDone, total: totalCalls, status: `Two-Step: P${pi + 1}, trial ${t + 1}/${total}` });
+              });
+              const tsScore = scoreTwoStep(tsResult);
+              for (const td of tsResult.trialDetails) {
+                trials.push({
+                  trialIndex: td.trial, condition: td.transition,
+                  rt: tsResult.outcomes[td.trial * 2]?.latencyMs ?? 1000,
+                  response: td.stage1Choice === 'A' ? 0 : 1, correct: td.rewarded,
+                  metadata: { transition: td.transition, planet: td.planet, rewarded: td.rewarded, ...tsScore },
+                });
+              }
+            } else if (task.paradigmId === 'tower-of-london') {
+              // === TOL: 25 multi-turn puzzles with move validation ===
+              const tolResult = await runTOL(person.llmPrompt, 25, pi * 100, (p, total) => {
+                callsDone++;
+                setLlmProgress({ current: callsDone, total: totalCalls, status: `TOL: P${pi + 1}, puzzle ${p + 1}/${total}` });
+              });
+              const tolScore = scoreTOL(tolResult);
+              for (const pd of tolResult.puzzleDetails) {
+                trials.push({
+                  trialIndex: pd.puzzleId, condition: `${pd.minMoves}-move`,
+                  rt: tolResult.outcomes[pd.puzzleId]?.latencyMs ?? 5000,
+                  response: pd.actualMoves, correct: pd.optimal,
+                  metadata: { minMoves: pd.minMoves, solved: pd.solved, optimal: pd.optimal, ...tolScore },
+                });
+              }
+            } else if (task.paradigmId === 'n-back') {
+              // === N-BACK: Sequential, one letter at a time ===
+              const nbResult = await runNBack(person.llmPrompt, undefined, pi * 100, (t, total) => {
+                callsDone++;
+                setLlmProgress({ current: callsDone, total: totalCalls, status: `N-back: P${pi + 1}, trial ${t}/${total}` });
+              });
+              const nbScore = scoreNBack(nbResult);
+              for (let bi = 0; bi < nbResult.blocks.length; bi++) {
+                const b = nbResult.blocks[bi];
+                trials.push({
+                  trialIndex: bi, condition: `${b.nBack}-back`,
+                  rt: 0, response: b.dPrime, correct: b.accuracy > 0.6,
+                  metadata: { nBack: b.nBack, hitRate: b.hitRate, falseAlarmRate: b.falseAlarmRate, dPrime: b.dPrime, ...nbScore },
+                });
+              }
+            } else if (task.paradigmId === 'corsi-block') {
+              // === CORSI: Sequential spatial, adaptive staircase ===
+              const corsiResult = await runCorsi(person.llmPrompt, 3, 9, 2, pi * 100, (t, total) => {
+                callsDone++;
+                setLlmProgress({ current: callsDone, total: totalCalls, status: `Corsi: P${pi + 1}, trial ${t}/${total}` });
+              });
+              const corsiScore = scoreCorsi(corsiResult);
+              for (const td of corsiResult.trialDetails) {
+                trials.push({
+                  trialIndex: td.trialAtSpan, condition: `span-${td.span}`,
+                  rt: 0, response: td.correct ? 1 : 0, correct: td.correct,
+                  metadata: { span: td.span, sequence: td.sequence, recalled: td.recalled, ...corsiScore },
+                });
+              }
+            } else if (task.paradigmId === 'four-in-a-row') {
+              // === FIAR: Full games against AI ===
+              const fiarResult = await runFIAR(person.llmPrompt, 10, pi * 100, (g, total) => {
+                callsDone += 10; // ~10 moves per game
+                setLlmProgress({ current: callsDone, total: totalCalls, status: `FIAR: P${pi + 1}, game ${g + 1}/${total}` });
+              });
+              const fiarScore = scoreFIAR(fiarResult);
+              for (const gd of fiarResult.gameDetails) {
+                trials.push({
+                  trialIndex: gd.gameId, condition: `skill-${gd.opponentSkill.toFixed(1)}`,
+                  rt: 0, response: gd.result === 'win' ? 1 : gd.result === 'draw' ? 0.5 : 0,
+                  correct: gd.result === 'win',
+                  metadata: { result: gd.result, opponentSkill: gd.opponentSkill, ...fiarScore },
+                });
               }
             } else {
               // === GENERIC TASK: standard trial format ===
@@ -163,8 +270,8 @@ export function DispatchPage() {
           }
         }
 
-        // Run analysis
-        const plan = allDatasets.length > 1 ? defaultBatteryPlan(allDatasets.length) : defaultSingleTaskPlan(paradigmIds[0]);
+        // Run analysis (pass paradigmIds so task-specific steps auto-include)
+        const plan = allDatasets.length > 1 ? defaultBatteryPlan(allDatasets.length, paradigmIds) : defaultSingleTaskPlan(paradigmIds[0]);
         const analysisResults = runAnalysisPipeline(plan, { datasets: allDatasets, designs: allDesigns, paradigms, personas });
         dispatch({ type: 'SET_ANALYSIS_RESULTS', payload: analysisResults });
 
@@ -185,9 +292,9 @@ export function DispatchPage() {
         const allDesigns: ExperimentDesign[] = [];
         const paradigms: any[] = [];
 
-        // Check if brief contains iteration feedback
-        const feedbackMatch = session.brief.match(/\[round \d+ feedback: (.+?)\]/);
-        const feedback = feedbackMatch?.[1] || '';
+        // Extract the LATEST iteration feedback (last match, not first)
+        const allFeedback = [...session.brief.matchAll(/\[round \d+ feedback: (.+?)\]/g)];
+        const feedback = allFeedback.length > 0 ? allFeedback[allFeedback.length - 1][1] : '';
 
         // If there's feedback, ask Claude to adjust params; otherwise use defaults
         let paramOverrides: Record<string, any> | null = null;
@@ -256,7 +363,8 @@ Only include fields that the feedback asks to change. Return {} if no param chan
         }
 
         // Run full analysis pipeline (instant — all pure computation)
-        const plan = defaultBatteryPlan(allDatasets.length);
+        const batteryParadigmIds = battery.map(t => t.paradigmId);
+        const plan = defaultBatteryPlan(allDatasets.length, batteryParadigmIds);
         const analysisResults = runAnalysisPipeline(plan, {
           datasets: allDatasets, designs: allDesigns, paradigms, personas,
         });
@@ -274,18 +382,15 @@ Only include fields that the feedback asks to change. Return {} if no param chan
         const paradigm = getParadigm(session.paradigmId);
         if (!paradigm) return;
 
-        // Extract iteration feedback from brief (same logic as battery mode)
-        const feedbackMatch = session.brief.match(/\[round \d+ feedback: (.+?)\]/);
-        const feedback = feedbackMatch?.[1] || '';
+        // Extract the LATEST iteration feedback (last match, not first)
+        const allFeedback = [...session.brief.matchAll(/\[round \d+ feedback: (.+?)\]/g)];
+        const feedback = allFeedback.length > 0 ? allFeedback[allFeedback.length - 1][1] : '';
 
         // Parse param overrides from feedback via Claude
         let paramOverrides: Record<string, any> | null = null;
         if (feedback) {
           try {
-            const res = await fetch('/api/claude', {
-              method: 'POST',
-              headers: { 'content-type': 'application/json' },
-              body: JSON.stringify({
+            const res = await callClaudeApi({
                 model: 'claude-sonnet-4-6-20250514',
                 max_tokens: 400,
                 system: `You adjust experiment parameters based on researcher feedback.
@@ -296,7 +401,6 @@ Return ONLY JSON with fields to override. Examples:
 - "add a third condition" → { "nConditions": 3 }
 Only include fields the feedback asks to change. Return {} if no param changes needed.`,
                 messages: [{ role: 'user', content: `Feedback: "${feedback}"` }],
-              }),
             });
             const data = await res.json();
             const raw = data.content?.[0]?.text ?? '';

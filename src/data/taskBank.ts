@@ -109,6 +109,23 @@ export const taskBank: ParadigmDefinition[] = [
       { name: 'accuracy', type: 'binary', unit: 'proportion', expectedRange: [0, 1], higherIsBetter: true },
     ],
   },
+  {
+    id: 'wcst',
+    name: 'Wisconsin Card Sort',
+    emoji: '🃏',
+    category: 'control',
+    paradigmType: 'behavioral',
+    description: 'Sort cards by a hidden rule (color/shape/number) that changes without warning — measures cognitive flexibility (Lin & Ma Factor 3)',
+    defaultParams: {
+      type: 'behavioral', difficulty: 0.5, nTrials: 64, nConditions: 3,
+      conditionLabels: ['color', 'shape', 'number'],
+      withinSubject: true, rtRange: [500, 5000], baseAccuracy: 0.75,
+    },
+    dependentVariables: [
+      { name: 'perseverativeErrors', type: 'continuous', unit: 'count', expectedRange: [0, 30], higherIsBetter: false },
+      { name: 'categoriesCompleted', type: 'continuous', unit: 'count', expectedRange: [0, 6], higherIsBetter: true },
+    ],
+  },
 
   // === COMPLEX PLANNING ===
   {

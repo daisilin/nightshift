@@ -4,6 +4,7 @@ import { ceilingFloorCheck, outlierCheck } from './quality';
 import { conditionEffects, personaDifferences } from './effects';
 import { correlationMatrix, exploratoryFA } from './multivariate';
 import { construalAnalysis, construalByMaze } from './construal';
+import { wcstAnalysis, twoStepAnalysis, tolAnalysis, nbackAnalysis, corsiAnalysis, fiarAnalysis } from './taskSpecific';
 
 // === Step Registry ===
 
@@ -18,6 +19,12 @@ const ALL_STEPS: AnalysisStepDef[] = [
   exploratoryFA,
   construalAnalysis,
   construalByMaze,
+  wcstAnalysis,
+  twoStepAnalysis,
+  tolAnalysis,
+  nbackAnalysis,
+  corsiAnalysis,
+  fiarAnalysis,
 ];
 
 const REGISTRY = new Map<string, AnalysisStepDef>(ALL_STEPS.map(s => [s.id, s]));
@@ -73,17 +80,23 @@ export function defaultSingleTaskPlan(paradigmId?: string): AnalysisPlan {
     { id: 'persona-differences' },
   ];
 
-  // Auto-include maze-construal analysis when relevant
+  // Auto-include task-specific analysis when relevant
   if (paradigmId === 'maze-construal') {
     steps.unshift({ id: 'construal-effect' });
     steps.push({ id: 'construal-by-maze' });
   }
+  if (paradigmId === 'wcst') steps.unshift({ id: 'wcst-analysis' });
+  if (paradigmId === 'two-step') steps.unshift({ id: 'two-step-analysis' });
+  if (paradigmId === 'tower-of-london') steps.unshift({ id: 'tol-analysis' });
+  if (paradigmId === 'n-back') steps.unshift({ id: 'nback-analysis' });
+  if (paradigmId === 'corsi-block') steps.unshift({ id: 'corsi-analysis' });
+  if (paradigmId === 'four-in-a-row') steps.unshift({ id: 'fiar-analysis' });
 
   return { steps };
 }
 
 /** Default plan for multi-task battery */
-export function defaultBatteryPlan(nTasks: number): AnalysisPlan {
+export function defaultBatteryPlan(nTasks: number, paradigmIds?: string[]): AnalysisPlan {
   const steps: AnalysisPlanStep[] = [
     { id: 'descriptive-stats' },
     { id: 'split-half-reliability' },
@@ -92,6 +105,18 @@ export function defaultBatteryPlan(nTasks: number): AnalysisPlan {
     { id: 'persona-differences' },
     { id: 'correlation-matrix', params: { permutations: 500 } },
   ];
+
+  // Auto-include task-specific analysis for multi-turn tasks in battery
+  if (paradigmIds?.includes('wcst')) steps.push({ id: 'wcst-analysis' });
+  if (paradigmIds?.includes('two-step')) steps.push({ id: 'two-step-analysis' });
+  if (paradigmIds?.includes('tower-of-london')) steps.push({ id: 'tol-analysis' });
+  if (paradigmIds?.includes('n-back')) steps.push({ id: 'nback-analysis' });
+  if (paradigmIds?.includes('corsi-block')) steps.push({ id: 'corsi-analysis' });
+  if (paradigmIds?.includes('four-in-a-row')) steps.push({ id: 'fiar-analysis' });
+  if (paradigmIds?.includes('maze-construal')) {
+    steps.push({ id: 'construal-effect' });
+    steps.push({ id: 'construal-by-maze' });
+  }
 
   if (nTasks >= 4) {
     steps.push({ id: 'exploratory-fa', params: { nFactors: Math.min(3, Math.floor(nTasks / 2)) } });

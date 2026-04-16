@@ -35,6 +35,8 @@ export const TASK_LOADINGS: Record<string, TaskLoadings> = {
   'corsi-block':     { g: 0.33, spatial: 0.14, workingMemory: 0.78, inhibition: 0.05 },
   'n-back':          { g: 0.32, spatial: 0.21, workingMemory: 0.70, inhibition: 0.09 },
   'stroop':          { g: 0.30, spatial: 0.32, workingMemory: 0.03, inhibition: 0.62 },
+  // WCST: Lin & Ma Table 2 — loaded 0.62 on inhibition factor, 0.32 cross-loading on visuospatial
+  'wcst':            { g: 0.30, spatial: 0.32, workingMemory: 0.03, inhibition: 0.62 },
   'rush-hour':       { g: 0.35, spatial: 0.50, workingMemory: 0.30, inhibition: 0.20 },
   'chess':           { g: 0.40, spatial: 0.55, workingMemory: 0.35, inhibition: 0.10 },
   // Surveys load primarily on g (conscientiousness, self-report accuracy)

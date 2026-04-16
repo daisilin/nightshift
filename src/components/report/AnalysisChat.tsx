@@ -19,10 +19,16 @@ function buildSystemPrompt(taskNames: string[], personaNames: string[], nDataset
   const singleSteps = ['descriptive-stats', 'split-half-reliability', 'ceiling-floor', 'outlier-detection', 'condition-effects', 'persona-differences'];
   const mazeSteps = ['construal-effect', 'construal-by-maze'];
   const multiSteps = ['correlation-matrix', 'exploratory-fa'];
+  const wcstSteps = ['wcst-analysis'];
+  const twoStepSteps = ['two-step-analysis'];
   const hasMaze = taskNames.some(n => n.toLowerCase().includes('maze') || n.toLowerCase().includes('construal'));
+  const hasWCST = taskNames.some(n => n.toLowerCase().includes('wisconsin') || n.toLowerCase().includes('wcst') || n.toLowerCase().includes('card sort'));
+  const hasTwoStep = taskNames.some(n => n.toLowerCase().includes('two-step') || n.toLowerCase().includes('two step'));
   const available = [
     ...singleSteps,
     ...(hasMaze ? mazeSteps : []),
+    ...(hasWCST ? wcstSteps : []),
+    ...(hasTwoStep ? twoStepSteps : []),
     ...(nDatasets >= 2 ? multiSteps : []),
   ];
 
@@ -34,11 +40,25 @@ function buildSystemPrompt(taskNames: string[], personaNames: string[], nDataset
 - Construal effect (difference): 0.614
 - HGLM: β=0.133, SE=0.003, χ²(1)=2297.21, p<10⁻¹⁶` : '';
 
-  const planningReferenceData = !hasMaze && nDatasets >= 2 ? `REAL HUMAN DATA — Kösester et al. (2021), planning battery:
+  const wcstReferenceData = hasWCST ? `REAL HUMAN DATA — Lin & Ma (Nature Communications), WCST:
+- N=476 participants, 64 trials per participant
+- Mean perseverative errors: 2.45 (SEM=0.17)
+- WCST loaded 0.62 on inhibition factor, 0.32 cross-loading on visuospatial factor
+- Perseverative errors correlate with Two-Step model-based weight (r=0.179)
+- Perseverative errors correlate with SPM (r=0.295)` : '';
+
+  const twoStepReferenceData = hasTwoStep ? `REAL HUMAN DATA — Lin & Ma (Nature Communications), Two-Step:
+- N=476 participants, 80 trials per participant
+- Mean model-based weight: 2.162 (SEM=0.046)
+- Model-based weight correlates with WCST (r=0.179), SPM (r=0.233)
+- Two-Step loaded 0.83 on inhibition factor
+- Split-half reliability: r=0.30 (low — known issue with this task)` : '';
+
+  const planningReferenceData = nDatasets >= 2 ? `REAL HUMAN DATA — Lin & Ma (Nature Communications), planning battery:
 - Tower of London and Four-in-a-Row each correlate with planning ability r≈0.4-0.6
 - Working memory (N-back, Corsi) correlates with planning r≈0.3-0.5
-- Inhibition (Stroop) correlates more weakly r≈0.2-0.35
-- 3-factor EFA solution: planning, working memory, inhibition` : '';
+- Inhibition (WCST) correlates more weakly r≈0.2-0.35
+- 3-factor EFA solution: visuospatial, working memory, inhibition` : '';
 
   return `You are an expert analysis agent powered by Claude Opus. You EXECUTE analyses by returning step IDs in JSON, AND you can write Python code for advanced analyses.
 
@@ -47,6 +67,8 @@ DATA IN MEMORY: ${nDatasets} task(s): ${taskNames.join(', ')}. Populations: ${pe
 ${paperContext ? `ORIGINAL PAPER (full text available):\n${paperContext.slice(0, 3000)}` : ''}
 
 ${mazeReferenceData}
+${wcstReferenceData}
+${twoStepReferenceData}
 ${planningReferenceData}
 
 ${existingResultsSummary ? `ALREADY COMPUTED FROM SIMULATED DATA:\n${existingResultsSummary}` : ''}
@@ -107,7 +129,8 @@ export function AnalysisChat() {
 
     import('../../lib/analysis/registry').then(({ runAnalysisPipeline, defaultBatteryPlan, defaultSingleTaskPlan }) => {
       const singleParadigmId = paradigms[0]?.id;
-      const plan = datasets.length > 1 ? defaultBatteryPlan(datasets.length) : defaultSingleTaskPlan(singleParadigmId);
+      const allParadigmIds = paradigms.map((p: any) => p.id);
+      const plan = datasets.length > 1 ? defaultBatteryPlan(datasets.length, allParadigmIds) : defaultSingleTaskPlan(singleParadigmId);
       const results = runAnalysisPipeline(plan, { datasets, designs, paradigms, personas });
 
       if (results.length > 0) {
