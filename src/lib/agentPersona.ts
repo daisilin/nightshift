@@ -13,6 +13,8 @@
  * This is generalizable to ANY experiment — not limited to predefined personas.
  */
 
+import { callClaudeApi } from './apiKey';
+
 export interface AgentPersonaConfig {
   id: string;
   description: string;  // free-text: "college students at a state university, ages 18-22"
@@ -80,10 +82,7 @@ export async function generatePersonaProfile(
   taskDescription: string,
 ): Promise<GeneratedProfile> {
   try {
-    const res = await fetch('/api/claude', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
+    const res = await callClaudeApi({
         model: 'claude-sonnet-4-6-20250514',
         max_tokens: 500,
         system: PROFILE_PROMPT,
@@ -91,7 +90,6 @@ export async function generatePersonaProfile(
           role: 'user',
           content: `Population: "${description}"\nTask context: "${taskDescription}"\nGenerate a behavioral profile.`,
         }],
-      }),
     });
 
     if (!res.ok) throw new Error(`${res.status}`);

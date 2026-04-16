@@ -20,6 +20,7 @@ import { createRng, normalDraw } from './simulation';
 import { buildPersonaPrompt, type PersonaSpec } from './personaPrompts';
 import type { PersonaDefinition } from './types';
 import { generateLatentProfile, type LatentProfile } from './latentModel';
+import { callClaudeApi } from './apiKey';
 
 export interface SimulatedPerson {
   id: string;
@@ -396,17 +397,13 @@ export async function generatePoolFromDescription(
   n: number,
 ): Promise<{ pool: SimulatedPerson[]; populationType: string; explanation: string }> {
   try {
-    const res = await fetch('/api/claude', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
+    const res = await callClaudeApi({
         model: 'claude-sonnet-4-6-20250514',
         max_tokens: 200,
         system: `Given a population description, identify the closest type and any adjustments needed.
 Available types: college-student, mturk-worker, older-adult, child, clinical-adhd
 Return JSON: { "type": "closest-type", "explanation": "why and what adjustments" }`,
         messages: [{ role: 'user', content: description }],
-      }),
     });
     const data = await res.json();
     const raw = data.content?.[0]?.text ?? '';

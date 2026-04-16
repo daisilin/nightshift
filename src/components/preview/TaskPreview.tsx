@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import type { ExperimentDesign, BehavioralParams, SurveyParams } from '../../lib/types';
 import { getParadigm } from '../../data/taskBank';
+import { callClaudeApi } from '../../lib/apiKey';
 import { StroopPreview } from './StroopPreview';
 import { SurveyPreview } from './SurveyPreview';
 import { TowerOfLondonPreview } from './TowerOfLondonPreview';
@@ -11,6 +12,7 @@ import { MazePreview } from './MazePreview';
 import { NBackPreview } from './NBackPreview';
 import { CorsiPreview } from './CorsiPreview';
 import { TwoStepPreview } from './TwoStepPreview';
+import { WCSTPreview } from './WCSTPreview';
 
 interface Props {
   design: ExperimentDesign;
@@ -53,10 +55,7 @@ export function TaskPreview({ design, onClose, onDesignChange }: Props) {
 
     const paradigm = getParadigm(id);
     try {
-      const res = await fetch('/api/claude', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
+      const res = await callClaudeApi({
           model: 'claude-sonnet-4-6-20250514',
           max_tokens: 500,
           system: `You are a task design agent helping a researcher iterate on an experiment.
@@ -76,7 +75,6 @@ If the request is about something you can change via params, include the JSON. I
             ...designChat.slice(-6).map(m => ({ role: m.role, content: m.content })),
             { role: 'user', content: msg },
           ],
-        }),
       });
       const data = await res.json();
       const raw = data.content?.[0]?.text ?? '';
@@ -190,12 +188,13 @@ If the request is about something you can change via params, include the JSON. I
       {id === 'n-back' && <NBackPreview nLevel={nLevel ? parseInt(nLevel) : 2} />}
       {id === 'corsi-block' && <CorsiPreview />}
       {id === 'two-step' && <TwoStepPreview />}
+      {id === 'wcst' && <WCSTPreview />}
       {id === 'maze-construal' && <MazePreview />}
       {(id === 'likert-survey' || id === 'forced-choice') && sp && (
         <SurveyPreview params={sp} />
       )}
 
-      {!['stroop', 'tower-of-london', 'four-in-a-row', 'chess', 'n-back', 'corsi-block', 'two-step', 'maze-construal', 'likert-survey', 'forced-choice'].includes(id) && (
+      {!['stroop', 'tower-of-london', 'four-in-a-row', 'chess', 'n-back', 'corsi-block', 'two-step', 'wcst', 'maze-construal', 'likert-survey', 'forced-choice'].includes(id) && (
         <div className="card p-6 text-center">
           <p className="text-sm text-text-3 mb-2">interactive preview for <strong>{id}</strong> coming soon</p>
         </div>

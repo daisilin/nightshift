@@ -45,9 +45,9 @@ export async function proposeDesign(
 ): Promise<ExperimentDesign> {
   const intern = INTERN_PROFILES[role];
 
-  // Extract iteration feedback from brief if present
-  const feedbackMatch = brief.match(/\[round \d+ feedback: (.+?)\]/);
-  const iterationFeedback = feedbackMatch?.[1] || '';
+  // Extract the LATEST iteration feedback (last match, not first)
+  const allFeedback = [...brief.matchAll(/\[round \d+ feedback: (.+?)\]/g)];
+  const iterationFeedback = allFeedback.length > 0 ? allFeedback[allFeedback.length - 1][1] : '';
 
   const system = `You are ${intern.name}, a research intern designing behavioral experiments.
 Your approach: ${intern.description}

@@ -19,6 +19,8 @@
  * - But: captures cognitive phenomena that math can't model
  */
 
+import { callClaudeApi } from './apiKey';
+
 export interface LLMTrialInput {
   taskDescription: string;
   stimulus: string;        // the specific trial (maze layout, game board, etc.)
@@ -39,10 +41,7 @@ export async function runLLMTrial(input: LLMTrialInput): Promise<LLMTrialOutput>
   const start = Date.now();
 
   try {
-    const res = await fetch('/api/claude', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
+    const res = await callClaudeApi({
         model: 'claude-sonnet-4-6-20250514',
         max_tokens: 300,
         system: `${input.personaPrompt}
@@ -52,7 +51,6 @@ Task: ${input.taskDescription}
 Response format: ${input.responseFormat}
 Return ONLY the JSON response.`,
         messages: [{ role: 'user', content: input.stimulus }],
-      }),
     });
 
     const data = await res.json();

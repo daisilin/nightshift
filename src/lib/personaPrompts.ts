@@ -491,6 +491,7 @@ export function buildTaskPrompt(taskType: string, trialDescription: string): str
     'n-back': `Letters appear one at a time on screen. Press "match" if the current letter is the same as the one from 2 letters ago. It goes pretty fast.`,
     'corsi-block': `Some blocks light up in a sequence. After the sequence finishes, tap the blocks in the same order they lit up. The sequences get longer as you get them right.`,
     'two-step': `You're playing a game with spaceships and aliens. Pick a spaceship, it takes you to a planet, then pick an alien. Sometimes you get a reward. Try to figure out which choices lead to more rewards.`,
+    'wcst': `You see four key cards and a stimulus card. Sort the stimulus by matching it to a key card. The rule is hidden — you figure it out from feedback. The rule can change without warning.`,
     'likert-survey': `You're filling out a questionnaire. Read each statement and rate how much you agree on the scale provided. There are no right or wrong answers.`,
     'chess': `You see a chess position. Find the best move. Take your time to think about it.`,
   };

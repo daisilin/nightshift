@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import * as pdfjsLib from 'pdfjs-dist';
+import { callClaudeApi } from '../lib/apiKey';
 
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
@@ -34,7 +35,9 @@ Return ONLY valid JSON:
   "keyDetails": "N participants, N trials, conditions, key DVs"
 }
 
-Available IDs: maze-construal, tower-of-london, four-in-a-row, rush-hour, corsi-block, n-back, stroop, chess, two-step, likert-survey, forced-choice
+Available IDs: maze-construal, tower-of-london, four-in-a-row, rush-hour, corsi-block, n-back, stroop, wcst, chess, two-step, likert-survey, forced-choice
+
+Task notes: Use 'wcst' (Wisconsin Card Sorting Test) for card sorting / set-shifting / cognitive flexibility tasks. Use 'two-step' for sequential decision tasks or model-based/model-free RL paradigms.
 
 Pick whichever task(s) best match what participants ACTUALLY DID in the experiments.
 If the paper uses multiple tasks, list all of them.
@@ -75,15 +78,11 @@ export function PaperUpload({ onExtracted }: Props) {
     setLoading(true);
     setStatus('analyzing paper...');
     try {
-      const res = await fetch('/api/claude', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
+      const res = await callClaudeApi({
           model: 'claude-sonnet-4-6-20250514',
           max_tokens: 800,
           system: SYSTEM_PROMPT,
           messages: [{ role: 'user', content: `Extract the experimental design:\n\n${text.slice(0, 10000)}` }],
-        }),
       });
       if (!res.ok) throw new Error(`API ${res.status}`);
       const data = await res.json();

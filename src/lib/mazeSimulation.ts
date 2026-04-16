@@ -21,6 +21,7 @@ import { createRng, normalDraw, bernoulliDraw } from './simulation';
 import type { PersonaDefinition, SimulatedTrial, SimulatedParticipant, SimulatedDataset } from './types';
 import type { LatentProfile } from './latentModel';
 import { computeTaskAbility, getTaskLoadings } from './latentModel';
+import { callClaudeApi } from './apiKey';
 
 // ============================================================
 // PAPER MAZE TYPES
@@ -358,10 +359,7 @@ export async function runMazeLLMTrial(
 
   try {
     // Phase 1: Navigation — let the LLM plan a route and think aloud
-    const navRes = await fetch('/api/claude', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
+    const navRes = await callClaudeApi({
         model: 'claude-sonnet-4-6-20250514',
         max_tokens: 500,
         system: `${personaPrompt}
@@ -375,17 +373,13 @@ You're doing a maze task in a research study. You see a grid maze on screen.
 
 Navigate from S to G. Think out loud about what you see and how you'd get there.`,
         messages: [{ role: 'user', content: `Here is the maze:\n\n${mazeText}\n\nPlan your route from S to G.` }],
-      }),
     });
 
     const navData = await navRes.json();
     const cot = navData.content?.[0]?.text ?? '';
 
     // Phase 2: Awareness probe — rate awareness of each obstacle
-    const probeRes = await fetch('/api/claude', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
+    const probeRes = await callClaudeApi({
         model: 'claude-sonnet-4-6-20250514',
         max_tokens: 200,
         system: `${personaPrompt}
@@ -399,7 +393,6 @@ For each obstacle (labeled with a digit), rate how aware you were of it while yo
 
 Return ONLY a JSON object: { "0": 0.7, "1": 0.2, ... }`,
         messages: [{ role: 'user', content: `The maze had these obstacles: ${obstacleLabels.join(', ')}\n\nYou said: "${cot.slice(0, 300)}"\n\nHow aware were you of each obstacle?` }],
-      }),
     });
 
     const probeData = await probeRes.json();
