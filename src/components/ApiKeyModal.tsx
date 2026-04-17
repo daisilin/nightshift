@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { getStoredApiKey, setStoredApiKey, clearStoredApiKey } from '../lib/apiKey';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { getStoredApiKey, setStoredApiKey, clearStoredApiKey, detectAvailableModels, getAvailableModels } from '../lib/apiKey';
 
 interface Props {
   onClose: () => void;
@@ -11,8 +11,18 @@ export function ApiKeyModal({ onClose }: Props) {
   const [key, setKey] = useState('');
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
+  const [detecting, setDetecting] = useState(false);
+  const [models, setModels] = useState<string[]>(getAvailableModels());
 
-  const handleSave = () => {
+  // Detect models when modal opens with existing key
+  useEffect(() => {
+    if (existing && models.length === 0) {
+      setDetecting(true);
+      detectAvailableModels().then(m => { setModels(m); setDetecting(false); });
+    }
+  }, [existing]);
+
+  const handleSave = async () => {
     const trimmed = key.trim();
     if (!trimmed.startsWith('sk-ant-')) {
       setError('Key must start with sk-ant-');
@@ -20,12 +30,33 @@ export function ApiKeyModal({ onClose }: Props) {
     }
     setStoredApiKey(trimmed);
     setSaved(true);
-    setTimeout(onClose, 700);
+    // Detect available models for the new key
+    setDetecting(true);
+    const detected = await detectAvailableModels();
+    setModels(detected);
+    setDetecting(false);
+    if (detected.length === 0) {
+      setError('Key saved but no models accessible. Check your Anthropic plan.');
+      setSaved(false);
+      return;
+    }
+    setTimeout(onClose, 1200);
   };
 
   const handleClear = () => {
     clearStoredApiKey();
+    setModels([]);
     onClose();
+  };
+
+  const modelLabel = (id: string) => {
+    if (id.includes('sonnet-4-6')) return 'Sonnet 4.6';
+    if (id.includes('sonnet-4-5')) return 'Sonnet 4.5';
+    if (id.includes('sonnet-4-2')) return 'Sonnet 4';
+    if (id.includes('3-7-sonnet')) return 'Sonnet 3.7';
+    if (id.includes('3-5-sonnet')) return 'Sonnet 3.5';
+    if (id.includes('3-5-haiku')) return 'Haiku 3.5';
+    return id.split('-').slice(1, 4).join(' ');
   };
 
   return (
@@ -45,7 +76,7 @@ export function ApiKeyModal({ onClose }: Props) {
           <div>
             <h2 className="text-sm font-heading text-text">API key</h2>
             <p className="text-[11px] text-text-3 mt-0.5">
-              your Anthropic key — stored in this browser only
+              your Anthropic key — calls API directly from your browser
             </p>
           </div>
           <button onClick={onClose} className="text-text-4 hover:text-text cursor-pointer text-lg leading-none">×</button>
@@ -59,9 +90,29 @@ export function ApiKeyModal({ onClose }: Props) {
               </span>
               <span className="text-[10px] text-sage">active</span>
             </div>
-            <p className="text-[11px] text-text-3">
-              AI features are using your key. Remove it if you want to use a server-configured key instead.
-            </p>
+
+            {/* Available models */}
+            <div>
+              <p className="text-[10px] text-text-3 mb-1">available models:</p>
+              {detecting ? (
+                <p className="text-[10px] text-text-4 italic">detecting...</p>
+              ) : models.length > 0 ? (
+                <div className="flex flex-wrap gap-1">
+                  {models.map((m, i) => (
+                    <span key={m} className={`px-2 py-0.5 rounded text-[9px] ${i === 0 ? 'bg-sage/15 text-sage border border-sage/20' : 'bg-surface-2/50 text-text-3'}`}>
+                      {modelLabel(m)}{i === 0 ? ' (primary)' : ''}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[10px] text-red-400">
+                  no models detected —{' '}
+                  <button onClick={() => { setDetecting(true); detectAvailableModels().then(m => { setModels(m); setDetecting(false); }); }}
+                    className="underline cursor-pointer">retry</button>
+                </p>
+              )}
+            </div>
+
             <div className="flex gap-2">
               <button
                 onClick={handleClear}
@@ -82,13 +133,23 @@ export function ApiKeyModal({ onClose }: Props) {
           <div className="text-center py-4">
             <div className="text-2xl mb-2">✓</div>
             <p className="text-sm text-sage">key saved</p>
+            {detecting ? (
+              <p className="text-[10px] text-text-3 mt-1">detecting available models...</p>
+            ) : models.length > 0 ? (
+              <div className="mt-2">
+                <p className="text-[10px] text-text-3">using: <strong>{modelLabel(models[0])}</strong></p>
+                {models.length > 1 && (
+                  <p className="text-[9px] text-text-4">+{models.length - 1} more available</p>
+                )}
+              </div>
+            ) : null}
           </div>
         ) : (
           <div className="space-y-3">
             <p className="text-[11px] text-text-3 leading-relaxed">
               Get a key at{' '}
               <span className="font-mono text-orchid">console.anthropic.com</span>.
-              It's stored only in this browser's localStorage — never sent anywhere except to Anthropic through this app's proxy.
+              It's stored only in this browser — calls go directly to Anthropic, never through our server.
             </p>
             <input
               type="password"
@@ -102,11 +163,11 @@ export function ApiKeyModal({ onClose }: Props) {
             {error && <p className="text-[11px] text-red-500">{error}</p>}
             <button
               onClick={handleSave}
-              disabled={!key.trim()}
+              disabled={!key.trim() || detecting}
               className="w-full py-2.5 rounded-xl text-sm font-semibold text-white cursor-pointer disabled:opacity-30"
               style={{ background: 'linear-gradient(135deg, #B07CC6, #D48BB5)' }}
             >
-              save key
+              {detecting ? 'detecting models...' : 'save key'}
             </button>
           </div>
         )}
