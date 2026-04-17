@@ -30,6 +30,7 @@ export function reducer(state: AppState, action: AppAction): AppState {
         synthesis: null, agreements: [], disagreements: [], openQuestions: [], nextMissions: [],
         createdAt: Date.now(), completedAt: null,
         round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0, analysisResults: [], simulationMode: 'parametric' as const, paperContext: null,
+        nParticipants: action.payload.nParticipants ?? 20,
       };
       return { ...state, currentSession: session, step: 'dispatch' };
     }
@@ -50,6 +51,7 @@ export function reducer(state: AppState, action: AppAction): AppState {
         synthesis: null, agreements: [], disagreements: [], openQuestions: [], nextMissions: [],
         createdAt: Date.now(), completedAt: null,
         round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0, analysisResults: [], simulationMode: 'parametric' as const, paperContext: null,
+        nParticipants: action.payload.nParticipants ?? 20,
       };
       return { ...state, currentSession: session, step: 'dispatch' };
     }
@@ -67,6 +69,7 @@ export function reducer(state: AppState, action: AppAction): AppState {
         synthesis: null, agreements: [], disagreements: [], openQuestions: [], nextMissions: [],
         createdAt: Date.now(), completedAt: null,
         round: state.sessions.length + 1, previousSessionId: null, selectedDesignIndex: 0, analysisResults: [], simulationMode: 'parametric' as const, paperContext: null,
+        nParticipants: 20,
       };
       return { ...state, currentSession: session, step: 'dispatch' };
     }

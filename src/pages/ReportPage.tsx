@@ -16,6 +16,7 @@ import { personaBank } from '../data/personaBank';
 import { stagger, staggerItem } from '../lib/animations';
 import { callClaudeApi } from '../lib/apiKey';
 import { buildIterationAgentSystemPrompt } from '../lib/designAgentPrompt';
+import { validatePlan, extractJson } from '../lib/agentSchema';
 
 export function ReportPage() {
   const nav = useNavigate();
@@ -252,7 +253,7 @@ export function ReportPage() {
               currentTasks={session.paradigmIds ?? [session.paradigmId]}
               currentPersonas={session.personaIds}
               currentBrief={session.brief}
-              currentN={20}
+              currentN={session.nParticipants ?? 20}
               title="proposed diff for round N+1"
               approveLabel="approve & re-dispatch"
               onApprove={(p) => {
@@ -269,16 +270,17 @@ export function ReportPage() {
 
                 const nextBrief = p.brief || session.brief;
 
+                const nextN = p.nParticipants ?? session.nParticipants ?? 20;
                 dispatch({ type: 'COMPLETE_SESSION' });
                 if (nextTasks.length > 1) {
-                  dispatch({ type: 'START_BATTERY', payload: { brief: nextBrief, paradigmIds: nextTasks, personaIds: nextPersonas } });
+                  dispatch({ type: 'START_BATTERY', payload: { brief: nextBrief, paradigmIds: nextTasks, personaIds: nextPersonas, nParticipants: nextN } });
                 } else {
-                  dispatch({ type: 'START_EXPERIMENT', payload: { brief: nextBrief, paradigmId: nextTasks[0], personaIds: nextPersonas } });
+                  dispatch({ type: 'START_EXPERIMENT', payload: { brief: nextBrief, paradigmId: nextTasks[0], personaIds: nextPersonas, nParticipants: nextN } });
                 }
                 nav('/dispatch');
               }}
               onEdit={() => setIterationPlan(null)}
-              onReject={() => { setIterationPlan(null); setIterationFeedback(''); }}
+              onReject={() => { setIterationPlan(null); /* keep feedback text so user can edit */ }}
             />
           ) : (
             <div className="flex gap-2">
@@ -302,7 +304,7 @@ export function ReportPage() {
                     const res = await callClaudeApi({
                       model: 'claude-sonnet-4-5-20250929',
                       max_tokens: 800,
-                      system: buildIterationAgentSystemPrompt(currentTasks, session.personaIds, session.brief, 20, resultsSummary),
+                      system: buildIterationAgentSystemPrompt(currentTasks, session.personaIds, session.brief, session.nParticipants ?? 20, resultsSummary),
                       messages: [{ role: 'user', content: feedback }],
                     });
                     if (!res.ok) {
@@ -311,13 +313,22 @@ export function ReportPage() {
                     }
                     const data = await res.json();
                     const raw = data.content?.[0]?.text ?? '';
-                    const m = raw.match(/```json\s*([\s\S]*?)```/);
-                    if (!m) throw new Error('agent did not return a structured plan');
-                    const parsed = JSON.parse(m[1]);
-                    if (parsed.mode === 'clarify' && parsed.clarifyingQuestion) {
+                    const parsed: any = extractJson(raw);
+
+                    if (parsed?.mode === 'clarify' && typeof parsed.clarifyingQuestion === 'string') {
                       setIterationClarify(parsed.clarifyingQuestion);
                     } else {
-                      setIterationPlan(parsed as AgentPlan);
+                      const plan = validatePlan(parsed);
+                      if (plan) {
+                        setIterationPlan(plan);
+                      } else {
+                        // Fallback: surface the agent's prose as a clarify prompt
+                        // so the researcher sees what the agent said and can refine.
+                        const prose = raw.replace(/```json[\s\S]*?```/g, '').trim();
+                        setIterationClarify(
+                          prose || 'the agent did not return a structured diff. try rephrasing the feedback more concretely (e.g., "add 80 more participants", "add the corsi block task").'
+                        );
+                      }
                     }
                   } catch (err: any) {
                     setIterationError(`iteration agent error: ${err?.message || 'unknown'}`);

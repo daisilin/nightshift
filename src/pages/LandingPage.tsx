@@ -13,6 +13,7 @@ import { callClaudeApi, getStoredApiKey } from '../lib/apiKey';
 import { buildDesignAgentSystemPrompt } from '../lib/designAgentPrompt';
 import { PlanConfirmation, type AgentPlan } from '../components/PlanConfirmation';
 import { ProbeCard, type AgentProbe } from '../components/ProbeCard';
+import { validatePlan, validateProbe, extractJson } from '../lib/agentSchema';
 import type { ExperimentDesign } from '../lib/types';
 
 type Mode = 'start' | 'design' | 'configure' | 'explore';
@@ -32,6 +33,7 @@ export function LandingPage() {
   const [pendingProbe, setPendingProbe] = useState<AgentProbe | null>(null);
   const [probesAnswered, setProbesAnswered] = useState(false);
   const [pendingExtraction, setPendingExtraction] = useState<ExtractedDesign | null>(null);
+  const noJsonStreak = useRef(0);
   const [chatInput, setChatInput] = useState('');
   const chatScrollRef = useRef<HTMLDivElement>(null);
   const [exploringTask, setExploringTask] = useState<string | null>(null);
@@ -67,9 +69,9 @@ export function LandingPage() {
     const b = brief.trim();
     if (!b || selectedTasks.length === 0 || selectedPersonas.length === 0) return;
     if (selectedTasks.length === 1) {
-      dispatch({ type: 'START_EXPERIMENT', payload: { brief: b, paradigmId: selectedTasks[0], personaIds: selectedPersonas } });
+      dispatch({ type: 'START_EXPERIMENT', payload: { brief: b, paradigmId: selectedTasks[0], personaIds: selectedPersonas, nParticipants } });
     } else {
-      dispatch({ type: 'START_BATTERY', payload: { brief: b, paradigmIds: selectedTasks, personaIds: selectedPersonas } });
+      dispatch({ type: 'START_BATTERY', payload: { brief: b, paradigmIds: selectedTasks, personaIds: selectedPersonas, nParticipants } });
     }
     // Set paper context on the newly created session
     if (paperContext) {
@@ -105,28 +107,32 @@ export function LandingPage() {
 
       const data = await res.json();
       const raw = data.content?.[0]?.text ?? '';
-      const jsonMatch = raw.match(/```json\s*([\s\S]*?)```/);
+      const parsed = extractJson(raw);
       let plan: AgentPlan | null = null;
       let probe: AgentProbe | null = null;
-      if (jsonMatch) {
-        try {
-          const u = JSON.parse(jsonMatch[1]);
-          if (u.mode === 'probe' && Array.isArray(u.probes)) {
-            probe = u as AgentProbe;
-            setPendingProbe(probe);
-          } else if (u.addTasks || u.removeTasks || u.brief || u.nParticipants || u.mode === 'plan') {
-            plan = u as AgentPlan;
-            setPendingPlan(plan);
-          } else {
-            if (u.addPersonas) setSelectedPersonas(prev => [...new Set([...prev, ...u.addPersonas.filter((id: string) => personaBank.find(p => p.id === id))])]);
-            if (u.removePersonas) setSelectedPersonas(prev => prev.filter(id => !u.removePersonas.includes(id)));
-          }
-        } catch { /* ignore */ }
+
+      if (parsed) {
+        noJsonStreak.current = 0;
+        probe = validateProbe(parsed);
+        if (probe) {
+          setPendingProbe(probe);
+        } else {
+          plan = validatePlan(parsed);
+          if (plan) setPendingPlan(plan);
+        }
+      } else {
+        // Model returned prose only. If this is the 2nd consecutive miss,
+        // unlock plan mode so the user doesn't get stuck in a probe loop.
+        noJsonStreak.current += 1;
+        if (noJsonStreak.current >= 2 && !probesAnswered) {
+          setProbesAnswered(true);
+        }
       }
+
       const chatText = raw.replace(/```json[\s\S]*?```/g, '').trim();
       setDesignChat(prev => [...prev, {
         role: 'assistant',
-        content: chatText,
+        content: chatText || '(agent returned empty response — try rephrasing)',
         ...(plan ? { plan } : {}),
         ...(probe ? { probe } : {}),
       }]);

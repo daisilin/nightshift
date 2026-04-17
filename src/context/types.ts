@@ -91,6 +91,7 @@ export interface ResearchSession {
   analysisResults: any[];
   simulationMode: 'parametric' | 'llm';
   paperContext: string | null; // extracted paper text for analysis agent context
+  nParticipants: number; // persisted so iteration agent knows the baseline
 }
 
 export interface AppState {
@@ -100,8 +101,8 @@ export interface AppState {
 }
 
 export type AppAction =
-  | { type: 'START_EXPERIMENT'; payload: { brief: string; paradigmId: string; personaIds: string[] } }
-  | { type: 'START_BATTERY'; payload: { brief: string; paradigmIds: string[]; personaIds: string[] } }
+  | { type: 'START_EXPERIMENT'; payload: { brief: string; paradigmId: string; personaIds: string[]; nParticipants?: number } }
+  | { type: 'START_BATTERY'; payload: { brief: string; paradigmIds: string[]; personaIds: string[]; nParticipants?: number } }
   | { type: 'START_SESSION'; payload: { brief: string; missions: Intern[] } }
   | { type: 'SET_STEP'; payload: AppState['step'] }
   | { type: 'SET_PAPER_CONTEXT'; payload: string }

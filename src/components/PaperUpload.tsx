@@ -2,6 +2,8 @@ import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import * as pdfjsLib from 'pdfjs-dist';
 import { callClaudeApi } from '../lib/apiKey';
+import { taskBank } from '../data/taskBank';
+import { personaBank } from '../data/personaBank';
 
 // Configure PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
@@ -44,7 +46,10 @@ interface Props {
   onExtracted: (design: ExtractedDesign) => void;
 }
 
-const SYSTEM_PROMPT = `You extract experimental designs from academic papers.
+function buildSystemPrompt(): string {
+  const paradigmIds = taskBank.map(t => t.id).join(', ');
+  const personaIds = personaBank.map(p => p.id).join(', ');
+  return `You extract experimental designs from academic papers.
 Read the paper carefully — focus on the METHODS section to identify what tasks participants ACTUALLY PERFORMED.
 
 IMPORTANT: Only include tasks that participants DID in the experiment. Do NOT include tasks that are merely discussed, cited, or compared to. Look for phrases like "participants completed", "we administered", "the task required", "each trial consisted of".
@@ -62,9 +67,9 @@ Return ONLY valid JSON:
   "keyDetails": "N participants, N trials, conditions, key DVs"
 }
 
-Available paradigm IDs: maze-construal, tower-of-london, four-in-a-row, rush-hour, corsi-block, n-back, stroop, wcst, chess, two-step, likert-survey, forced-choice
+Available paradigm IDs: ${paradigmIds}
 
-Available persona IDs: college-student, mturk-worker, older-adult, child, expert, clinical-patient
+Available persona IDs: ${personaIds}
 
 Task mapping:
 - maze-construal: maze navigation + awareness/memory probes for obstacles
@@ -84,6 +89,7 @@ Calibrate confidence honestly:
 - Never return confidence=high without an evidence quote.
 
 Return ONLY JSON.`;
+}
 
 /**
  * Normalize extractor output — accepts both the new per-field format and
@@ -95,7 +101,7 @@ function normalize(parsed: any, rawText: string): ExtractedDesign {
       return {
         value: v.value as T,
         confidence: (v.confidence as Confidence) || 'medium',
-        evidence: typeof v.evidence === 'string' ? v.evidence : '',
+        evidence: typeof v.evidence === 'string' ? v.evidence.slice(0, 200) : '',
       };
     }
     // Legacy flat field — no confidence reported
@@ -171,7 +177,7 @@ export function PaperUpload({ onExtracted }: Props) {
       const res = await callClaudeApi({
           model: 'claude-sonnet-4-5-20250929',
           max_tokens: 800,
-          system: SYSTEM_PROMPT,
+          system: buildSystemPrompt(),
           messages: [{ role: 'user', content: `Extract the experimental design:\n\n${text.slice(0, 10000)}` }],
       });
       if (!res.ok) {
