@@ -84,7 +84,11 @@ export function PaperUpload({ onExtracted }: Props) {
           system: SYSTEM_PROMPT,
           messages: [{ role: 'user', content: `Extract the experimental design:\n\n${text.slice(0, 10000)}` }],
       });
-      if (!res.ok) throw new Error(`API ${res.status}`);
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({}));
+        const errMsg = (errBody as any)?.error?.message || `status ${res.status}`;
+        throw new Error(`API error (${res.status}): ${errMsg}`);
+      }
       const data = await res.json();
       const raw = data.content?.[0]?.text ?? '';
       if (!raw) throw new Error('empty response');
