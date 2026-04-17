@@ -24,7 +24,9 @@ interface Props {
 }
 
 const SYSTEM_PROMPT = `You extract experimental designs from academic papers.
-Read the paper carefully — especially the methods/procedure section.
+Read the paper carefully — focus on the METHODS section to identify what tasks participants ACTUALLY PERFORMED.
+
+IMPORTANT: Only include tasks that participants DID in the experiment. Do NOT include tasks that are merely discussed, cited, or compared to. Look for phrases like "participants completed", "we administered", "the task required", "each trial consisted of".
 
 Return ONLY valid JSON:
 {
@@ -37,10 +39,17 @@ Return ONLY valid JSON:
 
 Available IDs: maze-construal, tower-of-london, four-in-a-row, rush-hour, corsi-block, n-back, stroop, wcst, chess, two-step, likert-survey, forced-choice
 
-Task notes: Use 'wcst' (Wisconsin Card Sorting Test) for card sorting / set-shifting / cognitive flexibility tasks. Use 'two-step' for sequential decision tasks or model-based/model-free RL paradigms.
+Task mapping:
+- maze-construal: maze navigation + awareness/memory probes for obstacles
+- tower-of-london: rearrange balls/discs on pegs to match goal
+- four-in-a-row: strategic board game (4×9 grid, get 4 in a row)
+- wcst: Wisconsin Card Sorting (sort cards by hidden rule that changes)
+- two-step: sequential decision with common/rare state transitions
+- corsi-block: spatial sequence memory (blocks light up, reproduce order)
+- n-back: working memory (is current item same as N items back?)
+- stroop: name ink color while ignoring word
+- likert-survey: questionnaire with rating scales
 
-Pick whichever task(s) best match what participants ACTUALLY DID in the experiments.
-If the paper uses multiple tasks, list all of them.
 Return ONLY JSON.`;
 
 /** Extract text from PDF using PDF.js (the real library, not a hack) */
