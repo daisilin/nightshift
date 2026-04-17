@@ -88,7 +88,7 @@ export function PaperUpload({ onExtracted }: Props) {
     setStatus('analyzing paper...');
     try {
       const res = await callClaudeApi({
-          model: 'claude-sonnet-4-6-20250514',
+          model: 'claude-sonnet-4-5-20250929',
           max_tokens: 800,
           system: SYSTEM_PROMPT,
           messages: [{ role: 'user', content: `Extract the experimental design:\n\n${text.slice(0, 10000)}` }],

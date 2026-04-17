@@ -118,7 +118,7 @@ export async function runMazeWalk(
 
   // Phase 1: Show full maze, get brief route sketch
   const res1 = await callClaudeApi({
-    model: 'claude-sonnet-4-6-20250514',
+    model: 'claude-sonnet-4-5-20250929',
     max_tokens: 100,
     system: `${personaPrompt}\n\nMaze: S=start, G=goal. Plan a rough route direction.`,
     messages: [{ role: 'user', content: `Maze:\n${mazeText}\n\nBrief route direction (2 sentences).` }],
@@ -143,7 +143,7 @@ export async function runMazeWalk(
     const msg = `Step ${si + 1}: Position (${px},${py}). Nearby: ${nearby.length > 0 ? `obstacles ${nearby.join(', ')}` : 'nothing'}. What do you notice?`;
 
     const walkRes = await callClaudeApi({
-      model: 'claude-sonnet-4-6-20250514',
+      model: 'claude-sonnet-4-5-20250929',
       max_tokens: 80,
       system: `${personaPrompt}\n\nMentally walking through maze. Note nearby obstacles.`,
       messages: [...walkHistory, { role: 'user', content: msg }],
@@ -166,7 +166,7 @@ export async function runMazeWalk(
   }).join('; ');
 
   const probeRes = await callClaudeApi({
-    model: 'claude-sonnet-4-6-20250514',
+    model: 'claude-sonnet-4-5-20250929',
     max_tokens: 200,
     system: `${personaPrompt}\n\nRate awareness of each obstacle during walk: 0.0=didn't notice, 1.0=fully noticed.\nReturn ONLY JSON: { ${obsLabels.map(l => `"${l}": <number>`).join(', ')} }`,
     messages: [{ role: 'user', content: `Walk: ${walkSummary}\nRate awareness.` }],

@@ -42,7 +42,7 @@ export async function runLLMTrial(input: LLMTrialInput): Promise<LLMTrialOutput>
 
   try {
     const res = await callClaudeApi({
-        model: 'claude-sonnet-4-6-20250514',
+        model: 'claude-sonnet-4-5-20250929',
         max_tokens: 300,
         system: `${input.personaPrompt}
 

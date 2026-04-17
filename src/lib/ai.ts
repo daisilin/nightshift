@@ -11,7 +11,7 @@ import { callClaudeApi } from './apiKey';
 async function callClaude(system: string, user: string, maxTokens = 1200): Promise<string> {
   try {
     const res = await callClaudeApi({
-      model: 'claude-sonnet-4-6-20250514',
+      model: 'claude-sonnet-4-5-20250929',
       max_tokens: maxTokens,
       system,
       messages: [{ role: 'user', content: user }],

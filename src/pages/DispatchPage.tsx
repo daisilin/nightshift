@@ -301,7 +301,7 @@ export function DispatchPage() {
         if (feedback) {
           try {
             const res = await callClaudeApi({
-                model: 'claude-sonnet-4-6-20250514',
+                model: 'claude-sonnet-4-5-20250929',
                 max_tokens: 400,
                 system: `You adjust experiment parameters based on researcher feedback.
 Current default params for behavioral tasks: difficulty 0.5, nTrials 30, nConditions 2-3, nParticipantsPerPersona 20.
@@ -391,7 +391,7 @@ Only include fields that the feedback asks to change. Return {} if no param chan
         if (feedback) {
           try {
             const res = await callClaudeApi({
-                model: 'claude-sonnet-4-6-20250514',
+                model: 'claude-sonnet-4-5-20250929',
                 max_tokens: 400,
                 system: `You adjust experiment parameters based on researcher feedback.
 Current defaults: difficulty 0.5, nTrials 30, nConditions 2, nParticipantsPerPersona 20.

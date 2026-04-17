@@ -1,0 +1,2387 @@
+{
+  "text_old_keys_low": {
+    "pers": 1,
+    "errs": 6,
+    "cats": 2,
+    "acc": 0.8125,
+    "ambig_pct": 0.0,
+    "details": [
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": true,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 1,
+        "choice": 1
+      }
+    ]
+  },
+  "text_old_keys_med": {
+    "pers": 3,
+    "errs": 5,
+    "cats": 2,
+    "acc": 0.84375,
+    "ambig_pct": 0.0,
+    "details": [
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": true,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 4,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": true,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 1,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 1,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": true,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 2,
+        "choice": 2
+      }
+    ]
+  },
+  "text_old_keys_high": {
+    "pers": 2,
+    "errs": 3,
+    "cats": 2,
+    "acc": 0.90625,
+    "ambig_pct": 0.0,
+    "details": [
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": true,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 4,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": true,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 2,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 2,
+        "choice": 2
+      }
+    ]
+  },
+  "text_new_keys_low": {
+    "pers": 1,
+    "errs": 20,
+    "cats": 1,
+    "acc": 0.375,
+    "ambig_pct": 0.0,
+    "details": [
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": true,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 4,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 2,
+        "choice": 2
+      }
+    ]
+  },
+  "text_new_keys_med": {
+    "pers": 2,
+    "errs": 8,
+    "cats": 2,
+    "acc": 0.75,
+    "ambig_pct": 0.0,
+    "details": [
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": true,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 1,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 2,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": true,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 1,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "number",
+        "correct": 1,
+        "choice": 1
+      }
+    ]
+  },
+  "text_new_keys_high": {
+    "pers": 1,
+    "errs": 16,
+    "cats": 1,
+    "acc": 0.5,
+    "ambig_pct": 0.0,
+    "details": [
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": true,
+        "ambig": 3,
+        "rule": "shape",
+        "correct": 2,
+        "choice": 3
+      }
+    ]
+  },
+  "multimodal_new_keys_low": {
+    "pers": 0,
+    "errs": 21,
+    "cats": 0,
+    "acc": 0.34375,
+    "ambig_pct": 0.0,
+    "details": [
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      }
+    ]
+  },
+  "multimodal_new_keys_med": {
+    "pers": 0,
+    "errs": 22,
+    "cats": 0,
+    "acc": 0.3125,
+    "ambig_pct": 0.0,
+    "details": [
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      }
+    ]
+  },
+  "multimodal_new_keys_high": {
+    "pers": 0,
+    "errs": 22,
+    "cats": 0,
+    "acc": 0.3125,
+    "ambig_pct": 0.0,
+    "details": [
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 2
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 4
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 4
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 4,
+        "choice": 1
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 1
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 2,
+        "choice": 3
+      },
+      {
+        "c": false,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 1,
+        "choice": 2
+      },
+      {
+        "c": true,
+        "p": false,
+        "ambig": 3,
+        "rule": "color",
+        "correct": 3,
+        "choice": 3
+      }
+    ]
+  }
+}

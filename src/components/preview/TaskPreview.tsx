@@ -56,7 +56,7 @@ export function TaskPreview({ design, onClose, onDesignChange }: Props) {
     const paradigm = getParadigm(id);
     try {
       const res = await callClaudeApi({
-          model: 'claude-sonnet-4-6-20250514',
+          model: 'claude-sonnet-4-5-20250929',
           max_tokens: 500,
           system: `You are a task design agent helping a researcher iterate on an experiment.
 

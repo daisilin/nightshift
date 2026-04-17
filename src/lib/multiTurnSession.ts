@@ -115,7 +115,7 @@ export async function runTrialInSession(
 
   try {
     const res = await callClaudeApi({
-      model: 'claude-sonnet-4-6-20250514',
+      model: 'claude-sonnet-4-5-20250929',
       max_tokens: input.maxTokens ?? 300,
       system,
       messages: messages.map(m => ({ role: m.role, content: m.content })),

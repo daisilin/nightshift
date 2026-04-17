@@ -398,7 +398,7 @@ export async function generatePoolFromDescription(
 ): Promise<{ pool: SimulatedPerson[]; populationType: string; explanation: string }> {
   try {
     const res = await callClaudeApi({
-        model: 'claude-sonnet-4-6-20250514',
+        model: 'claude-sonnet-4-5-20250929',
         max_tokens: 200,
         system: `Given a population description, identify the closest type and any adjustments needed.
 Available types: college-student, mturk-worker, older-adult, child, clinical-adhd

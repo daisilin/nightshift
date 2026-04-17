@@ -360,7 +360,7 @@ export async function runMazeLLMTrial(
   try {
     // Phase 1: Navigation — let the LLM plan a route and think aloud
     const navRes = await callClaudeApi({
-        model: 'claude-sonnet-4-6-20250514',
+        model: 'claude-sonnet-4-5-20250929',
         max_tokens: 500,
         system: `${personaPrompt}
 
@@ -380,7 +380,7 @@ Navigate from S to G. Think out loud about what you see and how you'd get there.
 
     // Phase 2: Awareness probe — rate awareness of each obstacle
     const probeRes = await callClaudeApi({
-        model: 'claude-sonnet-4-6-20250514',
+        model: 'claude-sonnet-4-5-20250929',
         max_tokens: 200,
         system: `${personaPrompt}
 
