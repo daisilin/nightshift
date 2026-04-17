@@ -31,20 +31,35 @@ export async function callClaudeApi(body: object): Promise<Response> {
 
   if (storedKey) {
     // Direct call to Anthropic API (bypasses server proxy entirely)
-    try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'x-api-key': storedKey,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true',
-        },
-        body: JSON.stringify(body),
-      });
-      return res;
-    } catch {
-      // If direct call fails (e.g., CORS), fall through to proxy
+    // Try requested model first, then fallback to older model IDs
+    const requestedModel = (body as any).model;
+    const modelsToTry = [
+      requestedModel,
+      // Fallbacks for accounts without latest model access
+      ...(requestedModel?.includes('sonnet-4-6') ? ['claude-sonnet-4-5-20250929', 'claude-sonnet-4-20250514'] : []),
+      ...(requestedModel?.includes('sonnet-4-5') ? ['claude-sonnet-4-20250514'] : []),
+    ].filter(Boolean);
+
+    for (const model of modelsToTry) {
+      try {
+        const res = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            'x-api-key': storedKey,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true',
+          },
+          body: JSON.stringify({ ...body, model }),
+        });
+        if (res.status === 404 && model !== modelsToTry[modelsToTry.length - 1]) {
+          continue; // Try next model
+        }
+        return res;
+      } catch {
+        // Network error — fall through to proxy
+        break;
+      }
     }
   }
 
