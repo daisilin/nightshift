@@ -10,9 +10,12 @@ import { CrossTaskView } from '../components/report/CrossTaskView';
 import { ResultRenderer } from '../components/report/ResultRenderer';
 import { AnalysisChat } from '../components/report/AnalysisChat';
 import { DataExport } from '../components/report/DataExport';
-import { getParadigm } from '../data/taskBank';
+import { PlanConfirmation, type AgentPlan } from '../components/PlanConfirmation';
+import { getParadigm, taskBank } from '../data/taskBank';
 import { personaBank } from '../data/personaBank';
 import { stagger, staggerItem } from '../lib/animations';
+import { callClaudeApi } from '../lib/apiKey';
+import { buildIterationAgentSystemPrompt } from '../lib/designAgentPrompt';
 
 export function ReportPage() {
   const nav = useNavigate();
@@ -22,6 +25,10 @@ export function ReportPage() {
   const [editing, setEditing] = useState(false);
   const [previewing, setPreviewing] = useState(false);
   const [iterationFeedback, setIterationFeedback] = useState('');
+  const [iterationLoading, setIterationLoading] = useState(false);
+  const [iterationError, setIterationError] = useState<string | null>(null);
+  const [iterationPlan, setIterationPlan] = useState<AgentPlan | null>(null);
+  const [iterationClarify, setIterationClarify] = useState<string | null>(null);
 
   if (!session) return <div className="min-h-screen flex items-center justify-center text-text-3">loading...</div>;
 
@@ -209,65 +216,131 @@ export function ReportPage() {
           <AnalysisChat />
         </motion.div>
 
-        {/* Iteration: feedback → next round */}
+        {/* Iteration: feedback → agent-proposed diff → next round */}
         <motion.div variants={staggerItem} className="card p-5 mb-6">
           <h3 className="text-sm font-heading text-text mb-2">iterate</h3>
-          <p className="text-xs text-text-3 mb-3">what should change in the next round? your feedback shapes the next experiment.</p>
+          <p className="text-xs text-text-3 mb-3">tell me what to change. i'll propose a diff — you approve before anything re-runs.</p>
           <textarea
             value={iterationFeedback}
             onChange={e => setIterationFeedback(e.target.value)}
-            placeholder="e.g., 'increase difficulty on Tower of London — too easy for college students' or 'add a survey measure' or 'try with children instead'"
+            placeholder="e.g., 'add more samples for power' · 'try with older adults too' · 'add a control condition' · 'drop tower of london, keep only the memory tasks'"
             rows={2}
             className="w-full card p-3 text-sm text-text resize-none focus:outline-none mb-3"
+            disabled={iterationLoading || !!iterationPlan}
           />
-          <div className="flex gap-2">
-            <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-              onClick={() => {
-                const feedback = iterationFeedback.trim();
-                const newBrief = feedback ? `${session.brief} [round ${session.round} feedback: ${feedback}]` : session.brief;
 
-                // Parse feedback for task additions/removals
-                let paradigmIds = session.paradigmIds ?? [session.paradigmId];
-                const feedbackLower = feedback.toLowerCase();
-                // Remove tasks mentioned with "remove", "only", "just", "drop", "no"
-                if (feedbackLower.includes('only') || feedbackLower.includes('just') || feedbackLower.includes('remove') || feedbackLower.includes('drop')) {
-                  const taskBank = paradigmIds; // current tasks
-                  const keepTasks = taskBank.filter(id => {
-                    const name = id.replace(/-/g, ' ').toLowerCase();
-                    // Keep if feedback says "only X" and this is X
-                    if (feedbackLower.includes('only') || feedbackLower.includes('just')) {
-                      return feedbackLower.includes(name) || feedbackLower.includes(id);
-                    }
-                    // Remove if feedback says "remove X" or "drop X" or "no X"
-                    if (feedbackLower.includes(`remove ${name}`) || feedbackLower.includes(`drop ${name}`) || feedbackLower.includes(`no ${name}`)) {
-                      return false;
-                    }
-                    return true;
-                  });
-                  if (keepTasks.length > 0) paradigmIds = keepTasks;
-                }
+          {iterationError && (
+            <p className="text-[11px] text-red-500 mb-2">{iterationError}</p>
+          )}
+
+          {iterationClarify && !iterationPlan && (
+            <div className="mb-3 p-3 rounded-lg border border-orchid/20 bg-orchid/5">
+              <p className="text-[11px] text-text-3 uppercase tracking-wider mb-1">clarifying question</p>
+              <p className="text-sm text-text-2">{iterationClarify}</p>
+              <button
+                onClick={() => { setIterationClarify(null); }}
+                className="text-[10px] text-orchid mt-2 hover:underline cursor-pointer"
+              >
+                rewrite my feedback ↑
+              </button>
+            </div>
+          )}
+
+          {iterationPlan ? (
+            <PlanConfirmation
+              plan={iterationPlan}
+              currentTasks={session.paradigmIds ?? [session.paradigmId]}
+              currentPersonas={session.personaIds}
+              currentBrief={session.brief}
+              currentN={20}
+              title="proposed diff for round N+1"
+              approveLabel="approve & re-dispatch"
+              onApprove={(p) => {
+                const current = session.paradigmIds ?? [session.paradigmId];
+                let nextTasks = [...current];
+                if (p.removeTasks) nextTasks = nextTasks.filter(id => !p.removeTasks!.includes(id));
+                if (p.addTasks) nextTasks = [...new Set([...nextTasks, ...p.addTasks.filter(id => taskBank.find(t => t.id === id))])];
+                if (nextTasks.length === 0) nextTasks = current;
+
+                let nextPersonas = [...session.personaIds];
+                if (p.removePersonas) nextPersonas = nextPersonas.filter(id => !p.removePersonas!.includes(id));
+                if (p.addPersonas) nextPersonas = [...new Set([...nextPersonas, ...p.addPersonas.filter(id => personaBank.find(pb => pb.id === id))])];
+                if (nextPersonas.length === 0) nextPersonas = session.personaIds;
+
+                const nextBrief = p.brief || session.brief;
 
                 dispatch({ type: 'COMPLETE_SESSION' });
-                if (paradigmIds.length > 1) {
-                  dispatch({ type: 'START_BATTERY', payload: { brief: newBrief, paradigmIds, personaIds: session.personaIds } });
-                } else if (paradigmIds.length === 1) {
-                  dispatch({ type: 'START_EXPERIMENT', payload: { brief: newBrief, paradigmId: paradigmIds[0], personaIds: session.personaIds } });
+                if (nextTasks.length > 1) {
+                  dispatch({ type: 'START_BATTERY', payload: { brief: nextBrief, paradigmIds: nextTasks, personaIds: nextPersonas } });
                 } else {
-                  dispatch({ type: 'START_BATTERY', payload: { brief: newBrief, paradigmIds: session.paradigmIds ?? [session.paradigmId], personaIds: session.personaIds } });
+                  dispatch({ type: 'START_EXPERIMENT', payload: { brief: nextBrief, paradigmId: nextTasks[0], personaIds: nextPersonas } });
                 }
                 nav('/dispatch');
               }}
-              disabled={!iterationFeedback.trim()}
-              className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white cursor-pointer disabled:opacity-30"
-              style={{ background: 'linear-gradient(135deg, #B07CC6, #D48BB5)' }}>
-              next round with feedback →
-            </motion.button>
-            <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-              onClick={() => { dispatch({ type: 'COMPLETE_SESSION' }); nav('/'); }}
-              className="px-4 py-2.5 rounded-xl text-xs text-text-3 border border-orchid/15 cursor-pointer hover:bg-orchid/5">
-              done
-            </motion.button>
-          </div>
+              onEdit={() => setIterationPlan(null)}
+              onReject={() => { setIterationPlan(null); setIterationFeedback(''); }}
+            />
+          ) : (
+            <div className="flex gap-2">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={async () => {
+                  const feedback = iterationFeedback.trim();
+                  if (!feedback) return;
+                  setIterationLoading(true);
+                  setIterationError(null);
+                  setIterationClarify(null);
+
+                  const currentTasks = session.paradigmIds ?? [session.paradigmId];
+                  const resultsSummary = (session.analysisResults ?? [])
+                    .slice(0, 8)
+                    .map((r: any) => `- ${r.title}: ${typeof r.data === 'string' ? r.data.slice(0, 120) : JSON.stringify(r.data).slice(0, 120)}`)
+                    .join('\n');
+
+                  try {
+                    const res = await callClaudeApi({
+                      model: 'claude-sonnet-4-5-20250929',
+                      max_tokens: 800,
+                      system: buildIterationAgentSystemPrompt(currentTasks, session.personaIds, session.brief, 20, resultsSummary),
+                      messages: [{ role: 'user', content: feedback }],
+                    });
+                    if (!res.ok) {
+                      const err = await res.json().catch(() => ({}));
+                      throw new Error(err?.error?.message || `API error ${res.status}`);
+                    }
+                    const data = await res.json();
+                    const raw = data.content?.[0]?.text ?? '';
+                    const m = raw.match(/```json\s*([\s\S]*?)```/);
+                    if (!m) throw new Error('agent did not return a structured plan');
+                    const parsed = JSON.parse(m[1]);
+                    if (parsed.mode === 'clarify' && parsed.clarifyingQuestion) {
+                      setIterationClarify(parsed.clarifyingQuestion);
+                    } else {
+                      setIterationPlan(parsed as AgentPlan);
+                    }
+                  } catch (err: any) {
+                    setIterationError(`iteration agent error: ${err?.message || 'unknown'}`);
+                  } finally {
+                    setIterationLoading(false);
+                  }
+                }}
+                disabled={!iterationFeedback.trim() || iterationLoading}
+                className="flex-1 py-2.5 rounded-xl text-sm font-semibold text-white cursor-pointer disabled:opacity-30"
+                style={{ background: 'linear-gradient(135deg, #B07CC6, #D48BB5)' }}
+              >
+                {iterationLoading ? 'agent drafting diff...' : 'propose next round →'}
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => { dispatch({ type: 'COMPLETE_SESSION' }); nav('/'); }}
+                className="px-4 py-2.5 rounded-xl text-xs text-text-3 border border-orchid/15 cursor-pointer hover:bg-orchid/5"
+              >
+                done
+              </motion.button>
+            </div>
+          )}
         </motion.div>
 
         {/* Back to design studio */}

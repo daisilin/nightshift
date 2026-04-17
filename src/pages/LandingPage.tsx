@@ -1,14 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../context/AppContext';
 import { taskBank } from '../data/taskBank';
 import { personaBank } from '../data/personaBank';
-import { PaperUpload } from '../components/PaperUpload';
+import { PaperUpload, type ExtractedDesign } from '../components/PaperUpload';
+import { ExtractionReview } from '../components/ExtractionReview';
 import { TaskPreview } from '../components/preview/TaskPreview';
 import { ApiKeyModal } from '../components/ApiKeyModal';
 import { stagger, staggerItem } from '../lib/animations';
 import { callClaudeApi, getStoredApiKey } from '../lib/apiKey';
+import { buildDesignAgentSystemPrompt } from '../lib/designAgentPrompt';
+import { PlanConfirmation, type AgentPlan } from '../components/PlanConfirmation';
+import { ProbeCard, type AgentProbe } from '../components/ProbeCard';
 import type { ExperimentDesign } from '../lib/types';
 
 type Mode = 'start' | 'design' | 'configure' | 'explore';
@@ -24,8 +28,12 @@ export function LandingPage() {
   const [brief, setBrief] = useState('');
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
   const [selectedPersonas, setSelectedPersonas] = useState(['college-student', 'mturk-worker', 'older-adult']);
-  const [designChat, setDesignChat] = useState<{ role: 'user' | 'assistant'; content: string }[]>([]);
+  const [designChat, setDesignChat] = useState<{ role: 'user' | 'assistant'; content: string; plan?: AgentPlan; probe?: AgentProbe }[]>([]);
+  const [pendingProbe, setPendingProbe] = useState<AgentProbe | null>(null);
+  const [probesAnswered, setProbesAnswered] = useState(false);
+  const [pendingExtraction, setPendingExtraction] = useState<ExtractedDesign | null>(null);
   const [chatInput, setChatInput] = useState('');
+  const chatScrollRef = useRef<HTMLDivElement>(null);
   const [exploringTask, setExploringTask] = useState<string | null>(null);
   const [chatLoading, setChatLoading] = useState(false);
   const [simMode, setSimMode] = useState<'parametric' | 'llm'>('parametric');
@@ -34,6 +42,23 @@ export function LandingPage() {
   const [calibrationEnabled, setCalibrationEnabled] = useState(true);
   const [paperContext, setPaperContext] = useState('');
   const [showKeyModal, setShowKeyModal] = useState(false);
+  const [pendingPlan, setPendingPlan] = useState<AgentPlan | null>(null);
+
+  // Auto-scroll chat on new messages
+  useEffect(() => {
+    chatScrollRef.current?.scrollTo({ top: chatScrollRef.current.scrollHeight, behavior: 'smooth' });
+  }, [designChat, pendingPlan, pendingProbe]);
+
+  const submitProbeAnswers = (answers: Record<string, string>) => {
+    if (!pendingProbe) return;
+    const lines = pendingProbe.probes.map(p => {
+      const a = answers[p.id] || '(skipped)';
+      return `- ${p.question}\n  → ${a}`;
+    }).join('\n');
+    setPendingProbe(null);
+    setProbesAnswered(true);
+    sendToDesignAgent(`Here are my answers:\n${lines}\n\nNow propose a concrete plan.`);
+  };
 
   const toggleTask = (id: string) => setSelectedTasks(prev => prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]);
   const togglePersona = (id: string) => setSelectedPersonas(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]);
@@ -70,21 +95,8 @@ export function LandingPage() {
     try {
       const res = await callClaudeApi({
           model: 'claude-sonnet-4-5-20250929',
-          max_tokens: 800,
-          system: `You are a task design agent for nightshift, a behavioral research platform.
-
-Currently selected: ${selectedTasks.map(id => taskBank.find(t => t.id === id)?.name || id).join(', ') || 'none'}
-Populations: ${selectedPersonas.map(id => personaBank.find(p => p.id === id)?.name || id).join(', ')}
-Brief: "${brief || 'not set'}"
-
-Available tasks: ${taskBank.map(t => `${t.id}: ${t.name} (${t.category})`).join(', ')}
-Available populations: ${personaBank.map(p => `${p.id}: ${p.name}`).join(', ')}
-
-Help design the experiment. When recommending changes, include:
-\`\`\`json
-{ "brief": "...", "addTasks": [...], "removeTasks": [...], "addPersonas": [...], "removePersonas": [...] }
-\`\`\`
-Be conversational. Explain WHY. Suggest variants and point out design gaps.`,
+          max_tokens: 1200,
+          system: buildDesignAgentSystemPrompt(selectedTasks, selectedPersonas, brief, paperContext, probesAnswered),
           messages: [
             ...designChat.slice(-8).map(m => ({ role: m.role, content: m.content })),
             { role: 'user', content: msg },
@@ -94,17 +106,30 @@ Be conversational. Explain WHY. Suggest variants and point out design gaps.`,
       const data = await res.json();
       const raw = data.content?.[0]?.text ?? '';
       const jsonMatch = raw.match(/```json\s*([\s\S]*?)```/);
+      let plan: AgentPlan | null = null;
+      let probe: AgentProbe | null = null;
       if (jsonMatch) {
         try {
           const u = JSON.parse(jsonMatch[1]);
-          if (u.brief) setBrief(u.brief);
-          if (u.addTasks) setSelectedTasks(prev => [...new Set([...prev, ...u.addTasks.filter((id: string) => taskBank.find(t => t.id === id))])]);
-          if (u.removeTasks) setSelectedTasks(prev => prev.filter(id => !u.removeTasks.includes(id)));
-          if (u.addPersonas) setSelectedPersonas(prev => [...new Set([...prev, ...u.addPersonas.filter((id: string) => personaBank.find(p => p.id === id))])]);
-          if (u.removePersonas) setSelectedPersonas(prev => prev.filter(id => !u.removePersonas.includes(id)));
+          if (u.mode === 'probe' && Array.isArray(u.probes)) {
+            probe = u as AgentProbe;
+            setPendingProbe(probe);
+          } else if (u.addTasks || u.removeTasks || u.brief || u.nParticipants || u.mode === 'plan') {
+            plan = u as AgentPlan;
+            setPendingPlan(plan);
+          } else {
+            if (u.addPersonas) setSelectedPersonas(prev => [...new Set([...prev, ...u.addPersonas.filter((id: string) => personaBank.find(p => p.id === id))])]);
+            if (u.removePersonas) setSelectedPersonas(prev => prev.filter(id => !u.removePersonas.includes(id)));
+          }
         } catch { /* ignore */ }
       }
-      setDesignChat(prev => [...prev, { role: 'assistant', content: raw.replace(/```json[\s\S]*?```/g, '').trim() }]);
+      const chatText = raw.replace(/```json[\s\S]*?```/g, '').trim();
+      setDesignChat(prev => [...prev, {
+        role: 'assistant',
+        content: chatText,
+        ...(plan ? { plan } : {}),
+        ...(probe ? { probe } : {}),
+      }]);
     } catch {
       setDesignChat(prev => [...prev, { role: 'assistant', content: 'Could not reach the design agent.' }]);
     } finally {
@@ -144,22 +169,41 @@ Be conversational. Explain WHY. Suggest variants and point out design gaps.`,
           {mode === 'start' && (
             <motion.div variants={staggerItem} className="space-y-4">
               <PaperUpload onExtracted={(extracted) => {
-                const valid = (extracted.paradigmIds ?? [extracted.paradigmId]).filter((id: string) => taskBank.find(t => t.id === id));
-                if (valid.length > 0) setSelectedTasks(valid);
-                if (extracted.personaIds?.length > 0) setSelectedPersonas(extracted.personaIds);
-                setBrief(extracted.brief || '');
-                // Store FULL paper text for analysis agent — not just the extracted summary
-                const fullContext = [
-                  `Paper: "${extracted.paperTitle}"`,
-                  `Brief: ${extracted.brief}`,
-                  `Key details: ${extracted.keyDetails}`,
-                  `Tasks detected: ${valid.join(', ')}`,
-                  extracted.rawText ? `\nFull paper text:\n${extracted.rawText}` : '',
-                ].filter(Boolean).join('\n');
-                setPaperContext(fullContext);
-                setDesignChat([{ role: 'assistant', content: `from "${extracted.paperTitle}": ${valid.length} task(s) detected. ${extracted.keyDetails || ''}\n\nadjust below or ask me to modify.` }]);
-                setMode('design');
+                setPendingExtraction(extracted);
               }} />
+
+              {pendingExtraction && (
+                <ExtractionReview
+                  extracted={pendingExtraction}
+                  onCancel={() => setPendingExtraction(null)}
+                  onConfirm={(confirmed) => {
+                    const valid = confirmed.paradigmIds.filter((id: string) => taskBank.find(t => t.id === id));
+                    if (valid.length > 0) setSelectedTasks(valid);
+                    if (confirmed.personaIds.length > 0) setSelectedPersonas(confirmed.personaIds);
+                    setBrief(confirmed.brief || '');
+                    setProbesAnswered(false);
+                    setPendingProbe(null);
+                    setPendingPlan(null);
+                    const fullContext = [
+                      `Paper: "${confirmed.paperTitle}"`,
+                      `Brief: ${confirmed.brief}`,
+                      `Key details: ${confirmed.keyDetails}`,
+                      `Tasks detected: ${valid.join(', ')}`,
+                      confirmed.rawText ? `\nFull paper text:\n${confirmed.rawText}` : '',
+                    ].filter(Boolean).join('\n');
+                    setPaperContext(fullContext);
+                    setDesignChat([{
+                      role: 'assistant',
+                      content: `confirmed "${confirmed.paperTitle}" — ${valid.length} task(s): ${valid.join(', ')}. ${confirmed.keyDetails || ''}\n\nlet me think about what's worth deciding before we run this.`,
+                    }]);
+                    setMode('design');
+                    setPendingExtraction(null);
+                    setTimeout(() => {
+                      sendToDesignAgent(`I just confirmed this paper's design. What are the 2-4 most important decisions I need to make before dispatching a simulation of ${valid.join(', ')}?`);
+                    }, 300);
+                  }}
+                />
+              )}
 
               <div className="card p-3">
                 <textarea value={brief} onChange={e => setBrief(e.target.value)}
@@ -267,15 +311,93 @@ Be conversational. Explain WHY. Suggest variants and point out design gaps.`,
                 </div>
               ) : (
                 <div className="card p-3">
-                  <div className="max-h-[300px] overflow-y-auto space-y-2 mb-2">
+                  <div ref={chatScrollRef} className="max-h-[400px] overflow-y-auto space-y-3 mb-2">
                     {designChat.length === 0 && <p className="text-xs text-text-4 italic">ask me about task design, variants, parameters, or populations...</p>}
                     {designChat.map((msg, i) => (
-                      <div key={i} className={`text-sm leading-relaxed ${msg.role === 'user' ? 'text-orchid' : 'text-text-2'}`}>
-                        {msg.role === 'user' ? '→ ' : ''}{msg.content}
+                      <div key={i}>
+                        <div className={`text-sm leading-relaxed ${msg.role === 'user' ? 'text-orchid' : 'text-text-2'}`}>
+                          {msg.role === 'user' ? '→ ' : ''}{msg.content}
+                        </div>
+                        {/* Show probe card after agent message with probes (probe phase) */}
+                        {msg.probe && pendingProbe && i === designChat.length - 1 && (
+                          <div className="mt-2">
+                            <ProbeCard
+                              probe={pendingProbe}
+                              onAnswer={submitProbeAnswers}
+                              onSkip={() => {
+                                setPendingProbe(null);
+                                setProbesAnswered(true);
+                                sendToDesignAgent('Skip the probes — just propose a plan with reasonable defaults.');
+                              }}
+                            />
+                          </div>
+                        )}
+                        {/* Show plan confirmation card after agent message with plan */}
+                        {msg.plan && pendingPlan && i === designChat.length - 1 && (
+                          <div className="mt-2">
+                            <PlanConfirmation
+                              plan={pendingPlan}
+                              currentTasks={selectedTasks}
+                              currentPersonas={selectedPersonas}
+                              currentBrief={brief}
+                              onApprove={(approvedPlan) => {
+                                // Apply the plan
+                                if (approvedPlan.brief) setBrief(approvedPlan.brief);
+                                if (approvedPlan.addTasks) setSelectedTasks(prev => [...new Set([...prev, ...approvedPlan.addTasks!.filter(id => taskBank.find(t => t.id === id))])]);
+                                if (approvedPlan.removeTasks) setSelectedTasks(prev => prev.filter(id => !approvedPlan.removeTasks!.includes(id)));
+                                if (approvedPlan.addPersonas) setSelectedPersonas(prev => [...new Set([...prev, ...approvedPlan.addPersonas!.filter(id => personaBank.find(p => p.id === id))])]);
+                                if (approvedPlan.removePersonas) setSelectedPersonas(prev => prev.filter(id => !approvedPlan.removePersonas!.includes(id)));
+                                if (approvedPlan.nParticipants) setNParticipants(approvedPlan.nParticipants);
+                                if (approvedPlan.modelPool) setModelPool(approvedPlan.modelPool);
+                                setPendingPlan(null);
+                                // Auto-dispatch after a brief delay
+                                setTimeout(() => {
+                                  setDesignChat(prev => [...prev, { role: 'assistant', content: 'plan approved! dispatching...' }]);
+                                }, 200);
+                              }}
+                              onEdit={() => {
+                                // Apply changes to state so user can manually tweak
+                                const p = pendingPlan;
+                                if (p.brief) setBrief(p.brief);
+                                if (p.addTasks) setSelectedTasks(prev => [...new Set([...prev, ...p.addTasks!.filter(id => taskBank.find(t => t.id === id))])]);
+                                if (p.removeTasks) setSelectedTasks(prev => prev.filter(id => !p.removeTasks!.includes(id)));
+                                setPendingPlan(null);
+                                setMode('configure');
+                              }}
+                              onReject={() => {
+                                setPendingPlan(null);
+                                sendToDesignAgent('I\'d like to revise this plan. What changes would you suggest?');
+                              }}
+                            />
+                          </div>
+                        )}
                       </div>
                     ))}
-                    {chatLoading && <div className="text-xs text-text-3 italic">thinking...</div>}
+                    {chatLoading && (
+                      <div className="flex items-center gap-2 text-xs text-text-3">
+                        <motion.span animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                          className="inline-block w-3 h-3 border border-orchid/30 border-t-orchid rounded-full" />
+                        thinking...
+                      </div>
+                    )}
                   </div>
+                  {/* Quick-action suggestion chips */}
+                  {designChat.length > 0 && !chatLoading && !pendingPlan && !pendingProbe && (
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {[
+                        selectedTasks.length === 0 ? 'what tasks should I use?' : null,
+                        'what are the known limitations?',
+                        'propose a plan',
+                        selectedTasks.length > 0 ? 'add a control condition' : null,
+                        'what sample size do you recommend?',
+                      ].filter(Boolean).slice(0, 3).map(q => (
+                        <button key={q} onClick={() => sendToDesignAgent(q!)}
+                          className="px-2 py-1 rounded-lg text-[9px] text-text-3 border border-orchid/10 cursor-pointer hover:bg-orchid/5 hover:text-text-2 transition-colors">
+                          {q}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                   <div className="flex gap-2">
                     <input value={chatInput} onChange={e => setChatInput(e.target.value)}
                       onKeyDown={e => { if (e.key === 'Enter') sendToDesignAgent(); }}

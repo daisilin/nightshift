@@ -9,6 +9,14 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url,
 ).toString();
 
+export type Confidence = 'high' | 'medium' | 'low';
+
+export interface FieldExtraction<T> {
+  value: T;
+  confidence: Confidence;
+  evidence: string; // short quote from the paper (empty string if none)
+}
+
 export interface ExtractedDesign {
   brief: string;
   paradigmIds: string[];
@@ -17,6 +25,19 @@ export interface ExtractedDesign {
   personaIds: string[];
   paperTitle: string;
   keyDetails: string;
+  // Per-field confidence (undefined on legacy payloads)
+  confidence?: {
+    paperTitle: Confidence;
+    paradigmIds: Confidence;
+    personaIds: Confidence;
+    brief: Confidence;
+  };
+  evidence?: {
+    paperTitle: string;
+    paradigmIds: string;
+    personaIds: string;
+    brief: string;
+  };
 }
 
 interface Props {
@@ -28,16 +49,22 @@ Read the paper carefully — focus on the METHODS section to identify what tasks
 
 IMPORTANT: Only include tasks that participants DID in the experiment. Do NOT include tasks that are merely discussed, cited, or compared to. Look for phrases like "participants completed", "we administered", "the task required", "each trial consisted of".
 
+For EVERY field, also report:
+- confidence: "high" if the paper states it explicitly, "medium" if inferred from context, "low" if guessed
+- evidence: a short direct quote (<= 20 words) from the paper that supports your extraction. Empty string if none found.
+
 Return ONLY valid JSON:
 {
-  "paperTitle": "full title",
-  "brief": "one sentence: what was studied and how",
-  "paradigmIds": ["id", ...],
-  "personaIds": ["college-student"] default,
+  "paperTitle": { "value": "full title", "confidence": "high|medium|low", "evidence": "quote" },
+  "brief": { "value": "one sentence: what was studied and how", "confidence": "...", "evidence": "quote" },
+  "paradigmIds": { "value": ["id", ...], "confidence": "...", "evidence": "quote naming the task(s)" },
+  "personaIds": { "value": ["college-student"], "confidence": "...", "evidence": "quote about participants" },
   "keyDetails": "N participants, N trials, conditions, key DVs"
 }
 
-Available IDs: maze-construal, tower-of-london, four-in-a-row, rush-hour, corsi-block, n-back, stroop, wcst, chess, two-step, likert-survey, forced-choice
+Available paradigm IDs: maze-construal, tower-of-london, four-in-a-row, rush-hour, corsi-block, n-back, stroop, wcst, chess, two-step, likert-survey, forced-choice
+
+Available persona IDs: college-student, mturk-worker, older-adult, child, expert, clinical-patient
 
 Task mapping:
 - maze-construal: maze navigation + awareness/memory probes for obstacles
@@ -50,7 +77,61 @@ Task mapping:
 - stroop: name ink color while ignoring word
 - likert-survey: questionnaire with rating scales
 
+Calibrate confidence honestly:
+- If the paper names the task explicitly ("Tower of London"), paradigmIds confidence = high
+- If you\'re matching by description only ("participants planned ball moves across pegs"), confidence = medium
+- If you\'re guessing because the methods section is ambiguous, confidence = low
+- Never return confidence=high without an evidence quote.
+
 Return ONLY JSON.`;
+
+/**
+ * Normalize extractor output — accepts both the new per-field format and
+ * the legacy flat format. Returns a uniform ExtractedDesign with confidence.
+ */
+function normalize(parsed: any, rawText: string): ExtractedDesign {
+  const pick = <T,>(v: any, fallback: T): FieldExtraction<T> => {
+    if (v && typeof v === 'object' && 'value' in v) {
+      return {
+        value: v.value as T,
+        confidence: (v.confidence as Confidence) || 'medium',
+        evidence: typeof v.evidence === 'string' ? v.evidence : '',
+      };
+    }
+    // Legacy flat field — no confidence reported
+    return { value: (v ?? fallback) as T, confidence: 'medium', evidence: '' };
+  };
+
+  const title = pick<string>(parsed.paperTitle, 'Untitled');
+  const brief = pick<string>(parsed.brief, rawText.slice(0, 100));
+  const paradigmIds = pick<string[]>(
+    parsed.paradigmIds ?? (parsed.paradigmId ? { value: [parsed.paradigmId] } : undefined),
+    [],
+  );
+  const personaIds = pick<string[]>(parsed.personaIds, ['college-student']);
+
+  return {
+    paperTitle: title.value,
+    brief: brief.value,
+    paradigmIds: paradigmIds.value,
+    paradigmId: paradigmIds.value[0] || 'tower-of-london',
+    personaIds: personaIds.value,
+    keyDetails: parsed.keyDetails || '',
+    rawText: rawText.slice(0, 15000),
+    confidence: {
+      paperTitle: title.confidence,
+      brief: brief.confidence,
+      paradigmIds: paradigmIds.confidence,
+      personaIds: personaIds.confidence,
+    },
+    evidence: {
+      paperTitle: title.evidence,
+      brief: brief.evidence,
+      paradigmIds: paradigmIds.evidence,
+      personaIds: personaIds.evidence,
+    },
+  };
+}
 
 /** Extract text from PDF using PDF.js (the real library, not a hack) */
 async function extractPdfText(file: File): Promise<string> {
@@ -110,17 +191,8 @@ export function PaperUpload({ onExtracted }: Props) {
       }
 
       const parsed = JSON.parse(jsonStr);
-      const paradigmIds = parsed.paradigmIds ?? (parsed.paradigmId ? [parsed.paradigmId] : []);
-      const result: ExtractedDesign = {
-        paperTitle: parsed.paperTitle || 'Untitled',
-        brief: parsed.brief || text.slice(0, 100),
-        paradigmIds,
-        paradigmId: paradigmIds[0] || 'tower-of-london',
-        personaIds: parsed.personaIds ?? ['college-student'],
-        keyDetails: parsed.keyDetails || '',
-        rawText: text.slice(0, 15000), // first 6000 chars of paper for analysis agent
-      };
-      setStatus(`✓ ${result.paperTitle} — ${paradigmIds.length} task(s)`);
+      const result = normalize(parsed, text);
+      setStatus(`✓ ${result.paperTitle} — ${result.paradigmIds.length} task(s)`);
       onExtracted(result);
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'unknown';
