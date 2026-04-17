@@ -225,14 +225,35 @@ export function ReportPage() {
               onClick={() => {
                 const feedback = iterationFeedback.trim();
                 const newBrief = feedback ? `${session.brief} [round ${session.round} feedback: ${feedback}]` : session.brief;
-                // Single dispatch — ITERATE_SESSION archives current + creates new
-                // Then we need to set the new session as a battery or single experiment
-                // The cleanest way: complete current, then start fresh with feedback in brief
+
+                // Parse feedback for task additions/removals
+                let paradigmIds = session.paradigmIds ?? [session.paradigmId];
+                const feedbackLower = feedback.toLowerCase();
+                // Remove tasks mentioned with "remove", "only", "just", "drop", "no"
+                if (feedbackLower.includes('only') || feedbackLower.includes('just') || feedbackLower.includes('remove') || feedbackLower.includes('drop')) {
+                  const taskBank = paradigmIds; // current tasks
+                  const keepTasks = taskBank.filter(id => {
+                    const name = id.replace(/-/g, ' ').toLowerCase();
+                    // Keep if feedback says "only X" and this is X
+                    if (feedbackLower.includes('only') || feedbackLower.includes('just')) {
+                      return feedbackLower.includes(name) || feedbackLower.includes(id);
+                    }
+                    // Remove if feedback says "remove X" or "drop X" or "no X"
+                    if (feedbackLower.includes(`remove ${name}`) || feedbackLower.includes(`drop ${name}`) || feedbackLower.includes(`no ${name}`)) {
+                      return false;
+                    }
+                    return true;
+                  });
+                  if (keepTasks.length > 0) paradigmIds = keepTasks;
+                }
+
                 dispatch({ type: 'COMPLETE_SESSION' });
-                if (isBatteryMode) {
-                  dispatch({ type: 'START_BATTERY', payload: { brief: newBrief, paradigmIds: session.paradigmIds ?? [session.paradigmId], personaIds: session.personaIds } });
+                if (paradigmIds.length > 1) {
+                  dispatch({ type: 'START_BATTERY', payload: { brief: newBrief, paradigmIds, personaIds: session.personaIds } });
+                } else if (paradigmIds.length === 1) {
+                  dispatch({ type: 'START_EXPERIMENT', payload: { brief: newBrief, paradigmId: paradigmIds[0], personaIds: session.personaIds } });
                 } else {
-                  dispatch({ type: 'START_EXPERIMENT', payload: { brief: newBrief, paradigmId: session.paradigmId, personaIds: session.personaIds } });
+                  dispatch({ type: 'START_BATTERY', payload: { brief: newBrief, paradigmIds: session.paradigmIds ?? [session.paradigmId], personaIds: session.personaIds } });
                 }
                 nav('/dispatch');
               }}
