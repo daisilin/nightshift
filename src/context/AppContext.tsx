@@ -172,6 +172,31 @@ export function reducer(state: AppState, action: AppAction): AppState {
   }
 }
 
+/**
+ * Drop the heaviest per-session fields — raw simulated datasets and full
+ * paper text — so the session becomes a small summary record. Used when
+ * localStorage quota is exceeded and we need to shrink past sessions.
+ */
+export function stripHeavy<T extends { battery?: any[]; designReports?: any[]; paperContext?: any }>(s: T): T {
+  return {
+    ...s,
+    paperContext: null,
+    battery: (s.battery ?? []).map((b: any) => ({ ...b, dataset: null })),
+    designReports: (s.designReports ?? []).map((d: any) => ({ ...d, dataset: null })),
+  };
+}
+
+/**
+ * Trim paper-context rawText while keeping the extracted summary. Used on
+ * the current session so analysis agents still have a short reference
+ * without the whole PDF in memory.
+ */
+export function stripPaperContext<T extends { paperContext?: any }>(s: T): T {
+  if (!s.paperContext || typeof s.paperContext !== 'string') return s;
+  const MAX = 2000;
+  return s.paperContext.length <= MAX ? s : { ...s, paperContext: s.paperContext.slice(0, MAX) + '\n...[truncated for storage]' };
+}
+
 const AppContext = createContext<{ state: AppState; dispatch: React.Dispatch<AppAction> } | null>(null);
 
 export function AppProvider({ children }: { children: ReactNode }) {
@@ -191,6 +216,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
           selectedDesignIndex: s.selectedDesignIndex ?? 0,
           paradigmId: s.paradigmId ?? '', analysisResults: s.analysisResults ?? [], simulationMode: s.simulationMode ?? 'parametric', paperContext: s.paperContext ?? null,
           personaIds: s.personaIds ?? [],
+          nParticipants: s.nParticipants ?? 20,
         });
         return {
           ...parsed,
@@ -202,7 +228,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return initialState;
   });
 
-  useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }, [state]);
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (err) {
+      // Quota exceeded — drop the heaviest bits (raw datasets, paper text) from
+      // past sessions and retry. Keep the current session's datasets so the
+      // analysis pipeline still has data to work with.
+      try {
+        const compact: AppState = {
+          ...state,
+          sessions: state.sessions.map(s => stripHeavy(s)),
+          currentSession: state.currentSession ? stripPaperContext(state.currentSession) : null,
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(compact));
+      } catch (err2) {
+        // Still too big. Drop past sessions entirely as a last resort.
+        try {
+          const minimal: AppState = { ...state, sessions: [] };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(minimal));
+        } catch {
+          console.warn('nightshift: localStorage quota exceeded, state not persisted', err2);
+        }
+      }
+    }
+  }, [state]);
 
   return <AppContext.Provider value={{ state, dispatch }}>{children}</AppContext.Provider>;
 }

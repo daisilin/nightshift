@@ -190,12 +190,16 @@ export function LandingPage() {
                     setProbesAnswered(false);
                     setPendingProbe(null);
                     setPendingPlan(null);
+                    // Cap rawText at 6000 chars to stay under localStorage budget.
+                    // Methods section fits easily; analysis agent gets title/brief/details
+                    // as structured summary anyway.
+                    const rawExcerpt = confirmed.rawText ? confirmed.rawText.slice(0, 6000) : '';
                     const fullContext = [
                       `Paper: "${confirmed.paperTitle}"`,
                       `Brief: ${confirmed.brief}`,
                       `Key details: ${confirmed.keyDetails}`,
                       `Tasks detected: ${valid.join(', ')}`,
-                      confirmed.rawText ? `\nFull paper text:\n${confirmed.rawText}` : '',
+                      rawExcerpt ? `\nPaper excerpt:\n${rawExcerpt}` : '',
                     ].filter(Boolean).join('\n');
                     setPaperContext(fullContext);
                     setDesignChat([{
