@@ -12,6 +12,7 @@ import { stagger, staggerItem } from '../lib/animations';
 import { callClaudeApi, getStoredApiKey } from '../lib/apiKey';
 import { buildDesignAgentSystemPrompt } from '../lib/designAgentPrompt';
 import { PlanConfirmation, type AgentPlan } from '../components/PlanConfirmation';
+import { TWEAK_LIBRARY, getRelevantTweaks, getBaselineTweakIds, type MechanismTweak } from '../lib/mechanismTweaks';
 import { ProbeCard, type AgentProbe } from '../components/ProbeCard';
 import { validatePlan, validateProbe, extractJson } from '../lib/agentSchema';
 import type { ExperimentDesign } from '../lib/types';
@@ -45,6 +46,8 @@ export function LandingPage() {
   const [paperContext, setPaperContext] = useState('');
   const [showKeyModal, setShowKeyModal] = useState(false);
   const [pendingPlan, setPendingPlan] = useState<AgentPlan | null>(null);
+  const [selectedTweaks, setSelectedTweaks] = useState<string[]>(getBaselineTweakIds());
+  const [customTweak, setCustomTweak] = useState('');
 
   // Auto-scroll chat on new messages
   useEffect(() => {
@@ -62,7 +65,15 @@ export function LandingPage() {
     sendToDesignAgent(`Here are my answers:\n${lines}\n\nNow propose a concrete plan.`);
   };
 
-  const toggleTask = (id: string) => setSelectedTasks(prev => prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]);
+  const toggleTask = (id: string) => {
+    setSelectedTasks(prev => prev.includes(id) ? prev.filter(t => t !== id) : [...prev, id]);
+    // Task set changed — invalidate prior probes so the agent re-evaluates caveats
+    if (probesAnswered) {
+      setProbesAnswered(false);
+      setPendingProbe(null);
+      noJsonStreak.current = 0;
+    }
+  };
   const togglePersona = (id: string) => setSelectedPersonas(prev => prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]);
 
   const dispatchExperiment = () => {
@@ -83,6 +94,8 @@ export function LandingPage() {
     if (simMode === 'llm') {
       params.set('pool', modelPool);
       params.set('calibrated', calibrationEnabled ? '1' : '0');
+      if (selectedTweaks.length > 0) params.set('tweaks', selectedTweaks.join(','));
+      if (customTweak.trim()) params.set('customTweak', customTweak.trim());
     }
     nav(`/dispatch?${params.toString()}`);
   };
@@ -351,19 +364,36 @@ export function LandingPage() {
                               currentPersonas={selectedPersonas}
                               currentBrief={brief}
                               onApprove={(approvedPlan) => {
-                                // Apply the plan
-                                if (approvedPlan.brief) setBrief(approvedPlan.brief);
-                                if (approvedPlan.addTasks) setSelectedTasks(prev => [...new Set([...prev, ...approvedPlan.addTasks!.filter(id => taskBank.find(t => t.id === id))])]);
-                                if (approvedPlan.removeTasks) setSelectedTasks(prev => prev.filter(id => !approvedPlan.removeTasks!.includes(id)));
-                                if (approvedPlan.addPersonas) setSelectedPersonas(prev => [...new Set([...prev, ...approvedPlan.addPersonas!.filter(id => personaBank.find(p => p.id === id))])]);
-                                if (approvedPlan.removePersonas) setSelectedPersonas(prev => prev.filter(id => !approvedPlan.removePersonas!.includes(id)));
-                                if (approvedPlan.nParticipants) setNParticipants(approvedPlan.nParticipants);
+                                // Apply the plan to local state
+                                const nextBrief = approvedPlan.brief || brief;
+                                let nextTasks = [...selectedTasks];
+                                if (approvedPlan.addTasks) nextTasks = [...new Set([...nextTasks, ...approvedPlan.addTasks.filter(id => taskBank.find(t => t.id === id))])];
+                                if (approvedPlan.removeTasks) nextTasks = nextTasks.filter(id => !approvedPlan.removeTasks!.includes(id));
+                                let nextPersonas = [...selectedPersonas];
+                                if (approvedPlan.addPersonas) nextPersonas = [...new Set([...nextPersonas, ...approvedPlan.addPersonas.filter(id => personaBank.find(p => p.id === id))])];
+                                if (approvedPlan.removePersonas) nextPersonas = nextPersonas.filter(id => !approvedPlan.removePersonas!.includes(id));
+                                const nextN = approvedPlan.nParticipants || nParticipants;
                                 if (approvedPlan.modelPool) setModelPool(approvedPlan.modelPool);
                                 setPendingPlan(null);
-                                // Auto-dispatch after a brief delay
-                                setTimeout(() => {
-                                  setDesignChat(prev => [...prev, { role: 'assistant', content: 'plan approved! dispatching...' }]);
-                                }, 200);
+
+                                // Actually dispatch — don't just update state and leave the user stranded
+                                if (!nextBrief.trim() || nextTasks.length === 0 || nextPersonas.length === 0) return;
+                                if (nextTasks.length === 1) {
+                                  dispatch({ type: 'START_EXPERIMENT', payload: { brief: nextBrief, paradigmId: nextTasks[0], personaIds: nextPersonas, nParticipants: nextN } });
+                                } else {
+                                  dispatch({ type: 'START_BATTERY', payload: { brief: nextBrief, paradigmIds: nextTasks, personaIds: nextPersonas, nParticipants: nextN } });
+                                }
+                                if (paperContext) dispatch({ type: 'SET_PAPER_CONTEXT', payload: paperContext });
+                                const params = new URLSearchParams();
+                                if (simMode === 'llm') params.set('mode', 'llm');
+                                params.set('n', String(nextN));
+                                if (simMode === 'llm') {
+                                  params.set('pool', approvedPlan.modelPool || modelPool);
+                                  params.set('calibrated', calibrationEnabled ? '1' : '0');
+                                  if (selectedTweaks.length > 0) params.set('tweaks', selectedTweaks.join(','));
+                                  if (customTweak.trim()) params.set('customTweak', customTweak.trim());
+                                }
+                                nav(`/dispatch?${params.toString()}`);
                               }}
                               onEdit={() => {
                                 // Apply changes to state so user can manually tweak
@@ -372,6 +402,10 @@ export function LandingPage() {
                                 if (p.addTasks) setSelectedTasks(prev => [...new Set([...prev, ...p.addTasks!.filter(id => taskBank.find(t => t.id === id))])]);
                                 if (p.removeTasks) setSelectedTasks(prev => prev.filter(id => !p.removeTasks!.includes(id)));
                                 setPendingPlan(null);
+                                // Editing means tasks may change — re-probe for new caveats
+                                setProbesAnswered(false);
+                                setPendingProbe(null);
+                                noJsonStreak.current = 0;
                                 setMode('configure');
                               }}
                               onReject={() => {
@@ -470,13 +504,93 @@ export function LandingPage() {
                 </div>
               </div>
 
+              {/* Mechanism Tweaks */}
+              {simMode === 'llm' && (
+              <div className="card p-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-mono text-text-3 uppercase">mechanism tweaks</span>
+                  <span className="text-[9px] text-text-4">hypothesis-driven processing changes</span>
+                </div>
+
+                {/* General tweaks (humanized baseline) */}
+                <div>
+                  <span className="text-[9px] text-text-4">baseline (always-on cognitive constraints):</span>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {TWEAK_LIBRARY.filter(t => t.category === 'general').map(t => (
+                      <button key={t.id}
+                        onClick={() => setSelectedTweaks(prev =>
+                          prev.includes(t.id) ? prev.filter(x => x !== t.id) : [...prev, t.id]
+                        )}
+                        title={`${t.description} (${t.citation})`}
+                        className={`px-2 py-0.5 rounded text-[9px] cursor-pointer border transition-colors ${
+                          selectedTweaks.includes(t.id)
+                            ? 'bg-sage/15 border-sage/30 text-text'
+                            : 'border-orchid/8 text-text-4 hover:text-text-3'
+                        }`}>
+                        {t.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Hypothesis tweaks (task-specific) */}
+                {selectedTasks.length > 0 && (() => {
+                  const relevant = TWEAK_LIBRARY.filter(t =>
+                    t.category === 'hypothesis' &&
+                    selectedTasks.some(taskId => !t.relevantTasks || t.relevantTasks.includes(taskId))
+                  );
+                  if (relevant.length === 0) return null;
+                  return (
+                    <div>
+                      <span className="text-[9px] text-text-4">hypothesis (test a specific mechanism):</span>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {relevant.map(t => (
+                          <button key={t.id}
+                            onClick={() => setSelectedTweaks(prev =>
+                              prev.includes(t.id) ? prev.filter(x => x !== t.id) : [...prev, t.id]
+                            )}
+                            title={`${t.description} (${t.citation})`}
+                            className={`px-2 py-0.5 rounded text-[9px] cursor-pointer border transition-colors ${
+                              selectedTweaks.includes(t.id)
+                                ? 'bg-orchid/15 border-orchid/30 text-text'
+                                : 'border-orchid/8 text-text-4 hover:text-text-3'
+                            }`}>
+                            {t.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })()}
+
+                {/* Custom mechanism */}
+                <div>
+                  <span className="text-[9px] text-text-4">custom mechanism (describe your hypothesis):</span>
+                  <textarea
+                    value={customTweak}
+                    onChange={e => setCustomTweak(e.target.value)}
+                    placeholder="e.g. 'Participants selectively attend to features near their planned path and ignore distant ones.'"
+                    rows={2}
+                    className="w-full mt-1 px-2 py-1 rounded-lg text-[10px] border border-orchid/15 bg-white text-text placeholder-text-4 resize-none focus:outline-none focus:border-orchid/30"
+                  />
+                </div>
+
+                {selectedTweaks.length > 0 && (
+                  <div className="text-[9px] text-text-4 italic">
+                    active: {selectedTweaks.map(id => TWEAK_LIBRARY.find(t => t.id === id)?.name || id).join(', ')}
+                    {customTweak.trim() ? ' + custom mechanism' : ''}
+                  </div>
+                )}
+              </div>
+              )}
+
               {/* Dispatch */}
               <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                 onClick={dispatchExperiment}
                 disabled={selectedTasks.length === 0 || selectedPersonas.length === 0}
                 className="w-full py-3 rounded-[14px] text-sm font-semibold text-white cursor-pointer disabled:opacity-30"
                 style={{ background: 'linear-gradient(135deg, #B07CC6, #D48BB5)' }}>
-                dispatch {selectedTasks.length} task(s) × {selectedPersonas.length} pop. 🌙
+                dispatch {selectedTasks.length} task(s) × {selectedPersonas.length} pop. × {simMode === 'llm' ? Math.min(nParticipants, 10) : nParticipants}n 🌙
               </motion.button>
             </motion.div>
           )}

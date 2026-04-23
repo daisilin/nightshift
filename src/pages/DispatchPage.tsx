@@ -37,6 +37,8 @@ export function DispatchPage() {
   const searchParams = new URLSearchParams(window.location.search);
   const isLLMFromUrl = searchParams.get('mode') === 'llm';
   const nFromUrl = parseInt(searchParams.get('n') || '20', 10);
+  // Prefer the session's persisted N (set by plan card approval) over URL param
+  const nParticipantsBase = session?.nParticipants ?? nFromUrl;
 
   useEffect(() => {
     if (!session || ran.current) return;
@@ -58,7 +60,7 @@ export function DispatchPage() {
           paradigmId: session.paradigmId,
           design: null, dataset: null, metrics: null, status: 'pending' as const,
         }];
-        const nParticipants = isLLM ? Math.min(nFromUrl, 10) : nFromUrl; // cap LLM at 10
+        const nParticipants = isLLM ? Math.min(nParticipantsBase, 10) : nParticipantsBase; // cap LLM at 10
         const paradigmIds = llmBattery.map(t => t.paradigmId);
         // Estimate total API calls per task type
         const totalCalls = llmBattery.reduce((sum, t) => {
@@ -337,7 +339,7 @@ Only include fields that the feedback asks to change. Return {} if no param chan
             paradigmId: task.paradigmId,
             personaIds: session.personaIds,
             params,
-            nParticipantsPerPersona: paramOverrides?.nParticipantsPerPersona ?? nFromUrl,
+            nParticipantsPerPersona: paramOverrides?.nParticipantsPerPersona ?? nParticipantsBase,
             hypotheses: [`Effect of condition on ${paradigm.dependentVariables[0]?.name || 'performance'}`],
             rationale: feedback ? `Adjusted based on feedback: ${feedback}` : `Standard ${paradigm.name} design`,
             internRole: 'scout',
